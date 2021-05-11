@@ -3,8 +3,6 @@ from ROOT import TLorentzVector
 import math
 import numpy as np
 
-
-
 def setCavasAndStyles(canvasName, c, stat):
     #setup canvas
     c = ROOT.TCanvas(canvasName,"myPlots",0,0,800,600)
@@ -12,8 +10,6 @@ def setCavasAndStyles(canvasName, c, stat):
     c.SetLogy(0)
     ROOT.gStyle.SetOptStat(stat)
     ROOT.gStyle.SetPalette(1)
-
-
 
 def setHistProperties(hist, lineWidth, lineStyle, lineColor, fillStyle, fillColor, xAxisTitle, yAxisTitle):
     if not(hist):
@@ -41,36 +37,54 @@ def setHistProperties(hist, lineWidth, lineStyle, lineColor, fillStyle, fillColo
     # return
     return 0
 
-
 def setNEvents(processFileName):
     lNevents = 1
     if (processFileName=="Data"):
         lNEvents = 1
-    if (processFileName=="DY10"):
-        lNEvents = 37951928.0
-    if (processFileName=="DY50"): 
+    if (processFileName=="DY50"): # Z+jets.
         lNEvents = 99795992.0
-    if (processFileName=="TT"): 
+    if (processFileName=="TT"): # ttbar.
         lNEvents = 63667448.0
-    if (processFileName=="WZ"):
+    if (processFileName=="DY10"): # Zgamma+jets
+        lNEvents = 37951928.0
+    if (processFileName=="WZ"): # WZ
         lNEvents = 6739437.0
-    if (processFileName=="ZZ"):
+    if (processFileName=="ZZ"): # Irreducible bkg.
         lNEvents = 97457264.0
     return lNEvents
 
-
-
+def get_evt_weight(event, isData, Nickname):
+    """
+    Return the corrected weight of event:
+    new_weight = old_weight * (xs * L_int / N_events_from_MC)
+    """
+    if isData:
+        return 1
+    else:
+        weight = event.eventWeight
+        lNEvents = setNEvents(Nickname)
+        if (Nickname=="DY50"): # Z+jets.
+            weight *= 6225.4*LUMI_INT/lNEvents
+        if (Nickname=="TT"):
+            weight *= 87.31*LUMI_INT/lNEvents
+        if (Nickname=="DY10"): # Zgamma+jets
+            weight *= 18610.0*LUMI_INT/lNEvents
+        if (Nickname=="WZ"):
+            weight *= 4.67*LUMI_INT/lNEvents
+        if (Nickname=="ZZ"):  # Irreducible bkg?
+            weight *= 1.256*LUMI_INT*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
+        return weight
 
 def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     print ("--- Initiating the analyzeZX procedure for file nicknamed as: "+ Nickname +".")
 
+    MZ_PDG = 91.1876
     LUMI_INT = 59700
     lineWidth = 2
     leg_xl = 0.50
     leg_xr = 0.90
     leg_yb = 0.72 
     leg_yt = 0.90
-    
 
     varAxLabel = ""
     
@@ -84,7 +98,6 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
         var_plotLow = 0
         var_nBins = 10
         varAxLabel = "E_{T,miss}"
-    
 
     PtlBins = [5.,10.,20.,30.,40.,50.,80.]
     PtlBins = np.array(PtlBins)
@@ -95,7 +108,6 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
 
     binWidth = ((int) (100*(var_plotHigh - var_plotLow)/var_nBins))/100.
     sUnit = "GeV"    
-    
     
     if (varName=="ptl3"):
         h1D_dummy = ROOT.TH1D("dummy", "dummy",6, PtlBins)
@@ -147,7 +159,6 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
         h1D_FRmu_EE_d   = ROOT.TH1D("h1D_FRmu_EE_d","h1D_FRmu_EE_d",var_nBins, var_plotLow, var_plotHigh) 
         h1D_FRmu_EE_d.Sumw2()
 
-
     CR_var_plotHigh = 870.0
     CR_var_plotLow = 70.0
     CR_var_nBins = 40    
@@ -189,46 +200,28 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     h1D_m4l_2P2F_4mu.Sumw2()
     h1D_m4l_3P1F_4mu = ROOT.TH1D("h1D_m4l_3P1F_4mu","h1D_m4l_3P1F_4mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
     h1D_m4l_3P1F_4mu.Sumw2()
-    h1D_m4l_4P_4mu   = ROOT.TH1D("h1D_m4l_4P_4mu","h1D_m4l_4P_4mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
+    h1D_m4l_4P_4mu = ROOT.TH1D("h1D_m4l_4P_4mu","h1D_m4l_4P_4mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
     h1D_m4l_4P_4mu.Sumw2()
 
-
-
-
     isData = ("Data" in Nickname)
-    iEvt = -1
     nentries = fTemplateTree.GetEntries()
-    lNEvents = setNEvents(Nickname)
 
-    for event in fTemplateTree:
-        iEvt+=1
-        if(iEvt%50000==0):
-            print ("---- Processing event: " + str(iEvt) + "/" + str(nentries))     
-        # weight
-        weight = event.eventWeight
-
-        if (isData):
-            weight = 1
- 
-        if not(isData):
-            if (Nickname=="DY10"):
-                weight *= 18610.0*LUMI_INT/lNEvents
-                        
-            if (Nickname=="DY50"):
-                weight *= 6225.4*LUMI_INT/lNEvents
-
-            if (Nickname=="TT"):
-                weight *= 87.31*LUMI_INT/lNEvents
-
-            if (Nickname=="WZ"):
-                weight *= 4.67*LUMI_INT/lNEvents
-
-            if (Nickname=="ZZ"):
-                weight *= 1.256*LUMI_INT*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
-
+    for iEvt, event in enumerate(fTemplateTree):
+        if (iEvt % 50000 == 0):
+            print ("---- Processing event: {}/{}".format(iEvt, nentries))
+            
+        weight = get_evt_weight(event, isData, Nickname)
 
         if (event.passedZ1LSelection):
+            # We got some kind of Z+L event.
+            # It should only be from Z+jets or Zgamma+jets.
+            # Sometimes though even a WZ event makes it through.
+            # We will remove WZ later.
+            # If lep3 passes tight selection, then it's a fake
+            # (after all we're only using bkg samples)!
+            # How frequently does this happen? I.e. what is the fake rate?
 
+            # Get info about third loose lepton.
             lep_tight = event.lep_tightId[event.lep_Hindex[2]]
             lep_iso = event.lep_RelIsoNoFSR[event.lep_Hindex[2]]
             idL3 = event.lep_id[event.lep_Hindex[2]]
@@ -238,28 +231,29 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
             etaL3 = lep.Eta()
             phiL3 = lep.Phi()
             
-            
+            # Reconstruct Z candidate.
             lep_1 = ROOT.TLorentzVector()
             lep_2 = ROOT.TLorentzVector()
             lep_1.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[0]],event.lep_eta[event.lep_Hindex[0]],event.lep_phi[event.lep_Hindex[0]],event.lep_mass[event.lep_Hindex[0]])
             lep_2.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[1]],event.lep_eta[event.lep_Hindex[1]],event.lep_phi[event.lep_Hindex[1]],event.lep_mass[event.lep_Hindex[1]])
-            
             massZ1 = (lep_1+lep_2).M()
-
 
             TestVar=False
             FillVar=0.
             
-            if (varName=="mZ1"):
-                TestVar= 1
-                FillVar= massZ1
+            #--- Currently not used. ---#
+            # if (varName=="mZ1"):
+            #     TestVar= 1
+            #     FillVar= massZ1
             
-            if (varName=="mEt"):
-                TestVar= 1
-                FillVar= event.met
+            # if (varName=="mEt"):
+            #     TestVar= 1
+            #     FillVar= event.met
             
-            if (varName=="ptl3"):
-                TestVar= (math.fabs(massZ1-91.188)<7) and (event.met<25) 
+            if varName=="ptl3":
+                tight_mZ_window = math.fabs(massZ1 - MZ_PDG) < 7
+                low_MET = event.met < 25
+                TestVar= tight_mZ_window and low_MET
                 FillVar= pTL3
 
             if ((abs(idL3) == 11) and (math.fabs(etaL3) < 1.497) and TestVar):
@@ -293,7 +287,6 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
                     #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[ME_n], Hist_fakes[ME_n],Hist_BDfakes[ME_n], Hist_conv[ME_n],false)
                     h1D_FRmu_EE.Fill(FillVar, weight)
   
-
         elif (event.passedZXCRSelection and varName == "ptl3"):
 
             lep_tight = []
@@ -303,9 +296,6 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
                 lep_tight.append(event.lep_tightId[event.lep_Hindex[k]])
                 lep_iso.append(event.lep_RelIsoNoFSR[event.lep_Hindex[k]])
                 idL.append(event.lep_id[event.lep_Hindex[k]])
-        
-            
-
 
             lep_3 = ROOT.TLorentzVector()
             lep_3.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[2]], event.lep_eta[event.lep_Hindex[2]], event.lep_phi[event.lep_Hindex[2]], event.lep_mass[event.lep_Hindex[2]])
@@ -398,28 +388,19 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
                         h1D_m4l_2P2F_2mu2e.Fill(event.mass4l, weight)
                     if (abs(idL[2])+abs(idL[3])==26):
                         h1D_m4l_2P2F_2e2mu.Fill(event.mass4l, weight)
-                    
-                
-      
 
+    # Storing the plots
+    Data_string = "Data" if isData else "MC"
 
-        # Storing the plots
-    isData_string = "Data"
-    if not (isData):
-        isData_string = "MC"
+    SaveRootFile = ROOT.TFile("Hist_"+Data_string+"_"+varName+"_"+Nickname+".root", "RECREATE")
 
-    SaveRootFile = ROOT.TFile("Hist_"+isData_string+"_"+varName+"_"+Nickname+".root", "RECREATE")
-
-
+    # C++ code below.
     # C++ kod odavde
-       
-    
-    
+
     h1D_FRel_EE_n = h1D_FRel_EE.Clone()
     h1D_FRmu_EE_n = h1D_FRmu_EE.Clone()
     h1D_FRel_EB_n = h1D_FRel_EB.Clone()
     h1D_FRmu_EB_n = h1D_FRmu_EB.Clone()
-    
     
     # divide hists to get the fake rates
     h1D_FRel_EB_n.Divide(h1D_FRel_EB_d)
@@ -432,7 +413,6 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     h1D_FRmu_EB_n.GetYaxis().SetRangeUser(0.04,0.35)
     h1D_FRmu_EE_n.GetYaxis().SetRangeUser(0.04,0.35)
     #Save histograms in .root file
-    
     
     h1D_FRel_EB.SetName("Data_FRel_EB_n")
     h1D_FRel_EB.Write()
