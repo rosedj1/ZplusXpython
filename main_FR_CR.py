@@ -12,7 +12,11 @@ import math
 
 from analyzeZX import *
 
-fileList = ["/afs/cern.ch/work/d/drosenzw/zplusx/CMSSW_10_6_12/src/Datapractice_4500evts.root"]
+fileList = [
+    # "/cmsuf/data/store/user/drosenzw/UFHZZAnalysisRun2/Data/skim2L/SingleMuon/crab_SingleMuon_Run2018A-17Sep2018-v2/210506_233459/0000/SingleMuon_Run2018A-17Sep2018-v2_1.root",
+    "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/Data/skim2L/Data_mix_test1.root",
+    # "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/Data/skim2L/Data_DoubleMuonRunA_EGammaRunB_MuonEGRunC_SingleMuonRunD.root"
+    ]
 #fileList = ["../Data_skimmed.root",
 #            "../DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8_2018filter2l_new_ZX.root",
 #            "../TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_RunIIAutumn18MiniAOD-102X_2018filter2l_new_ZX.root",
@@ -37,8 +41,7 @@ for i in range(len(fileList)):
     else:
         tree = inFile.Get("Ana/passedEvents")
 
-
-    print ("- File: \"" + fileList[i] + "\" has been opened.\n-- It has "+str(tree.GetEntries())+" events.\n")
+    print("File: \"" + fileList[i] + "\" has been opened.\n-- It has "+str(tree.GetEntries())+" events.\n")
     analyzeZX(tree, RootNickNames[i])
     inFile.Close()
 
