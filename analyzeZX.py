@@ -2,6 +2,7 @@ import ROOT
 from ROOT import TLorentzVector
 import math
 import numpy as np
+# from Utils_Python.Utils_Files import check_overwrite
 
 def setCavasAndStyles(canvasName, c, stat):
     #setup canvas
@@ -75,6 +76,16 @@ def get_evt_weight(event, isData, Nickname):
             weight *= 1.256*LUMI_INT*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
         return weight
 
+def reconstruct_Zcand_leptons(event):
+    """Return (lep_1, lep_2) which make Z1 from event."""
+    lep_1 = ROOT.TLorentzVector()
+    lep_2 = ROOT.TLorentzVector()
+    ndx0 = event.lep_Hindex[0]
+    ndx1 = event.lep_Hindex[1]
+    lep_1.SetPtEtaPhiM(event.lep_pt[ndx0], event.lep_eta[ndx0], event.lep_phi[ndx0], event.lep_mass[ndx0])
+    lep_2.SetPtEtaPhiM(event.lep_pt[ndx1], event.lep_eta[ndx1], event.lep_phi[ndx1], event.lep_mass[ndx1])
+    return (lep_1, lep_2)
+
 def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     print ("--- Initiating the analyzeZX procedure for file nicknamed as: "+ Nickname +".")
 
@@ -104,9 +115,9 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
         var_nBins = 10
         varAxLabel = "E_{T,miss}"
 
-    PtlBins = [5.,10.,20.,30.,40.,50.,80.]
+    PtlBins = [5.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0]
     PtlBins = np.array(PtlBins)
-    PtlBinsMu = [5.,7.,10.,20.,30.,40.,50.,80.]
+    PtlBinsMu = [5.0, 7.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0]
     PtlBinsMu = np.array(PtlBinsMu)
     
     #initiate numerator and denominator histograms for FR computation
@@ -203,6 +214,7 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
 
     isData = ("Data" in Nickname)
     nentries = fTemplateTree.GetEntries()
+    n_tot_failedleps = 0
 
     for iEvt, event in enumerate(fTemplateTree):
         if (iEvt % 50000 == 0):
@@ -219,27 +231,24 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
             # (after all we're only using bkg samples)!
             # How frequently does this happen? I.e. what is the fake rate?
 
+            # First, reconstruct Z candidate.
+            lep_1, lep_2 = reconstruct_Zcand_leptons(event)
+            massZ1 = (lep_1+lep_2).M()
+
             # Get info about third lepton, which is at least loose.
-            lep_tight = event.lep_tightId[event.lep_Hindex[2]]
-            lep_iso = event.lep_RelIsoNoFSR[event.lep_Hindex[2]]
-            idL3 = event.lep_id[event.lep_Hindex[2]]
+            ndx_loose = event.lep_Hindex[2]
+            lep_tight = event.lep_tightId[ndx_loose]
+            lep_iso = event.lep_RelIsoNoFSR[ndx_loose]
+            idL3 = event.lep_id[ndx_loose]
             lep = ROOT.TLorentzVector()
-            lep.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[2]],
-                             event.lep_eta[event.lep_Hindex[2]],
-                             event.lep_phi[event.lep_Hindex[2]],
-                             event.lep_mass[event.lep_Hindex[2]]
-                            )
+            lep.SetPtEtaPhiM(event.lep_pt[ndx_loose],
+                             event.lep_eta[ndx_loose],
+                             event.lep_phi[ndx_loose],
+                             event.lep_mass[ndx_loose])
             pTL3  = lep.Pt()
             etaL3 = lep.Eta()
             phiL3 = lep.Phi()
             
-            # Reconstruct Z candidate.
-            lep_1 = ROOT.TLorentzVector()
-            lep_2 = ROOT.TLorentzVector()
-            lep_1.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[0]],event.lep_eta[event.lep_Hindex[0]],event.lep_phi[event.lep_Hindex[0]],event.lep_mass[event.lep_Hindex[0]])
-            lep_2.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[1]],event.lep_eta[event.lep_Hindex[1]],event.lep_phi[event.lep_Hindex[1]],event.lep_mass[event.lep_Hindex[1]])
-            massZ1 = (lep_1+lep_2).M()
-
             TestVar=False
             FillVar=0.
             
@@ -316,22 +325,10 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
             # phiL4 = lep_4.Phi()
             # DR = math.sqrt((phiL3-phiL4)*(phiL3-phiL4) + (etaL3-etaL4)*(etaL3-etaL4))
             
-            lep_1 = ROOT.TLorentzVector()
-            lep_2 = ROOT.TLorentzVector()
-
-            lep_1.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[0]],
-                               event.lep_eta[event.lep_Hindex[0]],
-                               event.lep_phi[event.lep_Hindex[0]],
-                               event.lep_mass[event.lep_Hindex[0]]
-                               )
-
-            lep_2.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[1]],
-                               event.lep_eta[event.lep_Hindex[1]],
-                               event.lep_phi[event.lep_Hindex[1]],
-                               event.lep_mass[event.lep_Hindex[1]]
-                               )
-            
+            lep_1, lep_2 = reconstruct_Zcand_leptons(event)
             massZ1 = (lep_1+lep_2).M()
+
+            # failed lep = not (tight and good e/mu)
             nFailedLeptons1 = not (lep_tight[0] and ((abs(idL[0])==11) or (abs(idL[0])==13 and lep_iso[0]<0.35)))
             nFailedLeptons2 = not (lep_tight[1] and ((abs(idL[1])==11) or (abs(idL[1])==13 and lep_iso[1]<0.35)))
             nFailedLeptonsZ1 = nFailedLeptons1 + nFailedLeptons2
@@ -342,12 +339,9 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
             
             nFailedLeptons = nFailedLeptonsZ1 + nFailedLeptonsZ2
 
-
             #nFailedLeptonsZ1 = not (lep_tight[0] and ((abs(idL[0])==11) or (abs(idL[0])==13 and lep_iso[0]<0.35))) + not (lep_tight[1] and ((abs(idL[1])==11) or (abs(idL[1])==13 and lep_iso[1]<0.35)))
             #nFailedLeptonsZ2 = not (lep_tight[2] and ((abs(idL[2])==11) or (abs(idL[2])==13 and lep_iso[2]<0.35))) + not (lep_tight[3] and ((abs(idL[3])==11) or (abs(idL[3])==13 and lep_iso[3]<0.35)))          
             #nFailedLeptons = nFailedLeptonsZ1 + nFailedLeptonsZ2
-
-
 
             # Fill m4l hists.
             if (nFailedLeptons == 0):
@@ -386,7 +380,6 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
                 h1D_m4l_2P2F.Fill(event.mass4l, weight)
                 #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_2P2F], CR[Fake][_2P2F], CR[BDfake][_2P2F],CR[Conv][_2P2F],false)
                 
-                
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==44):
                     #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_2P2F_4e], CR[Fake][_2P2F_4e], CR[BDfake][_2P2F_4e],CR[Conv][_2P2F_4e],false)
                     h1D_m4l_2P2F_4e.Fill(event.mass4l, weight)
@@ -403,14 +396,23 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
                     if (abs(idL[2])+abs(idL[3])==26):
                         h1D_m4l_2P2F_2e2mu.Fill(event.mass4l, weight)
 
+            if nFailedLeptons > 2:
+                print(f"  number of failed leptons in Z+LL CR: {nFailedLeptons}")
+                n_tot_failedleps += nFailedLeptons
+
     # Save the plots.
     Data_string = "Data" if isData else "MC"
-
-    SaveRootFile = ROOT.TFile("Hist_"+Data_string+"_"+varName+"_"+Nickname+".root", "RECREATE")
+    outfile_path = "Hist_"+Data_string+"_"+varName+"_"+Nickname+".root"
+    # check_overwrite(outfile_path, overwrite=False)
+    suffix = 0
+    while os.path.exists(outfile_path):
+        print(f"#--- Renaming: {outfile_path}")
+        outfile_path = f"""{outfile_path.rstrip('.root')}_{suffix}.root"""
+        suffix += 1
+    SaveRootFile = ROOT.TFile(outfile_path, "RECREATE")
 
     # C++ code below.
     # C++ kod odavde
-
     h1D_FRel_EE_n = h1D_FRel_EE.Clone()
     h1D_FRmu_EE_n = h1D_FRmu_EE.Clone()
     h1D_FRel_EB_n = h1D_FRel_EB.Clone()
@@ -422,10 +424,10 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     h1D_FRmu_EB_n.Divide(h1D_FRmu_EB_d)
     h1D_FRmu_EE_n.Divide(h1D_FRmu_EE_d)
     
-    h1D_FRel_EB_n.GetYaxis().SetRangeUser(0.01,0.35) 
-    h1D_FRel_EE_n.GetYaxis().SetRangeUser(0.01,0.35)
-    h1D_FRmu_EB_n.GetYaxis().SetRangeUser(0.04,0.35)
-    h1D_FRmu_EE_n.GetYaxis().SetRangeUser(0.04,0.35)
+    h1D_FRel_EB_n.GetYaxis().SetRangeUser(0.01, 0.35) 
+    h1D_FRel_EE_n.GetYaxis().SetRangeUser(0.01, 0.35)
+    h1D_FRmu_EB_n.GetYaxis().SetRangeUser(0.04, 0.35)
+    h1D_FRmu_EE_n.GetYaxis().SetRangeUser(0.04, 0.35)
     #Save histograms in .root file
     
     h1D_FRel_EB.SetName("Data_FRel_EB_n")
@@ -445,7 +447,6 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     h1D_FRmu_EB_d.Write()
     h1D_FRmu_EE_d.SetName("Data_FRmu_EE_d") 
     h1D_FRmu_EE_d.Write()
-    
     
     h1D_FRel_EB_n.SetName("Data_FRel_EB") 
     h1D_FRel_EB_n.Write()
