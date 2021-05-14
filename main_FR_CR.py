@@ -34,11 +34,12 @@ RootNickNames = ["Data"]#,"DY50","TT","WZ","ZZ"]
 
 # For testing
 #fileList = ["../DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8_2018filter2l_new_ZX.root",]
-#RootNickNames = ["DY50"]
+#fRootNickNames = ["DY50"]
 
 print("First stage of processing (FR computation and CR histogram creation) has been initiated.\n")
 
-for i in range(len(fileList)):
+#for i in range(len(fileList)):
+for i in range(1,2):
     inFile =  ROOT.TFile.Open(fileList[i], "READ")
     if i == 0:
         tree = inFile.Get("Ana/passedEvents")

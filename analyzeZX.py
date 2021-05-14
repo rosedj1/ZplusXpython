@@ -3,6 +3,35 @@ from ROOT import TLorentzVector
 import math
 import numpy as np
 # from Utils_Python.Utils_Files import check_overwrite
+from MC_composition import PartOrigin
+
+class barrel_endcap_region():
+    EB_n = 0
+    EB_d = 1
+    EE_n = 2
+    EE_d = 3
+    MB_n = 4
+    MB_d = 5
+    ME_n = 6
+    ME_d = 7
+
+class type_of_fake():
+    Prom = 0
+    Fake = 1
+    Conv = 2
+    BDfake = 3
+
+class CRregion():
+    _2P2F = 0
+    _2P2F_4e = 1
+    _2P2F_4mu = 2
+    _2P2F_2e2mu = 3
+    _2P2F_2mu2e = 4
+    _3P1F = 5
+    _3P1F_4e = 6
+    _3P1F_4mu = 7
+    _3P1F_2e2mu = 8
+    _3P1F_2mu2e = 9
 
 def setCavasAndStyles(canvasName, c, stat):
     #setup canvas
@@ -100,9 +129,7 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
 
     CR_var_plotHigh = 870.0
     CR_var_plotLow = 70.0
-    CR_var_nBins = 40    
-
-    varAxLabel = ""
+    CR_var_nBins = 40
     
     var_plotHigh = 120
     var_plotLow = 60
@@ -121,33 +148,33 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     #initiate numerator and denominator histograms for FR computation
 
     binWidth = ((int) (100*(var_plotHigh - var_plotLow)/var_nBins))/100.
-    sUnit = "GeV"    
+    sUnit = "GeV"
     
-    # Make pT hists for loose and tight leptons.
+    # Make pT hists for loose lepton.
     if (varName=="ptl3"):
-        h1D_dummy = ROOT.TH1D("dummy", "dummy",6, PtlBins)
+        h1D_dummy = ROOT.TH1D("dummy", "dummy", len(PtlBins), PtlBins)
         setHistProperties(h1D_dummy,1,1,1,0,0,varAxLabel,"Misidentification rate")
         #define FR numerator histograms
 
-        h1D_FRel_EB   = ROOT.TH1D("h1D_FRel_EB","h1D_FRel_EB",6, PtlBins) 
+        h1D_FRel_EB   = ROOT.TH1D("h1D_FRel_EB","h1D_FRel_EB", len(PtlBins), PtlBins) 
         h1D_FRel_EB.Sumw2()
-        h1D_FRel_EE   = ROOT.TH1D("h1D_FRel_EE","h1D_FRel_EE",6, PtlBins) 
+        h1D_FRel_EE   = ROOT.TH1D("h1D_FRel_EE","h1D_FRel_EE", len(PtlBins), PtlBins) 
         h1D_FRel_EE.Sumw2()
         
-        h1D_FRmu_EB   = ROOT.TH1D("h1D_FRmu_EB","h1D_FRmu_EB",7, PtlBinsMu) 
+        h1D_FRmu_EB   = ROOT.TH1D("h1D_FRmu_EB","h1D_FRmu_EB", len(PtlBinsMu), PtlBinsMu) 
         h1D_FRmu_EB.Sumw2()
-        h1D_FRmu_EE   = ROOT.TH1D("h1D_FRmu_EE","h1D_FRmu_EE",7, PtlBinsMu) 
+        h1D_FRmu_EE   = ROOT.TH1D("h1D_FRmu_EE","h1D_FRmu_EE", len(PtlBinsMu), PtlBinsMu) 
         h1D_FRmu_EE.Sumw2()
         
         # define FR denominator histograms
-        h1D_FRel_EB_d   = ROOT.TH1D("h1D_FRel_EB_d","h1D_FRel_EB_d",6, PtlBins) 
+        h1D_FRel_EB_d   = ROOT.TH1D("h1D_FRel_EB_d","h1D_FRel_EB_d", len(PtlBins), PtlBins) 
         h1D_FRel_EB_d.Sumw2()
-        h1D_FRel_EE_d   = ROOT.TH1D("h1D_FRel_EE_d","h1D_FRel_EE_d",6, PtlBins) 
+        h1D_FRel_EE_d   = ROOT.TH1D("h1D_FRel_EE_d","h1D_FRel_EE_d", len(PtlBins), PtlBins) 
         h1D_FRel_EE_d.Sumw2()
         
-        h1D_FRmu_EB_d   = ROOT.TH1D("h1D_FRmu_EB_d","h1D_FRmu_EB_d",7, PtlBinsMu) 
+        h1D_FRmu_EB_d   = ROOT.TH1D("h1D_FRmu_EB_d","h1D_FRmu_EB_d", len(PtlBinsMu), PtlBinsMu) 
         h1D_FRmu_EB_d.Sumw2()
-        h1D_FRmu_EE_d   = ROOT.TH1D("h1D_FRmu_EE_d","h1D_FRmu_EE_d",7, PtlBinsMu) 
+        h1D_FRmu_EE_d   = ROOT.TH1D("h1D_FRmu_EE_d","h1D_FRmu_EE_d", len(PtlBinsMu), PtlBinsMu) 
         h1D_FRmu_EE_d.Sumw2()    
     else:
         h1D_dummy = ROOT.TH1D("dummy", "dummy", var_nBins, var_plotLow, var_plotHigh)
@@ -214,6 +241,112 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     nentries = fTemplateTree.GetEntries()
     n_tot_failedleps = 0
 
+    # Begin: Define histograms for uncertainty studies (separating fakes per type of fake) 
+    order = ["EB_n","EB_d","EE_n","EE_d","MB_n","MB_d","ME_n","ME_d"]
+    CRSection = ["2P2F","2P2F4e","2P2F4mu","2P2F2e2mu","2P2F2mu2e","3P1F","3P1F4e","3P1F4mu","3P1F2e2mu","3P1F2mu2e"]
+
+    ID = {"Prom","Fake","Conv","BDfake"}
+
+    ## Define CR histograms for Prompt/Fake/Converson and BDfakes    
+    CR = [] 
+    CR_Prom = []
+    CR_Fake = []
+    CR_Conv = []
+    CR_BDfake = []
+
+    for count in range(CRregion._3P1F_2mu2e + 1):     
+    
+        CR_Prom.append(ROOT.TH1D("h1D_m4l_Prom_"+CRSection[count],"h1D_m4l_Prom_"+CRSection[count],CR_var_nBins, CR_var_plotLow, CR_var_plotHigh))
+        CR_Prom[count].Sumw2()
+
+        CR_Fake.append(ROOT.TH1D("h1D_m4l_Fake_"+CRSection[count],"h1D_m4l_Fake_"+CRSection[count],CR_var_nBins, CR_var_plotLow, CR_var_plotHigh))
+        CR_Fake[count].Sumw2()
+
+        CR_Conv.append(ROOT.TH1D("h1D_m4l_Conv_"+CRSection[count],"h1D_m4l_Conv_"+CRSection[count],CR_var_nBins, CR_var_plotLow, CR_var_plotHigh))
+        CR_Conv[count].Sumw2()
+
+        CR_BDfake.append(ROOT.TH1D("h1D_m4l_BDfake_"+CRSection[count],"h1D_m4l_BDfake_"+CRSection[count],CR_var_nBins, CR_var_plotLow, CR_var_plotHigh))
+        CR_BDfake[count].Sumw2()
+
+    CR.append(CR_Prom)
+    CR.append(CR_Fake)
+    CR.append(CR_Conv)
+    CR.append(CR_BDfake)
+
+    ## Define numerator/denominator histograms for Prompt/Fake/Converson and BDfakes in Z+L region.
+    Hist_conv = []
+    Hist_prompt = []
+    Hist_fakes = []
+    Hist_BDfakes = []
+
+    for count in range(barrel_endcap_region.ME_d+1):
+    
+        if (varName=="ptl3") and (count < barrel_endcap_region.MB_n):
+            Hist_conv.append(ROOT.TH1D("Hist_conv"+order[count] ,"Hist_conv"+order[count],6,PtlBins))
+            Hist_conv[count].Sumw2()
+
+            Hist_prompt.append(ROOT.TH1D("Hist_prompt"+order[count],"Hist_prompt"+order[count],6,PtlBins))
+            Hist_prompt[count].Sumw2()
+
+            Hist_fakes.append(ROOT.TH1D("Hist_fakes"+order[count],"Hist_fakes"+order[count],6,PtlBins))
+            Hist_fakes[count].Sumw2()
+
+            Hist_BDfakes.append(ROOT.TH1D("Hist_BDfakes"+order[count],"Hist_BDfakes"+order[count],6,PtlBins))
+            Hist_BDfakes[count].Sumw2()
+
+        elif (varName=="ptl3") and (count >= barrel_endcap_region.MB_n):
+            Hist_conv.append(ROOT.TH1D("Hist_conv"+order[count] ,"Hist_conv"+order[count],7,PtlBinsMu))
+            Hist_conv[count].Sumw2()
+
+            Hist_prompt.append(ROOT.TH1D("Hist_prompt"+order[count],"Hist_prompt"+order[count],7,PtlBinsMu))
+            Hist_prompt[count].Sumw2()
+
+            Hist_fakes.append(ROOT.TH1D("Hist_fakes"+order[count],"Hist_fakes"+order[count],7,PtlBinsMu))
+            Hist_fakes[count].Sumw2()
+
+            Hist_BDfakes.append(ROOT.TH1D("Hist_BDfakes"+order[count],"Hist_BDfakes"+order[count],7,PtlBinsMu))
+            Hist_BDfakes[count].Sumw2()
+        
+        else:
+            Hist_conv.append(ROOT.TH1D("Hist_conv"+order[count] ,"Hist_conv"+order[count],var_nBins, var_plotLow, var_plotHigh))
+            Hist_conv[count].Sumw2()
+
+            Hist_prompt.append(ROOT.TH1D("Hist_prompt"+order[count],"Hist_prompt"+order[count],var_nBins, var_plotLow, var_plotHigh))
+            Hist_prompt[count].Sumw2()
+
+            Hist_fakes.append(ROOT.TH1D("Hist_fakes"+order[count],"Hist_fakes"+order[count],var_nBins, var_plotLow, var_plotHigh))
+            Hist_fakes[count].Sumw2()
+
+            Hist_BDfakes.append(ROOT.TH1D("Hist_BDfakes"+order[count],"Hist_BDfakes"+order[count],var_nBins, var_plotLow, var_plotHigh))
+            Hist_BDfakes[count].Sumw2()
+    # End: Define histograms for uncertainty studies (separating fakes per type of fake) 
+ 
+    for event in fTemplateTree:
+        iEvt+=1
+        if(iEvt%50000==0):
+            print ("---- Processing event: " + str(iEvt) + "/" + str(nentries))     
+        # weight
+        weight = event.eventWeight
+
+        if (isData):
+            weight = 1
+ 
+        if not(isData):
+            if (Nickname=="DY10"):
+                weight *= 18610.0*LUMI_INT/lNEvents
+                        
+            if (Nickname=="DY50"):
+                weight *= 6225.4*LUMI_INT/lNEvents
+
+            if (Nickname=="TT"):
+                weight *= 87.31*LUMI_INT/lNEvents
+
+            if (Nickname=="WZ"):
+                weight *= 4.67*LUMI_INT/lNEvents
+
+            if (Nickname=="ZZ"):
+                weight *= 1.256*LUMI_INT*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
+
     for iEvt, event in enumerate(fTemplateTree):
         if (iEvt % 50000 == 0):
             print ("Processing event: {}/{}".format(iEvt, nentries))
@@ -247,6 +380,20 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
             etaL3 = lep.Eta()
             phiL3 = lep.Phi()
             
+            lep_matchedR03_PdgId = event.lep_matchedR03_PdgId
+            lep_matchedR03_MomId = event.lep_matchedR03_MomId
+            lep_matchedR03_MomMomId = event.lep_matchedR03_MomMomId
+            lep_id = event.lep_id
+            lep_Hindex = event.lep_Hindex
+
+            lep_1 = ROOT.TLorentzVector()
+            lep_2 = ROOT.TLorentzVector()
+            lep_1.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[0]],event.lep_eta[event.lep_Hindex[0]],event.lep_phi[event.lep_Hindex[0]],event.lep_mass[event.lep_Hindex[0]])
+            lep_2.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[1]],event.lep_eta[event.lep_Hindex[1]],event.lep_phi[event.lep_Hindex[1]],event.lep_mass[event.lep_Hindex[1]])
+            
+            massZ1 = (lep_1+lep_2).M()
+
+
             TestVar=False
             FillVar=0.
             
@@ -268,34 +415,35 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
             # Sort lep3 electrons.
             if ((abs(idL3) == 11) and (math.fabs(etaL3) < 1.497) and TestVar):
                 h1D_FRel_EB_d.Fill(FillVar, weight)
-                #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[EB_d], Hist_fakes[EB_d], Hist_BDfakes[EB_d], Hist_conv[EB_d],false)
+                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_d], Hist_fakes[barrel_endcap_region.EB_d], Hist_BDfakes[barrel_endcap_region.EB_d], Hist_conv[barrel_endcap_region.EB_d],False)
                 if (lep_tight and TestVar):
-                    #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[EB_n], Hist_fakes[EB_n],Hist_BDfakes[EB_n],Hist_conv[EB_n],false)
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_n], Hist_fakes[barrel_endcap_region.EB_n],Hist_BDfakes[barrel_endcap_region.EB_n],Hist_conv[barrel_endcap_region.EB_n],False)
                     h1D_FRel_EB.Fill(FillVar, weight)
 
             if ((abs(idL3) == 11) and (math.fabs(etaL3) > 1.497) and TestVar):
                 h1D_FRel_EE_d.Fill(FillVar, weight)
-                #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[EE_d], Hist_fakes[EE_d],Hist_BDfakes[EE_d], Hist_conv[EE_d],false)
+                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_d], Hist_fakes[barrel_endcap_region.EE_d],Hist_BDfakes[barrel_endcap_region.EE_d], Hist_conv[barrel_endcap_region.EE_d],False)
                 
                 if (lep_tight and TestVar):
-                    #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[EE_n], Hist_fakes[EE_n], Hist_BDfakes[EE_n], Hist_conv[EE_n],false)
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_n], Hist_fakes[barrel_endcap_region.EE_n], Hist_BDfakes[barrel_endcap_region.EE_n], Hist_conv[barrel_endcap_region.EE_n],False)
                     h1D_FRel_EE.Fill(FillVar, weight)
 
             # Sort L3 muons.
             if ((abs(idL3) == 13) and (math.fabs(etaL3) < 1.2) and TestVar):
                 h1D_FRmu_EB_d.Fill(FillVar, weight)
-                #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[MB_d], Hist_fakes[MB_d], Hist_BDfakes[MB_d], Hist_conv[MB_d],false)
+                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_d], Hist_fakes[barrel_endcap_region.MB_d], Hist_BDfakes[barrel_endcap_region.MB_d], Hist_conv[barrel_endcap_region.MB_d],False)
                 
                 if (lep_tight and (lep_iso < 0.35) and TestVar):
-                    #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[MB_n], Hist_fakes[MB_n],Hist_BDfakes[MB_n], Hist_conv[MB_n],false)
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_n], Hist_fakes[barrel_endcap_region.MB_n],Hist_BDfakes[barrel_endcap_region.MB_n], Hist_conv[barrel_endcap_region.MB_n],False)
                     h1D_FRmu_EB.Fill(FillVar, weight)
 
             if ((abs(idL3) == 13) and (math.fabs(etaL3) > 1.2) and TestVar):
                 h1D_FRmu_EE_d.Fill(FillVar, weight)
-                #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[ME_d], Hist_fakes[ME_d],Hist_BDfakes[ME_d], Hist_conv[ME_d],false)
+                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_d], Hist_fakes[barrel_endcap_region.ME_d],Hist_BDfakes[barrel_endcap_region.ME_d], Hist_conv[barrel_endcap_region.ME_d],False)
                 
                 if (lep_tight and (lep_iso < 0.35) and TestVar):
                     #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[ME_n], Hist_fakes[ME_n],Hist_BDfakes[ME_n], Hist_conv[ME_n],false)
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_n], Hist_fakes[barrel_endcap_region.ME_n],Hist_BDfakes[barrel_endcap_region.ME_n], Hist_conv[barrel_endcap_region.ME_n],False)
                     h1D_FRmu_EE.Fill(FillVar, weight)
   
         elif (event.passedZXCRSelection and varName == "ptl3"):
@@ -356,51 +504,54 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
                     
             if (nFailedLeptons == 1):
                 h1D_m4l_3P1F.Fill(event.mass4l, weight)
-                # h1D_Dkin_3P1F.Fill(event.Dkinbkg, weight)
-
-                # Uncertainty measurement.
-                #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_3P1F], CR[Fake][_3P1F],CR[BDfake][_3P1F],CR[Conv][_3P1F],false)
+                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F], CR[type_of_fake.Fake][CRregion._3P1F],CR[type_of_fake.BDfake][CRregion._3P1F],CR[type_of_fake.Conv][CRregion._3P1F],False)
                 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==44):
-                    #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_3P1F_4e], CR[Fake][_3P1F_4e],CR[BDfake][_3P1F_4e],CR[Conv][_3P1F_4e],false)
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_4e], CR[type_of_fake.Fake][CRregion._3P1F_4e],CR[type_of_fake.BDfake][CRregion._3P1F_4e],CR[type_of_fake.Conv][CRregion._3P1F_4e],False)
                     h1D_m4l_3P1F_4e.Fill(event.mass4l, weight)
             
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==52):
-                    #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_3P1F_4mu], CR[Fake][_3P1F_4mu], CR[BDfake][_3P1F_4mu],CR[Conv][_3P1F_4mu],false)
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_4mu], CR[type_of_fake.Fake][CRregion._3P1F_4mu], CR[type_of_fake.BDfake][CRregion._3P1F_4mu],CR[type_of_fake.Conv][CRregion._3P1F_4mu],False)
                     h1D_m4l_3P1F_4mu.Fill(event.mass4l, weight)
 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==48):
-                    #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_3P1F_2e2mu], CR[Fake][_3P1F_2e2mu],CR[BDfake][_3P1F_2e2mu],CR[Conv][_3P1F_2e2mu],false)
+
                     if (abs(idL[2])+abs(idL[3])==22):
                         h1D_m4l_3P1F_2mu2e.Fill(event.mass4l, weight)
-
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id,event. mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_2mu2e], CR[type_of_fake.Fake][CRregion._3P1F_2mu2e],CR[type_of_fake.BDfake][CRregion._3P1F_2mu2e],CR[type_of_fake.Conv][CRregion._3P1F_2mu2e],False)
+    
                     if (abs(idL[2])+abs(idL[3])==26):
                         h1D_m4l_3P1F_2e2mu.Fill(event.mass4l, weight)
-     
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id,event. mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_2e2mu], CR[type_of_fake.Fake][CRregion._3P1F_2e2mu],CR[type_of_fake.BDfake][CRregion._3P1F_2e2mu],CR[type_of_fake.Conv][CRregion._3P1F_2e2mu],False)     
+
             if (nFailedLeptons == 2):
                 h1D_m4l_2P2F.Fill(event.mass4l, weight)
-                #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_2P2F], CR[Fake][_2P2F], CR[BDfake][_2P2F],CR[Conv][_2P2F],false)
+                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F], CR[type_of_fake.Fake][CRregion._2P2F], CR[type_of_fake.BDfake][CRregion._2P2F],CR[type_of_fake.Conv][CRregion._2P2F],False)
                 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==44):
-                    #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_2P2F_4e], CR[Fake][_2P2F_4e], CR[BDfake][_2P2F_4e],CR[Conv][_2P2F_4e],false)
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_4e], CR[type_of_fake.Fake][CRregion._2P2F_4e], CR[type_of_fake.BDfake][CRregion._2P2F_4e],CR[type_of_fake.Conv][CRregion._2P2F_4e],False)
                     h1D_m4l_2P2F_4e.Fill(event.mass4l, weight)
                 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==52):
-                    #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_2P2F_4mu], CR[Fake][_2P2F_4mu],CR[BDfake][_2P2F_4mu],CR[Conv][_2P2F_4mu],false)
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_4mu], CR[type_of_fake.Fake][CRregion._2P2F_4mu],CR[type_of_fake.BDfake][CRregion._2P2F_4mu],CR[type_of_fake.Conv][CRregion._2P2F_4mu],False)
                     h1D_m4l_2P2F_4mu.Fill(event.mass4l, weight)
                 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==48):
-                    #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_2P2F_2e2mu], CR[Fake][_2P2F_2e2mu],CR[BDfake][_2P2F_2e2mu],CR[Conv][_2P2F_2e2mu],false)
                     
                     if (abs(idL[2])+abs(idL[3])==22):
                         h1D_m4l_2P2F_2mu2e.Fill(event.mass4l, weight)
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_2mu2e], CR[type_of_fake.Fake][CRregion._2P2F_2mu2e],CR[type_of_fake.BDfake][CRregion._2P2F_2mu2e],CR[type_of_fake.Conv][CRregion._2P2F_2mu2e],False)
+
                     if (abs(idL[2])+abs(idL[3])==26):
                         h1D_m4l_2P2F_2e2mu.Fill(event.mass4l, weight)
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_2e2mu], CR[type_of_fake.Fake][CRregion._2P2F_2e2mu],CR[type_of_fake.BDfake][CRregion._2P2F_2e2mu],CR[type_of_fake.Conv][CRregion._2P2F_2e2mu],False)
 
             if nFailedLeptons > 2:
                 print(f"  number of failed leptons in Z+LL CR: {nFailedLeptons}")
                 n_tot_failedleps += nFailedLeptons
-
+    # C++ code below.
+    # C++ kod odavde
+                
     # Save the plots.
     Data_string = "Data" if isData else "MC"
     outfile_path = "Hist_"+Data_string+"_"+varName+"_"+Nickname+".root"
@@ -410,10 +561,9 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
         print(f"#--- Renaming: {outfile_path}")
         outfile_path = f"""{outfile_path.rstrip('.root')}_{suffix}.root"""
         suffix += 1
-    SaveRootFile = ROOT.TFile(outfile_path, "RECREATE")
 
-    # C++ code below.
-    # C++ kod odavde
+    SaveRootFile = ROOT.TFile(outfile_path, "RECREATE")
+    
     h1D_FRel_EE_n = h1D_FRel_EE.Clone()
     h1D_FRmu_EE_n = h1D_FRmu_EE.Clone()
     h1D_FRel_EB_n = h1D_FRel_EB.Clone()
@@ -483,3 +633,30 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     h1D_m4l_3P1F_4mu.Write()
     
     SaveRootFile.Close()
+
+    # Storing the plots per type of fakes
+
+    SaveRootFile_Types_of_fake = ROOT.TFile("Hist_ID_"+varName+"_"+Nickname+".root", "RECREATE")
+
+    for count in range(CRregion._3P1F_2mu2e+1):    
+        for t in range(type_of_fake.BDfake+1): 
+    
+ 	    CR_Prom[count].Write()
+
+            CR_Fake[count].Write()
+
+            CR_Conv[count].Write()
+
+            CR_BDfake[count].Write()
+
+
+    for count in range(barrel_endcap_region.ME_d+1):
+            Hist_conv[count].Write()
+
+            Hist_prompt[count].Write()
+
+            Hist_fakes[count].Write()
+
+            Hist_BDfakes[count].Write()
+
+    SaveRootFile_Types_of_fake.Close()
