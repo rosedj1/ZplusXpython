@@ -12,6 +12,11 @@ import math
 
 from analyzeZX import *
 
+var_bin_dct = {
+    "ptl3" : [],
+    "m4l" : [],
+}
+
 fileList = [
     # "/cmsuf/data/store/user/drosenzw/UFHZZAnalysisRun2/Data/skim2L/SingleMuon/crab_SingleMuon_Run2018A-17Sep2018-v2/210506_233459/0000/SingleMuon_Run2018A-17Sep2018-v2_1.root",
     # "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/Data/skim2L/Data_DoubleMuonRunA_EGammaRunB_MuonEGRunC_SingleMuonRunD.root"

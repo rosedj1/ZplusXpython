@@ -115,10 +115,8 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
         var_nBins = 10
         varAxLabel = "E_{T,miss}"
 
-    PtlBins = [5.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0]
-    PtlBins = np.array(PtlBins)
-    PtlBinsMu = [5.0, 7.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0]
-    PtlBinsMu = np.array(PtlBinsMu)
+    PtlBins = np.array([5.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
+    PtlBinsMu = np.array([5.0, 7.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
     
     #initiate numerator and denominator histograms for FR computation
 
@@ -358,6 +356,9 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
                     
             if (nFailedLeptons == 1):
                 h1D_m4l_3P1F.Fill(event.mass4l, weight)
+                # h1D_Dkin_3P1F.Fill(event.Dkinbkg, weight)
+
+                # Uncertainty measurement.
                 #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, mass4l,weight,CR[Prom][_3P1F], CR[Fake][_3P1F],CR[BDfake][_3P1F],CR[Conv][_3P1F],false)
                 
                 if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==44):
