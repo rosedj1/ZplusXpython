@@ -1,8 +1,8 @@
 import ROOT
+from helpers.estimateZX import estimateZX
 
-from estimateZX import estimateZX
-
-file_WZremoved = "Hist_Data_ptl3_WZremoved.root"
+# file_WZremoved = "Hist_Data_ptl3_WZremoved.root"
+file_fakerates_WZremoved = "../data/Hist_Data_ptl3_Data_0_WZremoved.root"
 
 filename_dct = {
     "Data" : "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/smallerstats/Data_2018_smallerstats.root",
@@ -22,8 +22,8 @@ for name, filepath in filename_dct.items():
     inFile =  ROOT.TFile.Open(filepath, "READ")
     tree = inFile.Get("Ana/passedEvents")
     n_evts = tree.GetEntries()
-    print(f"File: {filepath} has been opened.")
+    print(f"Successfully opened file:\n  {filepath}")
     print(f"-- Nickname: {name}")
     print(f"-- Found {n_evts} events.")
-    estimateZX(file_WZremoved, tree, name)
+    estimateZX(file_fakerates_WZremoved, tree, name)
     inFile.Close()

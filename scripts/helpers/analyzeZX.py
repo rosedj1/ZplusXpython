@@ -3,7 +3,36 @@ import math
 import ROOT as rt
 import numpy as np
 # from Utils_Python.Utils_Files import check_overwrite
-from MC_composition import PartOrigin
+from helpers.MC_composition import PartOrigin
+
+xs_dct = {
+    'DY50' : 6225.4,
+    'TT'   : 87.31,
+    'DY10' : 18610.0,
+    'WZ'   : 4.67,
+    'ZZ'   : 1.256
+}
+
+MZ_PDG = 91.1876
+LUMI_INT = 59700  # pb^{-1}
+
+lineWidth = 2
+leg_xl = 0.50
+leg_xr = 0.90
+leg_yb = 0.72 
+leg_yt = 0.90
+
+CR_var_plotHigh = 870.0
+CR_var_plotLow = 70.0
+CR_var_nBins = 40
+
+var_plotHigh = 120
+var_plotLow = 60
+var_nBins = 20
+varAxLabel = "m_{Z1}"
+
+PtlBins = np.array([5.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
+PtlBinsMu = np.array([5.0, 7.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
 
 class barrel_endcap_region():
     EB_n = 0
@@ -216,41 +245,12 @@ def reconstruct_Zcand_leptons(event):
 
 def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     print ("--- Initiating the analyzeZX procedure for file nicknamed as: "+ Nickname +".")
-
-    xs_dct = {
-        'DY50' : 6225.4,
-        'TT' : 87.31,
-        'DY10' : 18610.0,
-        'WZ' : 4.67,
-        'ZZ' : 1.256
-    }
-    
-    MZ_PDG = 91.1876
-    LUMI_INT = 59700  # pb^{-1}
-
-    lineWidth = 2
-    leg_xl = 0.50
-    leg_xr = 0.90
-    leg_yb = 0.72 
-    leg_yt = 0.90
-
-    CR_var_plotHigh = 870.0
-    CR_var_plotLow = 70.0
-    CR_var_nBins = 40
-    
-    var_plotHigh = 120
-    var_plotLow = 60
-    var_nBins = 20
-    varAxLabel = "m_{Z1}"
     
     if (varName=="mEt"):
         var_plotHigh = 50
         var_plotLow = 0
         var_nBins = 10
         varAxLabel = "E_{T,miss}"
-
-    PtlBins = np.array([5.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
-    PtlBinsMu = np.array([5.0, 7.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
     
     #initiate numerator and denominator histograms for FR computation
 
@@ -422,7 +422,7 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
 
     for iEvt, event in enumerate(fTemplateTree):
         if (iEvt % 50000 == 0):
-            print ("Processing event: {}/{}".format(iEvt, nentries))
+            print (f"Processing event: {iEvt}/{nentries}")
             
         weight = get_evt_weight(isData, xs_dct, Nickname, LUMI_INT, event, nentries)
 

@@ -1,7 +1,6 @@
-from analyzeZX import setNEvents
-from analyzeZX import setHistProperties
 import ROOT
 import math
+from helpers.analyzeZX import get_evt_weight, xs_dct, LUMI_INT, setHistProperties
 
 def getFR(lep_id, lep_pt, lep_eta, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE):
 
@@ -20,7 +19,7 @@ def getFR(lep_id, lep_pt, lep_eta, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FR
     return 0
 
 def estimateZX(FakeRateFile, tree, Nickname):
-    LUMI_INT = 59700
+    # LUMI_INT = 59700
 
     # define dummy histogram for CRs
     var_plotHigh = 870.0
@@ -88,33 +87,33 @@ def estimateZX(FakeRateFile, tree, Nickname):
     isData = ("Data" in Nickname)
     iEvt = -1
     nentries = tree.GetEntries()
-    lNEvents = setNEvents(Nickname)
+    # lNEvents = setNEvents(Nickname)
 
-    for event in tree:
-        iEvt+=1
-        if(iEvt%50000==0):
-            print ("---- Processing event: " + str(iEvt) + "/" + str(nentries))     
-        # weight
-        weight = event.eventWeight
+    for iEvt, event in enumerate(tree):
+        if (iEvt % 50000 == 0):
+            print (f"Processing event: {iEvt}/{nentries}")
+        # weight = event.eventWeight
 
-        if (isData):
-            weight = 1
+        # if (isData):
+        #     weight = 1
  
-        if not(isData):
-            if (Nickname=="DY10"):
-                weight *= 18610.0*LUMI_INT/lNEvents
+        # if not(isData):
+        #     if (Nickname=="DY10"):
+        #         weight *= 18610.0*LUMI_INT/lNEvents
                         
-            if (Nickname=="DY50"):
-                weight *= 6225.4*LUMI_INT/lNEvents
+        #     if (Nickname=="DY50"):
+        #         weight *= 6225.4*LUMI_INT/lNEvents
 
-            if (Nickname=="TT"):
-                weight *= 87.31*LUMI_INT/lNEvents
+        #     if (Nickname=="TT"):
+        #         weight *= 87.31*LUMI_INT/lNEvents
 
-            if (Nickname=="WZ"):
-                weight *= 4.67*LUMI_INT/lNEvents
+        #     if (Nickname=="WZ"):
+        #         weight *= 4.67*LUMI_INT/lNEvents
 
-            if (Nickname=="ZZ"):
-                weight *= 1.256*LUMI_INT*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
+        #     if (Nickname=="ZZ"):
+        #         weight *= 1.256*LUMI_INT*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
+
+        weight = get_evt_weight(isData, xs_dct, Nickname, LUMI_INT, event, nentries)
 
         if (event.passedZXCRSelection):
             lep_tight = []
@@ -122,11 +121,11 @@ def estimateZX(FakeRateFile, tree, Nickname):
             idL = []
             pTL = []
             etaL = []
-            phiL = []
-            massL = []
-            dilep = ROOT.TLorentzVector()
+            # phiL = []
+            # massL = []
+            # dilep = ROOT.TLorentzVector()
 
-            for k in range (4):
+            for k in range(4):
                 lep_tight.append(event.lep_tightId[event.lep_Hindex[k]])
                 lep_iso.append(event.lep_RelIsoNoFSR[event.lep_Hindex[k]])
                 idL.append(event.lep_id[event.lep_Hindex[k]])
@@ -142,7 +141,6 @@ def estimateZX(FakeRateFile, tree, Nickname):
             lep_2.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[1]],event.lep_eta[event.lep_Hindex[1]],event.lep_phi[event.lep_Hindex[1]],event.lep_mass[event.lep_Hindex[1]])
             
             massZ1 = (lep_1+lep_2).M()
-            
             
             fr3 = getFR(idL[2], pTL[2], etaL[2], h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE)
             fr4 = getFR(idL[3], pTL[3], etaL[3], h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE)
@@ -218,7 +216,7 @@ def estimateZX(FakeRateFile, tree, Nickname):
                         h1D_m4l_Add_2P2F_2mu2e.Fill(event.mass4l, weight * fr2)
                     
           
-    SaveRootFile = ROOT.TFile("estimateZX"+Nickname, "RECREATE")
+    SaveRootFile = ROOT.TFile(f"estimateZX_{Nickname}.root", "RECREATE")
         
     h1D_FRel_EB.SetName("h1D_FRel_EB")
     h1D_FRel_EB.Write()

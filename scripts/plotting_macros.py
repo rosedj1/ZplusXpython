@@ -1,6 +1,6 @@
 import ROOT
 from ROOT import TColor
-from analyzeZX import setCavasAndStyles
+from helpers.analyzeZX import setCavasAndStyles
 
 def CRPlot():
     c1 = ROOT.TCanvas()
@@ -240,8 +240,6 @@ def CRPlot():
         dataPlot.GetZaxis().SetTitleSize(0.035)
         dataPlot.GetZaxis().SetTitleFont(42)
         
-        
-
         dataPlot.GetXaxis().SetRangeUser(50,800)
         dataPlot.GetYaxis().SetRangeUser(0, 1.3 * dataPlot.GetMaximum())
         dataPlot.Draw("e1 goff")
