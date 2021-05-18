@@ -8,13 +8,13 @@ def getFR(lep_id, lep_pt, lep_eta, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FR
     if ((math.fabs(lep_id) == 11) and (math.fabs(lep_eta) < 1.497)):
         return h1D_FRel_EB.GetBinContent(h1D_FRel_EB.FindBin(lep_pt))
 
-    if ((math.fabs(lep_id) == 11) and (math.fabs(lep_eta) > 1.497)):
+    elif ((math.fabs(lep_id) == 11) and (math.fabs(lep_eta) > 1.497)):
         return h1D_FRel_EE.GetBinContent(h1D_FRel_EE.FindBin(lep_pt))
 
-    if ((math.fabs(lep_id) == 13) and (math.fabs(lep_eta) < 1.2)):
+    elif ((math.fabs(lep_id) == 13) and (math.fabs(lep_eta) < 1.2)):
         return h1D_FRmu_EB.GetBinContent(h1D_FRmu_EB.FindBin(lep_pt))
 
-    if ((math.fabs(lep_id) == 13) and (math.fabs(lep_eta) > 1.2)):
+    elif ((math.fabs(lep_id) == 13) and (math.fabs(lep_eta) > 1.2)):
         return h1D_FRmu_EE.GetBinContent(h1D_FRmu_EE.FindBin(lep_pt))
 
     return 0

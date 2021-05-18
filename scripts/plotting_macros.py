@@ -19,7 +19,6 @@ def CRPlot():
     ProcessNames = ["Data","ZZ","WZ","TT","DY50"]
     LabelNames = ["Data","#Z\\gamma^*,ZZ#","#WZ#","#t\\bar{t}+jets#","#Z+jets#"]
 
-    
     fileSize = 5
     plotSize = 10
     variableN = "ptl3"
@@ -289,7 +288,5 @@ def CRPlot():
         c1.SaveAs("CR_plots/"+histName[p]+"_auto.pdf")
         c1.SaveAs("CR_plots/m"+histName[p]+"_auto.C")
         c1.SaveAs("CR_plots/"+histName[p]+"_auto.root")
-
-
 
 CRPlot()
