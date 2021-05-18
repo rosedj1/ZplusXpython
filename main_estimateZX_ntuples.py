@@ -12,7 +12,6 @@ import math
 
 from estimateZX import *
 
-
 fileList = ["../Data_skimmed.root",
             "../ZZTo4L_TuneCP5_13TeV_powheg_pythia8_RunIIAutumn18MiniAOD-102X_2018filter2l_new_ZX.root"
             ]

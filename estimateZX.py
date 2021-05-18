@@ -3,7 +3,6 @@ from analyzeZX import setHistProperties
 import ROOT
 import math
 
-
 def getFR(lep_id, lep_pt, lep_eta, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE):
 
     if ((math.fabs(lep_id) == 11) and (math.fabs(lep_eta) < 1.497)):
@@ -19,10 +18,6 @@ def getFR(lep_id, lep_pt, lep_eta, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FR
         return h1D_FRmu_EE.GetBinContent(h1D_FRmu_EE.FindBin(lep_pt))
 
     return 0
-
-
-
-
 
 def estimateZX(FakeRateFile, tree, Nickname):
     LUMI_INT = 59700
@@ -256,7 +251,6 @@ def estimateZX(FakeRateFile, tree, Nickname):
     h1D_m4l_Add_2P2F_2mu2e.SetName("h1D_m4l_Add_2P2F_2mu2e") 
     h1D_m4l_Add_2P2F_2mu2e.Write()
     
-    
     h1D_m4l_SR_3P1F.SetName("h1D_m4l_SR_3P1F") 
     h1D_m4l_SR_3P1F.Write()
     h1D_m4l_SR_3P1F_4e.SetName("h1D_m4l_SR_3P1F_4e") 
@@ -272,6 +266,4 @@ def estimateZX(FakeRateFile, tree, Nickname):
 
     #PAUZA ZA DANAS
             
-
     FR_file.Close()
-    
