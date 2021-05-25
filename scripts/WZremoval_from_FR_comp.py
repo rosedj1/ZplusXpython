@@ -1,6 +1,6 @@
 import ROOT
 
-infile_Data = "Hist_Data_ptl3_Data_0.root"
+infile_Data = "../data/Hist_Data_ptl3_Data.root"
 file0 = ROOT.TFile(infile_Data, "READ")
 print(f"Data file opened.")
     
@@ -16,7 +16,7 @@ d_MB = file0.Get("Data_FRmu_EB_d")
 d_ME = file0.Get("Data_FRmu_EE_d")
 
 
-fileMC = ROOT.TFile ("Hist_MC_ptl3_WZ.root", "READ")
+fileMC = ROOT.TFile ("../data/Hist_MC_ptl3_WZ.root", "READ")
 print("MC file opened.")
 fileMC.cd()
 

@@ -1,12 +1,18 @@
+import os
 import ROOT
 from ROOT import TColor
 from helpers.analyzeZX import setCavasAndStyles
 
 def CRPlot():
-    c1 = ROOT.TCanvas()
-    setCavasAndStyles("c1",c1,"")   
+    ROOT.gROOT.SetBatch(True)
+    indata_path = "../data/"
+    c2 = ROOT.TCanvas()
+    setCavasAndStyles("c2",c2,"")   
     
-    histName = ["2P2F","2P2F_4e","2P2F_4mu","2P2F_2e2mu","2P2F_2mu2e","3P1F","3P1F_4e","3P1F_4mu","3P1F_2e2mu","3P1F_2mu2e"]
+    histName = [
+        "2P2F", "2P2F_4e", "2P2F_4mu", "2P2F_2e2mu", "2P2F_2mu2e",
+        "3P1F", "3P1F_4e", "3P1F_4mu", "3P1F_2e2mu", "3P1F_2mu2e"
+        ]
  #   Fillcolors = ["#cc0099","#99ccff","#996666","#669966"]
  #   Linecolors = ["#990066","#000099","#5f3f3f","#003300"]
     StackTitle = "Proba"
@@ -16,14 +22,15 @@ def CRPlot():
     Fillcolors = ["#99ccff","#cc0099","#996666","#669966"]
     Linecolors = ["#000099","#990066","#5f3f3f","#003300"]
 
-    ProcessNames = ["Data","ZZ","WZ","TT","DY50"]
-    LabelNames = ["Data","#Z\\gamma^*,ZZ#","#WZ#","#t\\bar{t}+jets#","#Z+jets#"]
+    ProcessNames = ["Data", "ZZ", "WZ", "TT", "DY50"]
+    # LabelNames = ["Data", "#Z\\gamma^*, ZZ#", "#WZ#", "#t\\bar{t}+jets#", "#Z+jets#"]
 
     fileSize = 5
     plotSize = 10
     variableN = "ptl3"
     for p in range(plotSize):
-        print( "Ulazi u plotting" ) 
+        # print( "Ulazi u plotting" ) 
+        print( "Begin plotting." ) 
         leg = ROOT.TLegend(0.45,0.5,1.05,0.85)
         leg.SetBorderSize(0)
         leg.SetLineColor(1)
@@ -33,7 +40,7 @@ def CRPlot():
         leg.SetFillStyle(0)
     
         if (p>4):
-            entry =leg.AddEntry("NULL","Control Region "+ histName[p] ,"h")
+            entry = leg.AddEntry("NULL","Control Region "+ histName[p] ,"h")
         else:
             entry = leg.AddEntry("NULL","Control Region "+ histName[p] ,"h")
 
@@ -44,7 +51,7 @@ def CRPlot():
         entry.SetMarkerStyle(21)
         entry.SetMarkerSize(1)
         entry.SetTextFont(62)
-        entry=leg.AddEntry("NULL","Data","LP")
+        entry = leg.AddEntry("NULL","Data","LP")
         entry.SetLineColor(1)
         entry.SetLineStyle(1)
         entry.SetLineWidth(1)
@@ -52,7 +59,7 @@ def CRPlot():
         entry.SetMarkerStyle(20)
         entry.SetMarkerSize(1)
         entry.SetTextFont(42)
-        entry=leg.AddEntry("NULL","Z + jets","F")
+        entry = leg.AddEntry("NULL","Z + jets","F")
         
         ci = TColor.GetColor("#669966")
         entry.SetFillColor(ci)
@@ -94,7 +101,7 @@ def CRPlot():
         entry.SetMarkerStyle(21)
         entry.SetMarkerSize(1)
         entry.SetTextFont(42)
-        entry=leg.AddEntry("NULL","Z#gamma*,ZZ","F")
+        entry = leg.AddEntry("NULL","Z#gamma*,ZZ","F")
         
         ci = TColor.GetColor("#99ccff")
         entry.SetFillColor(ci)
@@ -119,8 +126,6 @@ def CRPlot():
             entry.SetMarkerStyle(21)
             entry.SetMarkerSize(1)
             entry.SetTextFont(42)        
-        
-        
         
         A = ROOT.THStack(StackTitle,StackTitle)
         
@@ -160,15 +165,15 @@ def CRPlot():
             else:
                 Title = "MC"
 
-            _file.append(ROOT.TFile("Hist_"+Title+"_"+variableN+"_"+ProcessNames[i]+".root"))
+            filename = f"../data/Hist_{Title}_{variableN}_{ProcessNames[i]}.root"
+            indata_fullpath = os.path.join(indata_path, filename)
+            _file.append(ROOT.TFile(indata_fullpath))
             
             if (i==0) :
                 dataPlot = _file[i].Get("h1D_m4l_"+histName[p])
                 histPlot.append(dataPlot)
 
                 print( "Data " + histName[p]+ " := "  + str(dataPlot.Integral()) )
-                
-            
             else:
                 histPlot.append(_file[i].Get("h1D_m4l_"+histName[p]))
                 histPlot[i].SetFillColor(TColor.GetColor(Fillcolors[i-1]))
@@ -199,24 +204,24 @@ def CRPlot():
                 A.Add(histPlot[i])
 
         print ("Data status " + str(dataPlot))    
-        c1 = ROOT.TCanvas("c1", "myPlots",0,67,600,600)
+        c2 = ROOT.TCanvas("c2", "myPlots",0,67,600,600)
         ROOT.gStyle.SetOptFit(1)
         ROOT.gStyle.SetOptStat(0)
         ROOT.gStyle.SetOptTitle(0)
-        c1.Range(-102.5,-10.38415,847.5,69.4939)
-        c1.SetFillColor(0)
-        c1.SetBorderMode(0)
-        c1.SetBorderSize(2)
-        c1.SetTickx(1)
-        c1.SetTicky(1)
-        c1.SetLeftMargin(0.15)
-        c1.SetRightMargin(0.05)
-        c1.SetTopMargin(0.05)
-        c1.SetBottomMargin(0.13)
-        c1.SetFrameFillStyle(0)
-        c1.SetFrameBorderMode(0)
-        c1.SetFrameFillStyle(0)
-        c1.SetFrameBorderMode(0)
+        c2.Range(-102.5,-10.38415,847.5,69.4939)
+        c2.SetFillColor(0)
+        c2.SetBorderMode(0)
+        c2.SetBorderSize(2)
+        c2.SetTickx(1)
+        c2.SetTicky(1)
+        c2.SetLeftMargin(0.15)
+        c2.SetRightMargin(0.05)
+        c2.SetTopMargin(0.05)
+        c2.SetBottomMargin(0.13)
+        c2.SetFrameFillStyle(0)
+        c2.SetFrameBorderMode(0)
+        c2.SetFrameFillStyle(0)
+        c2.SetFrameBorderMode(0)
         
         dataPlot.SetFillColor(TColor.GetColor("#000000"))
         dataPlot.SetLineColor(TColor.GetColor("#000000"))
@@ -241,13 +246,14 @@ def CRPlot():
         dataPlot.GetZaxis().SetTitleFont(42)
         
         dataPlot.GetXaxis().SetRangeUser(50,800)
-        dataPlot.GetYaxis().SetRangeUser(0, 1.3 * dataPlot.GetMaximum())
+        glb_max = max([h.GetMaximum() for h in histPlot])
+        dataPlot.GetYaxis().SetRangeUser(0, 1.3 * glb_max)
         dataPlot.Draw("e1 goff")
         
         A.Draw("hist same")
         dataPlot.Draw("same e1 goff")
         if ( p>4 ):
-            _file2p2f = ROOT.TFile("estimateZXData.root", "READ")
+            _file2p2f = ROOT.TFile(os.path.join(indata_path, "estimateZX_Data.root"), "READ")
             histPlot2p2f = _file2p2f.Get("h1D_m4l_Add_"+histName[p-5])
             
             print( "2P2F contr:= " + str(histPlot2p2f.Integral()) ) 
@@ -263,7 +269,7 @@ def CRPlot():
 
         leg.Draw("goff")
         
-        tex = ROOT.TLatex(0.95,0.96,"58.8 fb^{-1} (13 TeV)")
+        tex = ROOT.TLatex(0.95, 0.96, "58.8 fb^{-1} (13 TeV)")  # Or is it 59.7 fb^{-1}?
         tex.SetNDC()
         tex.SetTextAlign(31)
         tex.SetTextFont(42)
@@ -283,8 +289,10 @@ def CRPlot():
         tex.SetLineWidth(2)
         tex.Draw("goff")
         
-        c1.SaveAs("CR_plots/"+histName[p]+"_auto.pdf")
-        c1.SaveAs("CR_plots/m"+histName[p]+"_auto.C")
-        c1.SaveAs("CR_plots/"+histName[p]+"_auto.root")
+        outfile_path = '../CR_plots'
+        os.makedirs(outfile_path, exist_ok=True)
+        c2.SaveAs(os.path.join(outfile_path, f"{histName[p]}_auto.pdf"))
+        c2.SaveAs(os.path.join(outfile_path, f"m{histName[p]}_auto.C"))
+        c2.SaveAs(os.path.join(outfile_path, f"{histName[p]}_auto.root"))
 
 CRPlot()

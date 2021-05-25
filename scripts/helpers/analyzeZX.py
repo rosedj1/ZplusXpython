@@ -4,35 +4,7 @@ import ROOT as rt
 import numpy as np
 # from Utils_Python.Utils_Files import check_overwrite
 from helpers.MC_composition import PartOrigin
-
-xs_dct = {
-    'DY50' : 6225.4,
-    'TT'   : 87.31,
-    'DY10' : 18610.0,
-    'WZ'   : 4.67,
-    'ZZ'   : 1.256
-}
-
-MZ_PDG = 91.1876
-LUMI_INT = 59700  # pb^{-1}
-
-lineWidth = 2
-leg_xl = 0.50
-leg_xr = 0.90
-leg_yb = 0.72 
-leg_yt = 0.90
-
-CR_var_plotHigh = 870.0
-CR_var_plotLow = 70.0
-CR_var_nBins = 40
-
-var_plotHigh = 120
-var_plotLow = 60
-var_nBins = 20
-varAxLabel = "m_{Z1}"
-
-PtlBins = np.array([5.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
-PtlBinsMu = np.array([5.0, 7.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
+from constants.physics import xs_dct, MZ_PDG, LUMI_INT_2018, n_totevts_dataset_dct
 
 class barrel_endcap_region():
     EB_n = 0
@@ -68,7 +40,8 @@ finalstate_dct = {
     "2e2mu" : int(2 * 11 + 2 * 13),
     "2mu2e" : int(2 * 11 + 2 * 13),
     "2e" : int(2 * 11),
-    "2mu" : int(2 * 13)}
+    "2mu" : int(2 * 13)
+    }
 
 def get_sum_absIDs(id_ls):
     """Return the sum of abs(IDs) of all leptons in id_ls."""
@@ -76,7 +49,7 @@ def get_sum_absIDs(id_ls):
 
 def setCavasAndStyles(canvasName, c, stat):
     #setup canvas
-    c = rt.TCanvas(canvasName,"myPlots",0,0,800,600)
+    # c = rt.TCanvas(canvasName,"myPlots",0,0,800,600)
     c.cd(1)
     c.SetLogy(0)
     rt.gStyle.SetOptStat(stat)
@@ -108,48 +81,6 @@ def setHistProperties(hist, lineWidth, lineStyle, lineColor, fillStyle, fillColo
     # return
     return 0
 
-# def setNEvents(processFileName, n):
-#     if processFileName in "Data":
-#         return 1
-#     # any(name in processFileName for name in MC_processes)
-#     elif processFileName in ('DY50', 'TT', 'DY10', 'WZ', 'ZZ'):
-#         return nentries
-    # if (processFileName=="Data"):
-    #     lNEvents = 1
-    # if (processFileName=="DY50"): # Z+jets.
-    #     lNEvents = 99795992.0
-    # if (processFileName=="TT"): # ttbar.
-    #     lNEvents = 63667448.0
-    # if (processFileName=="DY10"): # Zgamma+jets
-    #     lNEvents = 37951928.0
-    # if (processFileName=="WZ"): # WZ
-    #     lNEvents = 6739437.0
-    # if (processFileName=="ZZ"): # Irreducible bkg.
-    #     lNEvents = 97457264.0
-    # return lNEvents
-
-#--- Prob delete below
-# def get_expected_n_evts(xs, lumi, n_evts, name, event):
-#     """Return the expected number of events based on cross section.
-    
-#     Parameters
-#     ----------
-#     xs : float
-#         Cross section of the physics process.
-#     lumi : float
-#         Luminosity (fb^{-1}).
-#     n_evts : int
-#         The number of events in the MC file.
-#     name : str
-#         Shorthand name of physics process (e.g. 'ZZ').
-#     event : TTree event obj
-#     """
-#     n_exp = xs * (lumi / float(n_evts))
-#     if "ZZ" == name:
-#         n_exp *= (event.k_qqZZ_qcd_M * event.k_qqZZ_ewk)
-#     return n_exp
-#--- Prob delete above
-
 def get_expected_n_evts(xs, lumi, name, event):
     """
     Return the expected number of events based on cross section, integrated
@@ -170,7 +101,7 @@ def get_expected_n_evts(xs, lumi, name, event):
         n_exp *= (event.k_qqZZ_qcd_M * event.k_qqZZ_ewk)
     return n_exp
 
-def get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_MC):
+def get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_obs_tot):
     """
     Return the corrected weight of event for MC based on data.
 
@@ -183,8 +114,14 @@ def get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_MC):
     xs_dct : dict
         key (str) => nickname of physics process
         val (float) => cross section
-    n_MC : int
-        The number of events in the MC file.
+    Nickname : str
+        Code name of data set.
+    lumi : float
+        Integrated luminosity (pb^{-1}).
+    event : TTree event
+    n_obs_tot : int
+        The total number of events in the data set which you processed.
+        Do: `crab report -d <dir>`.
     """
     if isData:
         return 1
@@ -193,7 +130,7 @@ def get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_MC):
         xs = xs_dct[Nickname]
         n_exp = get_expected_n_evts(xs, lumi, Nickname, event)
         old_weight = event.eventWeight
-        new_weight = old_weight * (n_exp / float(n_MC))
+        new_weight = old_weight * (n_exp / n_obs_tot)
         # if processFileName in "Data":
         #     return 1
         # # any(name in processFileName for name in MC_processes)
@@ -201,15 +138,15 @@ def get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_MC):
         #     return n_MC
         # lNEvents = setNEvents(Nickname)
         # if (Nickname=="DY50"): # Z+jets.
-        #     weight *= 6225.4*LUMI_INT/lNEvents
+        #     weight *= 6225.4*LUMI_INT_2018/lNEvents
         # elif (Nickname=="TT"):
-        #     weight *= 87.31*LUMI_INT/lNEvents
+        #     weight *= 87.31*LUMI_INT_2018/lNEvents
         # elif (Nickname=="DY10"): # Zgamma+jets
-        #     weight *= 18610.0*LUMI_INT/lNEvents
+        #     weight *= 18610.0*LUMI_INT_2018/lNEvents
         # elif (Nickname=="WZ"):
-        #     weight *= 4.67*LUMI_INT/lNEvents
+        #     weight *= 4.67*LUMI_INT_2018/lNEvents
         # elif (Nickname=="ZZ"):  # Irreducible bkg?
-        #     weight *= (1.256 * LUMI_INT * event.k_qqZZ_qcd_M * event.k_qqZZ_ewk) / lNEvents
+        #     weight *= (1.256 * LUMI_INT_2018 * event.k_qqZZ_qcd_M * event.k_qqZZ_ewk) / lNEvents
         return new_weight
 
 def make_hist_dct(kinem, n_bins, x_min, x_max):
@@ -244,6 +181,25 @@ def reconstruct_Zcand_leptons(event):
     return (lep_1, lep_2)
 
 def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
+
+    lineWidth = 2
+    leg_xl = 0.50
+    leg_xr = 0.90
+    leg_yb = 0.72 
+    leg_yt = 0.90
+
+    CR_var_plotHigh = 870.0
+    CR_var_plotLow = 70.0
+    CR_var_nBins = 40
+
+    var_plotHigh = 120
+    var_plotLow = 60
+    var_nBins = 20
+    varAxLabel = "m_{Z1}"
+
+    PtlBins = np.array([5.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
+    PtlBinsMu = np.array([5.0, 7.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
+
     print ("--- Initiating the analyzeZX procedure for file nicknamed as: "+ Nickname +".")
     
     if (varName=="mEt"):
@@ -335,6 +291,8 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     h1D_m4l_4P_4mu = rt.TH1D("h1D_m4l_4P_4mu","h1D_m4l_4P_4mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
 
     isData = ("Data" in Nickname)
+    # FIXME: Needs to be the total number of events DAS!!!
+    #
     nentries = fTemplateTree.GetEntries()
     n_tot_failedleps = 0
 
@@ -424,7 +382,8 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
         if (iEvt % 50000 == 0):
             print (f"Processing event: {iEvt}/{nentries}")
             
-        weight = get_evt_weight(isData, xs_dct, Nickname, LUMI_INT, event, nentries)
+        n_obs_tot = float(n_totevts_dataset_dct[Nickname])
+        weight = get_evt_weight(isData, xs_dct, Nickname, LUMI_INT_2018, event, n_obs_tot)
 
         # CR: Z+L
         if (event.passedZ1LSelection):
@@ -638,7 +597,7 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
                 
     # Save the plots.
     Data_string = "Data" if isData else "MC"
-    outfile_path = "Hist_"+Data_string+"_"+varName+"_"+Nickname+".root"
+    outfile_path = "../data/Hist_"+Data_string+"_"+varName+"_"+Nickname+".root"
     # check_overwrite(outfile_path, overwrite=False)
     suffix = 0
     while os.path.exists(outfile_path):
