@@ -2,6 +2,7 @@
 
 This repo contains scripts to:
 
+- Skim NTuples.
 - Calculate lepton fake rates.
 - Remove the WZ contribution.
 - Estimate the total non-ZZ background contribution.

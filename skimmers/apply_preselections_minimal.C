@@ -7,7 +7,7 @@
  *   and Z+LL control regions).
  * AUTHOR: Jake Rosenzweig, jake.rose@cern.ch
  * CREATED: 2021-05-20, happy birthday, Sheldoni!
- * UPDATED: 2021-05-21
+ * UPDATED: 2021-05-26
  */
 
 #include <iostream>
@@ -36,7 +36,7 @@ void apply_preselections_minimal(){
   // TString infile4 = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/SingleMuon_2018.root";
 
   // TString outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/Data_2018_ZL_ZLL_CRs.root";
-  TString outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/MC/ZL_ZLL_CR/" + filename;
+  TString outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/MC/fullstats/ZL_ZLL_CR/" + filename;
 
   TFile *outfile = new TFile(outfile_path, "RECREATE");
   TTree *newtree = new TTree("passedEvents","passedEvents");
