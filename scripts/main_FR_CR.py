@@ -1,5 +1,6 @@
 from ROOT import TFile
 from helpers.analyzeZX import *
+from constants.physics import LUMI_INT_2018_Jake
 
 var_bin_dct = {
     "ptl3" : [],
@@ -38,5 +39,5 @@ for name, filepath in filename_dct.items():
     print(f"File: {filepath} has been opened.")
     print(f"-- Nickname: {name}")
     print(f"-- Found {n_evts} events.")
-    analyzeZX(tree, name)
+    analyzeZX(tree, name, lumi=LUMI_INT_2018_Jake)
     inFile.Close()

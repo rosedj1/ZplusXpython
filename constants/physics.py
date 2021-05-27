@@ -2,7 +2,8 @@ MZ_PDG = 91.1876
 
 LUMI_INT_2016 = -1  # pb^{-1}
 LUMI_INT_2017 = -1  # pb^{-1}
-LUMI_INT_2018 = 59700  # pb^{-1}
+LUMI_INT_2018_Jake = 57400  # pb^{-1}
+LUMI_INT_2018_Vukasin = 59700  # pb^{-1}
 
 xs_dct = {
     'DY10' : 18610.0,

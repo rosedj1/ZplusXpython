@@ -4,7 +4,7 @@ import ROOT as rt
 import numpy as np
 # from Utils_Python.Utils_Files import check_overwrite
 from helpers.MC_composition import PartOrigin
-from constants.physics import xs_dct, MZ_PDG, LUMI_INT_2018, n_totevts_dataset_dct
+from constants.physics import xs_dct, MZ_PDG, lumi, n_totevts_dataset_dct
 
 class barrel_endcap_region():
     EB_n = 0
@@ -138,15 +138,15 @@ def get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_obs_tot):
         #     return n_MC
         # lNEvents = setNEvents(Nickname)
         # if (Nickname=="DY50"): # Z+jets.
-        #     weight *= 6225.4*LUMI_INT_2018/lNEvents
+        #     weight *= 6225.4*lumi/lNEvents
         # elif (Nickname=="TT"):
-        #     weight *= 87.31*LUMI_INT_2018/lNEvents
+        #     weight *= 87.31*lumi/lNEvents
         # elif (Nickname=="DY10"): # Zgamma+jets
-        #     weight *= 18610.0*LUMI_INT_2018/lNEvents
+        #     weight *= 18610.0*lumi/lNEvents
         # elif (Nickname=="WZ"):
-        #     weight *= 4.67*LUMI_INT_2018/lNEvents
+        #     weight *= 4.67*lumi/lNEvents
         # elif (Nickname=="ZZ"):  # Irreducible bkg?
-        #     weight *= (1.256 * LUMI_INT_2018 * event.k_qqZZ_qcd_M * event.k_qqZZ_ewk) / lNEvents
+        #     weight *= (1.256 * lumi * event.k_qqZZ_qcd_M * event.k_qqZZ_ewk) / lNEvents
         return new_weight
 
 def make_hist_dct(kinem, n_bins, x_min, x_max):
@@ -180,7 +180,7 @@ def reconstruct_Zcand_leptons(event):
     lep_2.SetPtEtaPhiM(event.lep_pt[ndx1], event.lep_eta[ndx1], event.lep_phi[ndx1], event.lep_mass[ndx1])
     return (lep_1, lep_2)
 
-def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
+def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
 
     lineWidth = 2
     leg_xl = 0.50
@@ -291,8 +291,6 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
     h1D_m4l_4P_4mu = rt.TH1D("h1D_m4l_4P_4mu","h1D_m4l_4P_4mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
 
     isData = ("Data" in Nickname)
-    # FIXME: Needs to be the total number of events DAS!!!
-    #
     nentries = fTemplateTree.GetEntries()
     n_tot_failedleps = 0
 
@@ -383,7 +381,7 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3"):
             print (f"Processing event: {iEvt}/{nentries}")
             
         n_obs_tot = float(n_totevts_dataset_dct[Nickname])
-        weight = get_evt_weight(isData, xs_dct, Nickname, LUMI_INT_2018, event, n_obs_tot)
+        weight = get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_obs_tot)
 
         # CR: Z+L
         if (event.passedZ1LSelection):

@@ -3,7 +3,7 @@ import math
 import sys
 sys.path.append('/blue/avery/rosedj1/ZplusXpython/')
 from helpers.analyzeZX import get_evt_weight, setHistProperties
-from constants.physics import xs_dct, MZ_PDG, LUMI_INT_2018
+from constants.physics import xs_dct, MZ_PDG, lumi
 
 def getFR(lep_id, lep_pt, lep_eta, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE):
 
@@ -21,9 +21,7 @@ def getFR(lep_id, lep_pt, lep_eta, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FR
 
     return 0
 
-def estimateZX(FakeRateFile, tree, Nickname):
-    # LUMI_INT_2018 = 59700
-
+def estimateZX(FakeRateFile, tree, Nickname, lumi=59700):
     # define dummy histogram for CRs
     var_plotHigh = 870.0
     var_plotLow = 70.0
@@ -102,21 +100,21 @@ def estimateZX(FakeRateFile, tree, Nickname):
  
         # if not(isData):
         #     if (Nickname=="DY10"):
-        #         weight *= 18610.0*LUMI_INT_2018/lNEvents
+        #         weight *= 18610.0*lumi/lNEvents
                         
         #     if (Nickname=="DY50"):
-        #         weight *= 6225.4*LUMI_INT_2018/lNEvents
+        #         weight *= 6225.4*lumi/lNEvents
 
         #     if (Nickname=="TT"):
-        #         weight *= 87.31*LUMI_INT_2018/lNEvents
+        #         weight *= 87.31*lumi/lNEvents
 
         #     if (Nickname=="WZ"):
-        #         weight *= 4.67*LUMI_INT_2018/lNEvents
+        #         weight *= 4.67*lumi/lNEvents
 
         #     if (Nickname=="ZZ"):
-        #         weight *= 1.256*LUMI_INT_2018*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
+        #         weight *= 1.256*lumi*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
 
-        weight = get_evt_weight(isData, xs_dct, Nickname, LUMI_INT_2018, event, nentries)
+        weight = get_evt_weight(isData, xs_dct, Nickname, lumi, event, nentries)
 
         if (event.passedZXCRSelection):
             lep_tight = []
