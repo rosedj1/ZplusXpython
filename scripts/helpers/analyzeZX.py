@@ -1,10 +1,20 @@
+"""Determine Fake Rates and OS Z+LL Control Regions
+
+Syntax to run: `python this_script.py`
+Original Author: Vukasin Milosevic
+Modified by: Jake Rosenzweig
+Updated: 2021-06-16
+"""
 import os
+import sys
 import math
 import ROOT as rt
 import numpy as np
 # from Utils_Python.Utils_Files import check_overwrite
 from helpers.MC_composition import PartOrigin
-from constants.physics import xs_dct, MZ_PDG, lumi, n_totevts_dataset_dct
+from constants.physics import xs_dct, MZ_PDG, LUMI_INT_2018_Jake, n_totevts_dataset_dct
+# from HiggsMassMeasurement.Utils_ROOT.ROOT_classes import make_TH1F
+from Utils_ROOT.ROOT_classes import make_TH1F
 
 class barrel_endcap_region():
     EB_n = 0
@@ -34,13 +44,15 @@ class CRregion():
     _3P1F_2e2mu = 8
     _3P1F_2mu2e = 9
 
+q_e = 11
+q_mu = 13
 finalstate_dct = {
-    "4e" : int(4 * 11),
-    "4mu" : int(4 * 13),
-    "2e2mu" : int(2 * 11 + 2 * 13),
-    "2mu2e" : int(2 * 11 + 2 * 13),
-    "2e" : int(2 * 11),
-    "2mu" : int(2 * 13)
+    "4e" : int(4 * q_e),
+    "4mu" : int(4 * q_mu),
+    "2e2mu" : int(2 * q_e + 2 * q_mu),
+    "2mu2e" : int(2 * q_e + 2 * q_mu),
+    "2e" : int(2 * q_e),
+    "2mu" : int(2 * q_mu)
     }
 
 def get_sum_absIDs(id_ls):
@@ -149,26 +161,86 @@ def get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_obs_tot):
         #     weight *= (1.256 * lumi * event.k_qqZZ_qcd_M * event.k_qqZZ_ewk) / lNEvents
         return new_weight
 
-def make_hist_dct(kinem, n_bins, x_min, x_max):
-    """Return a dict of kinem hists made for 5 final states and 3 Z+LL CRs.
+def make_hist_name(kinem, control_reg, fs):
+    """
+    Return the name (str) of a histogram based on a kinematic variable,
+    control region, and final state.
+    """
+    return f"h1D_{kinem}_{control_reg}_{fs}"
+
+def make_hist_dct(kinem_ls, kinem_info_dct):
+    """
+    Return a dict of kinem hists made for 5 final states and 3 Z+LL CRs.
     
     Example of key, val pair:
-    h1D_m4l_2P2F : rt.TH1D("h1D_m4l_2P2F", "h1D_m4l_2P2F", n_bins, x_min, x_max)
+    h1D_m4l_2P2F : rt.TH1D("h1D_m4l_2P2F_4mu", "h1D_m4l_2P2F_4mu",
+                           n_bins, x_min, x_max)
 
     Parameters
     ----------
-    kinem : str
-        Can be: "m4l", "D_bkg", "D_bkg_kin", "D_bkg_kin_vtx_BS"
-    n_bins : int
-    x_min : float
-    x_max : float
+    kinem_ls : list of str
+    kinem_info_dct : dict
+        Contains binning info for kinematics distributions.
     """
     hist_d = {}
-    for finalstate_4L in ('4mu', '4e', '2e2mu', '2mu2e', ''):
-        for passfail in ('4P', '3P1F', '2P2F'):
-            name = "h1D_{}_{}_{}".format(kinem, passfail, finalstate_4L)
-            hist_d[name] = rt.TH1D(name, name, n_bins, x_min, x_max)
+    for control_reg in "3P1F 2P2F".split():
+        for fs in "inclus 4e 4mu 2e2mu 2mu2e".split():
+            for kinem in kinem_ls:
+                name = make_hist_name(kinem=kinem, control_reg=control_reg, fs=fs)
+                n_bins = kinem_info_dct[kinem]["n_bins"]
+                xlabel = kinem_info_dct[kinem]["x_label"]
+                x_min = kinem_info_dct[kinem]["x_min"]
+                x_max = kinem_info_dct[kinem]["x_max"]
+                units = kinem_info_dct[kinem]["units"]
+                h = make_TH1F(name, title=name,
+                                    n_bins=n_bins, xlabel=xlabel,
+                                    x_min=x_min, x_max=x_max, units=units)
+                hist_d[name] = h.Clone()
     return hist_d
+
+def fill_hists(event, weight, hist_dct, kinem_ls, control_reg, fs):
+    """
+    Fill the hists in `hist_dct` for this `event` for the
+    specified kinematic vars in `kinem_ls`, for the given final state `fs`,
+    for the given control region `control_reg`.
+    """
+    for kinem in kinem_ls:
+        name = make_hist_name(kinem=kinem, control_reg=control_reg, fs=fs)
+        h = hist_dct[name]
+        val = getattr(event, kinem)
+        h.Fill(val, weight)
+
+def fill_hists_in_controlreg(event, weight, hist_dct, kinem_ls,
+                                control_reg, finalstate_4L, finalstate_2L):
+    """Fill inclusive and `finalstate_4L` kinematic hists.
+    
+    NOTE: finalstate_2L is used to determine whether 2e2mu or 2mu2e.
+    """
+    fill_hists(
+        event=event, weight=weight, hist_dct=hist_dct,
+        kinem_ls=kinem_ls, control_reg=control_reg, fs="inclus")
+
+    if finalstate_4L == finalstate_dct["4e"]:
+        fill_hists(
+            event=event, weight=weight, hist_dct=hist_dct,
+            kinem_ls=kinem_ls, control_reg=control_reg, fs="4e")
+
+    elif finalstate_4L == finalstate_dct["4mu"]:
+        fill_hists(
+            event=event, weight=weight, hist_dct=hist_dct,
+            kinem_ls=kinem_ls, control_reg=control_reg, fs="4mu")
+
+    elif finalstate_4L == finalstate_dct["2e2mu"]:
+        # Did Z_2 produce 2e or 2mu?
+        if finalstate_2L == finalstate_dct["2e"]:
+            fill_hists(
+                event=event, weight=weight, hist_dct=hist_dct,
+                kinem_ls=kinem_ls, control_reg=control_reg, fs="2mu2e")
+
+        elif finalstate_2L == finalstate_dct["2mu"]:
+            fill_hists(
+                event=event, weight=weight, hist_dct=hist_dct,
+                kinem_ls=kinem_ls, control_reg=control_reg, fs="2e2mu")
 
 def reconstruct_Zcand_leptons(event):
     """Return (lep_1, lep_2) which make Z1 from event."""
@@ -180,7 +252,81 @@ def reconstruct_Zcand_leptons(event):
     lep_2.SetPtEtaPhiM(event.lep_pt[ndx1], event.lep_eta[ndx1], event.lep_phi[ndx1], event.lep_mass[ndx1])
     return (lep_1, lep_2)
 
-def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
+def analyzeZX(fTemplateTree, Nickname, varName="ptl3", lumi=59700):
+
+    study_particle_origins = False
+
+    kinem_ls = [
+        "mass4l", #"mass4lREFIT", "mass4lREFIT_vtx_BS",
+        # "mass4lErr", "mass4lErrREFIT", "mass4lErrREFIT_vtx_BS",
+        "met", #"D_bkg_kin", "D_bkg_kin_vtx_BS"
+        ]
+        
+    kinem_info_dct = {
+        "mass4l" : {
+            "n_bins" : 100,
+            "x_label" : r'm_{4#ell}',
+            "x_min" : 70,
+            "x_max" : 170,
+            "units" : "GeV",
+            },
+        "mass4lREFIT" : {
+            "n_bins" : 100,
+            "x_label" : r'm_{4#ell}^{refit}',
+            "x_min" : 70,
+            "x_max" : 170,
+            "units" : "GeV",
+            },
+        "mass4lREFIT_vtx_BS" : {
+            "n_bins" : 100,
+            "x_label" : r'm_{4#ell}^{refit, VX+BS}',
+            "x_min" : 70,
+            "x_max" : 170,
+            "units" : "GeV",
+            },
+        "mass4lErr" : {
+            "n_bins" : 80,
+            "x_label" : r'#deltam_{4#ell}',
+            "x_min" : 0,
+            "x_max" : 8,
+            "units" : "GeV",
+            },
+        "mass4lErrREFIT" : {
+            "n_bins" : 80,
+            "x_label" : r'#deltam_{4#ell}^{refit}',
+            "x_min" : 0,
+            "x_max" : 8,
+            "units" : "GeV",
+            },
+        "mass4lErrREFIT_vtx_BS" : {
+            "n_bins" : 80,
+            "x_label" : r'#deltam_{4#ell}^{refit, VX+BS}',
+            "x_min" : 0,
+            "x_max" : 8,
+            "units" : "GeV",
+            },
+        "met" : {
+            "n_bins" : 100,
+            "x_label" : r'MET',
+            "x_min" : 0,
+            "x_max" : 50,
+            "units" : "GeV",
+            },
+        "D_bkg_kin" : {
+            "n_bins" : 10,
+            "x_label" : r'D^{kin}_{bkg}',
+            "x_min" : 0,
+            "x_max" : 1,
+            "units" : None,
+            },
+        "D_bkg_kin_vtx_BS" : {
+            "n_bins" : 10,
+            "x_label" : r'D^{kin, VX+BS}_{bkg}',
+            "x_min" : 0,
+            "x_max" : 1,
+            "units" : None,
+            },
+    }
 
     lineWidth = 2
     leg_xl = 0.50
@@ -197,8 +343,8 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
     var_nBins = 20
     varAxLabel = "m_{Z1}"
 
-    PtlBins = np.array([5.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
-    PtlBinsMu = np.array([5.0, 7.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])
+    PtlBins = np.array([       7.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])  # Electrons.
+    PtlBinsMu = np.array([5.0, 7.0, 10.0, 20.0, 30.0, 40.0, 50.0, 80.0])  # Muons.
 
     print ("--- Initiating the analyzeZX procedure for file nicknamed as: "+ Nickname +".")
     
@@ -219,88 +365,61 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
         # setHistProperties(h1D_dummy,1,1,1,0,0,varAxLabel,"Misidentification rate")
         
         # Define FR numerator histograms.
-        h1D_FRel_EB   = rt.TH1D("h1D_FRel_EB","h1D_FRel_EB", len(PtlBins)-1, PtlBins) 
-        h1D_FRel_EE   = rt.TH1D("h1D_FRel_EE","h1D_FRel_EE", len(PtlBins)-1, PtlBins) 
-        h1D_FRmu_EB   = rt.TH1D("h1D_FRmu_EB","h1D_FRmu_EB", len(PtlBinsMu)-1, PtlBinsMu) 
-        h1D_FRmu_EE   = rt.TH1D("h1D_FRmu_EE","h1D_FRmu_EE", len(PtlBinsMu)-1, PtlBinsMu) 
+        h1D_FRel_EB = rt.TH1D("h1D_FRel_EB","h1D_FRel_EB", len(PtlBins)-1, PtlBins) 
+        h1D_FRel_EE = rt.TH1D("h1D_FRel_EE","h1D_FRel_EE", len(PtlBins)-1, PtlBins) 
+        h1D_FRmu_EB = rt.TH1D("h1D_FRmu_EB","h1D_FRmu_EB", len(PtlBinsMu)-1, PtlBinsMu) 
+        h1D_FRmu_EE = rt.TH1D("h1D_FRmu_EE","h1D_FRmu_EE", len(PtlBinsMu)-1, PtlBinsMu) 
         
         # Define FR denominator histograms.
-        h1D_FRel_EB_d   = rt.TH1D("h1D_FRel_EB_d","h1D_FRel_EB_d", len(PtlBins)-1, PtlBins) 
-        h1D_FRel_EE_d   = rt.TH1D("h1D_FRel_EE_d","h1D_FRel_EE_d", len(PtlBins)-1, PtlBins) 
-        h1D_FRmu_EB_d   = rt.TH1D("h1D_FRmu_EB_d","h1D_FRmu_EB_d", len(PtlBinsMu)-1, PtlBinsMu) 
-        h1D_FRmu_EE_d   = rt.TH1D("h1D_FRmu_EE_d","h1D_FRmu_EE_d", len(PtlBinsMu)-1, PtlBinsMu) 
+        h1D_FRel_EB_d = rt.TH1D("h1D_FRel_EB_d","h1D_FRel_EB_d", len(PtlBins)-1, PtlBins) 
+        h1D_FRel_EE_d = rt.TH1D("h1D_FRel_EE_d","h1D_FRel_EE_d", len(PtlBins)-1, PtlBins) 
+        h1D_FRmu_EB_d = rt.TH1D("h1D_FRmu_EB_d","h1D_FRmu_EB_d", len(PtlBinsMu)-1, PtlBinsMu) 
+        h1D_FRmu_EE_d = rt.TH1D("h1D_FRmu_EE_d","h1D_FRmu_EE_d", len(PtlBinsMu)-1, PtlBinsMu) 
 
         all_FR_hist_ls = [
             h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
             h1D_FRel_EB_d, h1D_FRel_EE_d, h1D_FRmu_EB_d, h1D_FRmu_EE_d
             ]
-
     else:
         # h1D_dummy = rt.TH1D("dummy", "dummy", var_nBins, var_plotLow, var_plotHigh)
         # setHistProperties(h1D_dummy,1,1,1,0,0,varAxLabel,"Misidentification rate")
 
         # define FR numerator histograms
-        h1D_FRel_EB   = rt.TH1D("h1D_FRel_EB","h1D_FRel_EB",var_nBins, var_plotLow, var_plotHigh)
-        h1D_FRel_EB.Sumw2()
-        h1D_FRel_EE   = rt.TH1D("h1D_FRel_EE","h1D_FRel_EE",var_nBins, var_plotLow, var_plotHigh)
-        h1D_FRel_EE.Sumw2()
-        h1D_FRmu_EB   = rt.TH1D("h1D_FRmu_EB","h1D_FRmu_EB",var_nBins, var_plotLow, var_plotHigh) 
-        h1D_FRmu_EB.Sumw2()
-        h1D_FRmu_EE   = rt.TH1D("h1D_FRmu_EE","h1D_FRmu_EE",var_nBins, var_plotLow, var_plotHigh) 
-        h1D_FRmu_EE.Sumw2()
+        h1D_FRel_EB = rt.TH1D("h1D_FRel_EB","h1D_FRel_EB",var_nBins, var_plotLow, var_plotHigh)
+        h1D_FRel_EE = rt.TH1D("h1D_FRel_EE","h1D_FRel_EE",var_nBins, var_plotLow, var_plotHigh)
+        h1D_FRmu_EB = rt.TH1D("h1D_FRmu_EB","h1D_FRmu_EB",var_nBins, var_plotLow, var_plotHigh) 
+        h1D_FRmu_EE = rt.TH1D("h1D_FRmu_EE","h1D_FRmu_EE",var_nBins, var_plotLow, var_plotHigh) 
     
         # define FR denominator histograms
-        h1D_FRel_EB_d   = rt.TH1D("h1D_FRel_EB_d","h1D_FRel_EB_d",var_nBins, var_plotLow, var_plotHigh) 
-        h1D_FRel_EB_d.Sumw2()
-        h1D_FRel_EE_d   = rt.TH1D("h1D_FRel_EE_d","h1D_FRel_EE_d",var_nBins, var_plotLow, var_plotHigh) 
-        h1D_FRel_EE_d.Sumw2()
-        h1D_FRmu_EB_d   = rt.TH1D("h1D_FRmu_EB_d","h1D_FRmu_EB_d",var_nBins, var_plotLow, var_plotHigh) 
-        h1D_FRmu_EB_d.Sumw2()
-        h1D_FRmu_EE_d   = rt.TH1D("h1D_FRmu_EE_d","h1D_FRmu_EE_d",var_nBins, var_plotLow, var_plotHigh) 
-        h1D_FRmu_EE_d.Sumw2()
+        h1D_FRel_EB_d = rt.TH1D("h1D_FRel_EB_d","h1D_FRel_EB_d",var_nBins, var_plotLow, var_plotHigh) 
+        h1D_FRel_EE_d = rt.TH1D("h1D_FRel_EE_d","h1D_FRel_EE_d",var_nBins, var_plotLow, var_plotHigh) 
+        h1D_FRmu_EB_d = rt.TH1D("h1D_FRmu_EB_d","h1D_FRmu_EB_d",var_nBins, var_plotLow, var_plotHigh) 
+        h1D_FRmu_EE_d = rt.TH1D("h1D_FRmu_EE_d","h1D_FRmu_EE_d",var_nBins, var_plotLow, var_plotHigh) 
 
-    #--- Make kinematic hists (m4l, etc.) in XPYF control regions. ---#
-    # m4l_hist_dct = make_hist_dct("m4l", CR_var_nBins, CR_var_plotLow, CR_var_plotHigh)
-    # D_bkg_hist_dct = make_hist_dct("D_bkg", CR_var_nBins, CR_var_plotLow, CR_var_plotHigh)
-    # D_bkg_kin_hist_dct = make_hist_dct("D_bkg_kin", CR_var_nBins, CR_var_plotLow, CR_var_plotHigh)
-    # D_bkg_kin_vtx_BS_hist_dct = make_hist_dct("D_bkg_kin_vtx_BS", CR_var_nBins, CR_var_plotLow, CR_var_plotHigh)
+    print("...Making kinematic hists in XPYF control regions.")
+    hist_dct = make_hist_dct(kinem_ls, kinem_info_dct)
 
-    # Propagate weights.
-    # for dct in (m4l_hist_dct, D_bkg_hist_dct, D_bkg_kin_hist_dct, D_bkg_kin_vtx_BS_hist_dct):
-    # for hst in m4l_hist_dct: #dct.values():
-    #     hst.Sumw2()
-    # 4l
-    h1D_m4l_2P2F = rt.TH1D("h1D_m4l_2P2F","h1D_m4l_2P2F",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    h1D_m4l_3P1F = rt.TH1D("h1D_m4l_3P1F","h1D_m4l_3P1F",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    h1D_m4l_4P   = rt.TH1D("h1D_m4l_4P","h1D_m4l_4P",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    # 2e2mu
-    h1D_m4l_2P2F_2e2mu = rt.TH1D("h1D_m4l_2P2F_2e2mu","h1D_m4l_2P2F_2e2mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    h1D_m4l_3P1F_2e2mu = rt.TH1D("h1D_m4l_3P1F_2e2mu","h1D_m4l_3P1F_2e2mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    h1D_m4l_4P_2e2mu   = rt.TH1D("h1D_m4l_4P_2e2mu","h1D_m4l_4P_2e2mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    # 2mu2e
-    h1D_m4l_2P2F_2mu2e = rt.TH1D("h1D_m4l_2P2F_2mu2e","h1D_m4l_2P2F_2mu2e",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    h1D_m4l_3P1F_2mu2e = rt.TH1D("h1D_m4l_3P1F_2mu2e","h1D_m4l_3P1F_2mu2e",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    h1D_m4l_4P_2mu2e   = rt.TH1D("h1D_m4l_4P_2mu2e","h1D_m4l_4P_2mu2e",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    # 4e
-    h1D_m4l_2P2F_4e = rt.TH1D("h1D_m4l_2P2F_4e","h1D_m4l_2P2F_4e",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    h1D_m4l_3P1F_4e = rt.TH1D("h1D_m4l_3P1F_4e","h1D_m4l_3P1F_4e",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    h1D_m4l_4P_4e   = rt.TH1D("h1D_m4l_4P_4e","h1D_m4l_4P_4e",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    # 4mu
-    h1D_m4l_2P2F_4mu = rt.TH1D("h1D_m4l_2P2F_4mu","h1D_m4l_2P2F_4mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    h1D_m4l_3P1F_4mu = rt.TH1D("h1D_m4l_3P1F_4mu","h1D_m4l_3P1F_4mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
-    h1D_m4l_4P_4mu = rt.TH1D("h1D_m4l_4P_4mu","h1D_m4l_4P_4mu",CR_var_nBins, CR_var_plotLow, CR_var_plotHigh) 
+    # Propagate errors.
+    for h in all_FR_hist_ls + list(hist_dct.values()):
+        h.Sumw2()
 
     isData = ("Data" in Nickname)
     nentries = fTemplateTree.GetEntries()
     n_tot_failedleps = 0
 
     # Begin: Define histograms for uncertainty studies (separating fakes per type of fake) 
-    order = ["EB_n","EB_d","EE_n","EE_d","MB_n","MB_d","ME_n","ME_d"]
-    CRSection = ["2P2F","2P2F4e","2P2F4mu","2P2F2e2mu","2P2F2mu2e","3P1F","3P1F4e","3P1F4mu","3P1F2e2mu","3P1F2mu2e"]
+    order = [
+        "EB_n", "EB_d", "EE_n", "EE_d",
+        "MB_n", "MB_d", "ME_n", "ME_d"
+        ]
+    CRSection = [
+        "2P2F", "2P2F4e", "2P2F4mu", "2P2F2e2mu", "2P2F2mu2e",
+        "3P1F", "3P1F4e", "3P1F4mu", "3P1F2e2mu", "3P1F2mu2e"
+        ]
 
-    ID = {"Prom","Fake","Conv","BDfake"}
+    ID = {"Prom", "Fake", "Conv", "BDfake"}
 
-    ## Define CR histograms for Prompt/Fake/Converson and BDfakes    
+    ## Define CR histograms for Prompt/Fake/Conversion and BDfakes    
     CR = []  # list of lists of hists.
     CR_Prom = []
     CR_Fake = []
@@ -325,7 +444,7 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
     CR.append(CR_Conv)
     CR.append(CR_BDfake)
 
-    ## Define numerator/denominator histograms for Prompt/Fake/Converson and BDfakes in Z+L region.
+    ## Define numerator/denominator histograms for Prompt/Fake/Conversion and BDfakes in Z+L region.
     Hist_conv = []
     Hist_prompt = []
     Hist_fakes = []
@@ -379,18 +498,24 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
     for iEvt, event in enumerate(fTemplateTree):
         if (iEvt % 50000 == 0):
             print (f"Processing event: {iEvt}/{nentries}")
+        if iEvt == 100001:
+            break
             
+        # Get total number of events from MC/Data files.
+        # Use the L_int and xs to determine n_expected and event weights.
         n_obs_tot = float(n_totevts_dataset_dct[Nickname])
         weight = get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_obs_tot)
 
-        # CR: Z+L
-        if (event.passedZ1LSelection):
+        #######################################
+        #--- CR: Z+L for fake rate studies ---#
+        #######################################
+        if event.passedZ1LSelection:
             # We got some kind of Z+L event.
             # It should only be from Z+jets or Zgamma+jets.
-            # Sometimes though even a WZ event makes it through.
+            # However WZ events produce a Z and a prompt lepton.
             # We will remove WZ later.
-            # If lep3 passes tight selection, then it's a fake
-            # (after all we're only using bkg samples)!
+            # If lep3 passes tight selection, then it's likely a fake
+            # since we are only looking for 3 lep events right now.
             # How frequently does this happen? I.e. what is the fake rate?
 
             # First, reconstruct Z candidate.
@@ -447,7 +572,7 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
                 h1D_FRel_EE_d.Fill(FillVar, weight)
                 PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_d], Hist_fakes[barrel_endcap_region.EE_d],Hist_BDfakes[barrel_endcap_region.EE_d], Hist_conv[barrel_endcap_region.EE_d],False)
                 
-                if (lep_tight and TestVar):
+                if lep_tight and TestVar:
                     PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_n], Hist_fakes[barrel_endcap_region.EE_n], Hist_BDfakes[barrel_endcap_region.EE_n], Hist_conv[barrel_endcap_region.EE_n],False)
                     h1D_FRel_EE.Fill(FillVar, weight)
 
@@ -468,8 +593,13 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
                     #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[ME_n], Hist_fakes[ME_n],Hist_BDfakes[ME_n], Hist_conv[ME_n],false)
                     PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_n], Hist_fakes[barrel_endcap_region.ME_n],Hist_BDfakes[barrel_endcap_region.ME_n], Hist_conv[barrel_endcap_region.ME_n],False)
                     h1D_FRmu_EE.Fill(FillVar, weight)
-        # CR: Z+LL
-        elif (event.passedZXCRSelection and varName == "ptl3"):
+
+        #########################
+        #--- CR: Z+LL (XPYF) ---#
+        #########################
+        elif event.passedZXCRSelection and varName == "ptl3":
+            # We got at least 1 fake lepton.
+
             # Collect info about 4 leps from "H candidate".
             lep_tight = []
             lep_iso = []
@@ -494,9 +624,8 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
             lep_1, lep_2 = reconstruct_Zcand_leptons(event)
             massZ1 = (lep_1+lep_2).M()
 
+            assert len(list(lep_tight)) < 5
             # failed lep = not (tight and good e/mu)
-            # def isMu():
-            #     return True if abs(Id) 
             nFailedLeptons1 = not (lep_tight[0] and ((abs(idL[0])==11) or (abs(idL[0])==13 and lep_iso[0]<0.35)))
             nFailedLeptons2 = not (lep_tight[1] and ((abs(idL[1])==11) or (abs(idL[1])==13 and lep_iso[1]<0.35)))
             nFailedLeptonsZ1 = nFailedLeptons1 + nFailedLeptons2
@@ -514,84 +643,20 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
             # 4e = 44, 4mu = 52, 2e2mu or 2mu2e = 48
             finalstate_4L = get_sum_absIDs(idL)
             finalstate_2L = get_sum_absIDs(idL[2:])  # Final 2 leps.
+
             # Fill appropriate XPYF m4l hist.
-            # Use dicts to select correct hist instead of if/elif.
-            if (nFailedLeptons == 0):
-                h1D_m4l_4P.Fill(event.mass4l, weight)
+            if nFailedLeptons == 1:
+                conreg = "3P1F"
+            elif nFailedLeptons == 2:
+                conreg = "2P2F"
+            else:
+                msg = f"nFailedLeptons={nFailedLeptons} but should be 1 or 2."
+                raise ValueError(msg)
 
-                # if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==44):
-                if finalstate_4L == finalstate_dct["4e"]:
-                    h1D_m4l_4P_4e.Fill(event.mass4l, weight)
-                
-                elif finalstate_4L == finalstate_dct["4mu"]:
-                    h1D_m4l_4P_4mu.Fill(event.mass4l, weight)
-                
-                elif finalstate_4L == finalstate_dct["2e2mu"]:
-                    h1D_m4l_4P_2e2mu.Fill(event.mass4l, weight)
-
-            if (nFailedLeptons == 1):
-                h1D_m4l_3P1F.Fill(event.mass4l, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F], CR[type_of_fake.Fake][CRregion._3P1F],CR[type_of_fake.BDfake][CRregion._3P1F],CR[type_of_fake.Conv][CRregion._3P1F],False)
-
-                # if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==44):
-                if finalstate_4L == finalstate_dct["4e"]:
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId, lep_Hindex,lep_id,
-                               event.mass4l, weight,
-                               CR[type_of_fake.Prom][CRregion._3P1F_4e],
-                               CR[type_of_fake.Fake][CRregion._3P1F_4e],
-                               CR[type_of_fake.BDfake][CRregion._3P1F_4e],
-                               CR[type_of_fake.Conv][CRregion._3P1F_4e],
-                               False)
-                    h1D_m4l_3P1F_4e.Fill(event.mass4l, weight)
-            
-                # if ((abs(idL[0])+abs(idL[1])+abs(idL[2])+abs(idL[3]))==52):
-                elif finalstate_4L == finalstate_dct["4mu"]:
-
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId, lep_Hindex,lep_id,
-                               event.mass4l, weight,
-                               CR[type_of_fake.Prom][CRregion._3P1F_4mu],
-                               CR[type_of_fake.Fake][CRregion._3P1F_4mu],
-                               CR[type_of_fake.BDfake][CRregion._3P1F_4mu],
-                               CR[type_of_fake.Conv][CRregion._3P1F_4mu], False)
-                    h1D_m4l_3P1F_4mu.Fill(event.mass4l, weight)
-
-                # 2e and 2mu
-                elif finalstate_4L == finalstate_dct["2e2mu"]:
-                    # 2mu2e
-                    if finalstate_2L == finalstate_dct["2e"]:
-                        h1D_m4l_3P1F_2mu2e.Fill(event.mass4l, weight)
-                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id,event. mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_2mu2e], CR[type_of_fake.Fake][CRregion._3P1F_2mu2e],CR[type_of_fake.BDfake][CRregion._3P1F_2mu2e],CR[type_of_fake.Conv][CRregion._3P1F_2mu2e],False)
-                    # 2e2mu
-                    elif finalstate_2L == finalstate_dct["2mu"]:
-                        h1D_m4l_3P1F_2e2mu.Fill(event.mass4l, weight)
-                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id,event. mass4l,weight,CR[type_of_fake.Prom][CRregion._3P1F_2e2mu], CR[type_of_fake.Fake][CRregion._3P1F_2e2mu],CR[type_of_fake.BDfake][CRregion._3P1F_2e2mu],CR[type_of_fake.Conv][CRregion._3P1F_2e2mu],False)     
-
-            if (nFailedLeptons == 2):
-                h1D_m4l_2P2F.Fill(event.mass4l, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F], CR[type_of_fake.Fake][CRregion._2P2F], CR[type_of_fake.BDfake][CRregion._2P2F],CR[type_of_fake.Conv][CRregion._2P2F],False)
-                
-                if finalstate_4L == finalstate_dct["4e"]:
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_4e], CR[type_of_fake.Fake][CRregion._2P2F_4e], CR[type_of_fake.BDfake][CRregion._2P2F_4e],CR[type_of_fake.Conv][CRregion._2P2F_4e],False)
-                    h1D_m4l_2P2F_4e.Fill(event.mass4l, weight)
-                
-                elif finalstate_4L == finalstate_dct["4mu"]:
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_4mu], CR[type_of_fake.Fake][CRregion._2P2F_4mu],CR[type_of_fake.BDfake][CRregion._2P2F_4mu],CR[type_of_fake.Conv][CRregion._2P2F_4mu],False)
-                    h1D_m4l_2P2F_4mu.Fill(event.mass4l, weight)
-                
-                elif finalstate_4L == finalstate_dct["2e2mu"]:
-                    if finalstate_2L == finalstate_dct["2e"]:
-                        h1D_m4l_2P2F_2mu2e.Fill(event.mass4l, weight)
-                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_2mu2e], CR[type_of_fake.Fake][CRregion._2P2F_2mu2e],CR[type_of_fake.BDfake][CRregion._2P2F_2mu2e],CR[type_of_fake.Conv][CRregion._2P2F_2mu2e],False)
-
-                    elif finalstate_2L == finalstate_dct["2mu"]:
-                        h1D_m4l_2P2F_2e2mu.Fill(event.mass4l, weight)
-                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, event.mass4l,weight,CR[type_of_fake.Prom][CRregion._2P2F_2e2mu], CR[type_of_fake.Fake][CRregion._2P2F_2e2mu],CR[type_of_fake.BDfake][CRregion._2P2F_2e2mu],CR[type_of_fake.Conv][CRregion._2P2F_2e2mu],False)
-
-            if nFailedLeptons > 2:
-                print(f"  number of failed leptons in Z+LL CR: {nFailedLeptons}")
-                n_tot_failedleps += nFailedLeptons
-    # C++ code below.
-    # C++ kod odavde
+            fill_hists_in_controlreg(
+                event=event, weight=weight, hist_dct=hist_dct,
+                kinem_ls=kinem_ls, control_reg=conreg,
+                finalstate_4L=finalstate_4L, finalstate_2L=finalstate_2L)
                 
     # Save the plots.
     Data_string = "Data" if isData else "MC"
@@ -649,47 +714,27 @@ def analyzeZX(fTemplateTree, Nickname, varName = "ptl3", lumi=59700):
     h1D_FRmu_EE_n.SetName("Data_FRmu_EE") 
     h1D_FRmu_EE_n.Write()
     
-    # store slimmed tree and histograms in .root file
-    
-    h1D_m4l_2P2F.SetName("h1D_m4l_2P2F") 
-    h1D_m4l_2P2F.Write()
-    h1D_m4l_2P2F_2e2mu.SetName("h1D_m4l_2P2F_2e2mu") 
-    h1D_m4l_2P2F_2e2mu.Write()
-    h1D_m4l_2P2F_2mu2e.SetName("h1D_m4l_2P2F_2mu2e") 
-    h1D_m4l_2P2F_2mu2e.Write()
-    h1D_m4l_2P2F_4e.SetName("h1D_m4l_2P2F_4e") 
-    h1D_m4l_2P2F_4e.Write()
-    h1D_m4l_2P2F_4mu.SetName("h1D_m4l_2P2F_4mu") 
-    h1D_m4l_2P2F_4mu.Write()
-    
-    h1D_m4l_3P1F.SetName("h1D_m4l_3P1F") 
-    h1D_m4l_3P1F.Write()
-    h1D_m4l_3P1F_2e2mu.SetName("h1D_m4l_3P1F_2e2mu") 
-    h1D_m4l_3P1F_2e2mu.Write()
-    h1D_m4l_3P1F_2mu2e.SetName("h1D_m4l_3P1F_2mu2e") 
-    h1D_m4l_3P1F_2mu2e.Write()
-    h1D_m4l_3P1F_4e.SetName("h1D_m4l_3P1F_4e") 
-    h1D_m4l_3P1F_4e.Write()
-    h1D_m4l_3P1F_4mu.SetName("h1D_m4l_3P1F_4mu") 
-    h1D_m4l_3P1F_4mu.Write()
+    print("...Storing kinematic histograms in '.root' file.")
+    for h in hist_dct.values():
+        h.Write()
     
     SaveRootFile.Close()
 
-    # Storing the plots per type of fakes
+    # Storing the plots per type of fakes.
+    if study_particle_origins:
+        SaveRootFile_Types_of_fake = rt.TFile("Hist_ID_"+varName+"_"+Nickname+".root", "RECREATE")
 
-    SaveRootFile_Types_of_fake = rt.TFile("Hist_ID_"+varName+"_"+Nickname+".root", "RECREATE")
+        for count in range(CRregion._3P1F_2mu2e+1):    
+            for t in range(type_of_fake.BDfake+1): 
+                CR_Prom[count].Write()
+                CR_Fake[count].Write()
+                CR_Conv[count].Write()
+                CR_BDfake[count].Write()
 
-    for count in range(CRregion._3P1F_2mu2e+1):    
-        for t in range(type_of_fake.BDfake+1): 
-            CR_Prom[count].Write()
-            CR_Fake[count].Write()
-            CR_Conv[count].Write()
-            CR_BDfake[count].Write()
+        for count in range(barrel_endcap_region.ME_d+1):
+                Hist_conv[count].Write()
+                Hist_prompt[count].Write()
+                Hist_fakes[count].Write()
+                Hist_BDfakes[count].Write()
 
-    for count in range(barrel_endcap_region.ME_d+1):
-            Hist_conv[count].Write()
-            Hist_prompt[count].Write()
-            Hist_fakes[count].Write()
-            Hist_BDfakes[count].Write()
-
-    SaveRootFile_Types_of_fake.Close()
+        SaveRootFile_Types_of_fake.Close()

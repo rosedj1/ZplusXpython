@@ -20,24 +20,21 @@ fileMC = ROOT.TFile ("../data/Hist_MC_ptl3_WZ.root", "READ")
 print("MC file opened.")
 fileMC.cd()
 
+# WZ removal from FRs.
 n_EB.Add(fileMC.Get("Data_FRel_EB_n"),-1)
 d_EB.Add(fileMC.Get("Data_FRel_EB_d"),-1)
-
 n_EB.Divide(d_EB)
 
 n_EE.Add(fileMC.Get("Data_FRel_EE_n"),-1)
 d_EE.Add(fileMC.Get("Data_FRel_EE_d"),-1)
-
 n_EE.Divide(d_EE)
 
 n_MB.Add(fileMC.Get("Data_FRmu_EB_n"),-1)
 d_MB.Add(fileMC.Get("Data_FRmu_EB_d"),-1)
-
 n_MB.Divide(d_MB)
 
 n_ME.Add(fileMC.Get("Data_FRmu_EE_n"),-1)
 d_ME.Add(fileMC.Get("Data_FRmu_EE_d"),-1)
-
 n_ME.Divide(d_ME)
 
 # file1 = ROOT.TFile ("Hist_Data_ptl3_WZremoved.root", "RECREATE")

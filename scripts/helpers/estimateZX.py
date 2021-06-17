@@ -1,9 +1,8 @@
 import ROOT
 import math
 import sys
-sys.path.append('/blue/avery/rosedj1/ZplusXpython/')
 from helpers.analyzeZX import get_evt_weight, setHistProperties
-from constants.physics import xs_dct, MZ_PDG, lumi
+from constants.physics import xs_dct, MZ_PDG, LUMI_INT_2018_Jake
 
 def getFR(lep_id, lep_pt, lep_eta, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE):
 

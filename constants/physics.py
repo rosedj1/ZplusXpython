@@ -4,6 +4,8 @@ LUMI_INT_2016 = -1  # pb^{-1}
 LUMI_INT_2017 = -1  # pb^{-1}
 LUMI_INT_2018_Jake = 57400  # pb^{-1}
 LUMI_INT_2018_Vukasin = 59700  # pb^{-1}
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsZZ4lRunIILegacy#2018
+LUMI_INT_2018_TWiki = 59740  # pb^{-1}
 
 xs_dct = {
     'DY10' : 18610.0,
@@ -20,4 +22,5 @@ n_totevts_dataset_dct = {
     'TT'   : 63405000,
     'WZ'   : 10086433,
     'ZZ'   : 96412000,
+    'Data' : 1,  # Can be anything.
 }

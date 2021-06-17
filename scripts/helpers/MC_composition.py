@@ -64,17 +64,10 @@ def PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR0
                         n=0
 
                         test_particle_origin_1 = ((abs(lep_matchedR03_PdgId[lep_Hindex[2]])>410)and(abs(lep_matchedR03_PdgId[lep_Hindex[2]])<436))or((abs(lep_matchedR03_PdgId[lep_Hindex[2]])>10410)and(abs(lep_matchedR03_PdgId[lep_Hindex[2]])<10433)) or ((abs(lep_matchedR03_PdgId[lep_Hindex[2]])>20412)and(abs(lep_matchedR03_PdgId[lep_Hindex[2]])<20434))
-                        
                         test_particle_origin_2 = ((abs(lep_matchedR03_PdgId[lep_Hindex[2]])>510)and(abs(lep_matchedR03_PdgId[lep_Hindex[2]])<546))or((abs(lep_matchedR03_PdgId[lep_Hindex[2]])>10510)and(abs(lep_matchedR03_PdgId[lep_Hindex[2]])<10544)) or ((abs(lep_matchedR03_PdgId[lep_Hindex[2]])>20512)and(abs(lep_matchedR03_PdgId[lep_Hindex[2]])<20544))
-                        
-                        
                         test_particle_origin_3 = ((abs(lep_matchedR03_MomId[lep_Hindex[2]])>410)and(abs(lep_matchedR03_MomId[lep_Hindex[2]])<436))or((abs(lep_matchedR03_MomId[lep_Hindex[2]])>10410)and(abs(lep_matchedR03_MomId[lep_Hindex[2]])<10433)) or ((abs(lep_matchedR03_MomId[lep_Hindex[2]])>20412)and(abs(lep_matchedR03_MomId[lep_Hindex[2]])<20434))
-                        
                         test_particle_origin_4 = ((abs(lep_matchedR03_MomId[lep_Hindex[2]])>510)and(abs(lep_matchedR03_MomId[lep_Hindex[2]])<546))or((abs(lep_matchedR03_MomId[lep_Hindex[2]])>10510)and(abs(abs(lep_matchedR03_MomId[lep_Hindex[2]]))<10544)) or ((abs(lep_matchedR03_MomId[lep_Hindex[2]])>20512)and(abs(lep_matchedR03_MomId[lep_Hindex[2]])<20544))
-                        
-                        
                         test_particle_origin_5 = ((abs(lep_matchedR03_MomMomId[lep_Hindex[2]])>410)and(abs(lep_matchedR03_MomMomId[lep_Hindex[2]])<436))or((abs(lep_matchedR03_MomMomId[lep_Hindex[2]])>10410)and(abs(lep_matchedR03_MomMomId[lep_Hindex[2]])<10433)) or ((abs(lep_matchedR03_MomMomId[lep_Hindex[2]])>20412)and(abs(lep_matchedR03_MomMomId[lep_Hindex[2]])<20434))
-                        
                         test_particle_origin_6 = ((abs(lep_matchedR03_MomMomId[lep_Hindex[2]])>510)and(abs(lep_matchedR03_MomMomId[lep_Hindex[2]])<546))or((abs(lep_matchedR03_MomMomId[lep_Hindex[2]])>10510)and(abs(lep_matchedR03_MomMomId[lep_Hindex[2]])<10544)) or ((abs(lep_matchedR03_MomMomId[lep_Hindex[2]])>20512)and(abs(lep_matchedR03_MomMomId[lep_Hindex[2]])<20544))
                         
                         n = n + test_particle_origin_1 + test_particle_origin_2 + test_particle_origin_3 + test_particle_origin_4 + test_particle_origin_5 + test_particle_origin_6
@@ -89,9 +82,9 @@ def PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR0
                         else:
                             n = 0
                             
-                            test_particle_origin_1 = ((abs(lep_matchedR03_PdgId[lep_Hindex[2]])<10)or(abs(lep_matchedR03_PdgId[lep_Hindex[2]])>100))
-                            test_particle_origin_2 = ((abs(lep_matchedR03_MomId[lep_Hindex[2]])<10)or(abs(lep_matchedR03_MomId[lep_Hindex[2]])>100))
-                            test_particle_origin_3 = ((abs(lep_matchedR03_MomMomId[lep_Hindex[2]])<10)or(abs(lep_matchedR03_MomMomId[lep_Hindex[2]])>100))
+                            test_particle_origin_1 = ((abs(lep_matchedR03_PdgId[lep_Hindex[2]])<10) or (abs(lep_matchedR03_PdgId[lep_Hindex[2]])>100))
+                            test_particle_origin_2 = ((abs(lep_matchedR03_MomId[lep_Hindex[2]])<10) or (abs(lep_matchedR03_MomId[lep_Hindex[2]])>100))
+                            test_particle_origin_3 = ((abs(lep_matchedR03_MomMomId[lep_Hindex[2]])<10) or (abs(lep_matchedR03_MomMomId[lep_Hindex[2]])>100))
 
                             if ( n >= 1 ):
                                 n_fakes = n_fakes + 1
