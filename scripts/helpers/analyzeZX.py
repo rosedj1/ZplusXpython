@@ -3,7 +3,7 @@
 Syntax to run: `python this_script.py`
 Original Author: Vukasin Milosevic
 Modified by: Jake Rosenzweig
-Updated: 2021-06-16
+Updated: 2021-06-18
 """
 import os
 import sys
@@ -255,11 +255,12 @@ def reconstruct_Zcand_leptons(event):
 def analyzeZX(fTemplateTree, Nickname, varName="ptl3", lumi=59700):
 
     study_particle_origins = False
+    max_events = -1
 
     kinem_ls = [
-        "mass4l", #"mass4lREFIT", "mass4lREFIT_vtx_BS",
-        # "mass4lErr", "mass4lErrREFIT", "mass4lErrREFIT_vtx_BS",
-        "met", #"D_bkg_kin", "D_bkg_kin_vtx_BS"
+        "mass4l", "mass4lREFIT", "mass4lREFIT_vtx_BS",
+         "mass4lErr", "mass4lErrREFIT", "mass4lErrREFIT_vtx_BS",
+        "met", "D_bkg_kin", "D_bkg_kin_vtx_BS"
         ]
         
     kinem_info_dct = {
@@ -498,8 +499,8 @@ def analyzeZX(fTemplateTree, Nickname, varName="ptl3", lumi=59700):
     for iEvt, event in enumerate(fTemplateTree):
         if (iEvt % 50000 == 0):
             print (f"Processing event: {iEvt}/{nentries}")
-        if iEvt == 100001:
-            break
+        # if iEvt == max_events:
+        #     break
             
         # Get total number of events from MC/Data files.
         # Use the L_int and xs to determine n_expected and event weights.
