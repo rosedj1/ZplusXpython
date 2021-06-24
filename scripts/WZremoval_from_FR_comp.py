@@ -17,7 +17,7 @@ d_ME = file0.Get("Data_FRmu_EE_d")
 
 
 fileMC = ROOT.TFile ("../data/Hist_MC_ptl3_WZ.root", "READ")
-print("MC file opened.")
+print("MC (WZ) file opened.")
 fileMC.cd()
 
 # WZ removal from FRs.

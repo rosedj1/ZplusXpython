@@ -26,6 +26,9 @@ ratio (fake rate) in bins of pT(lep3).
 - Uses `MC_composition.py` to call `PartOrigin()`.
    -  Checks the type of fake procedure (checking the ID of the parent).
 
+Plot the histograms with:
+`ZplusXpython/scripts/plotters/plot_fakerate_hists.py`.
+
 ---
 
 ## WZ Removal

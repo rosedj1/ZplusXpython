@@ -143,22 +143,6 @@ def get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_obs_tot):
         n_exp = get_expected_n_evts(xs, lumi, Nickname, event)
         old_weight = event.eventWeight
         new_weight = old_weight * (n_exp / n_obs_tot)
-        # if processFileName in "Data":
-        #     return 1
-        # # any(name in processFileName for name in MC_processes)
-        # elif processFileName in ('DY50', 'TT', 'DY10', 'WZ', 'ZZ'):
-        #     return n_MC
-        # lNEvents = setNEvents(Nickname)
-        # if (Nickname=="DY50"): # Z+jets.
-        #     weight *= 6225.4*lumi/lNEvents
-        # elif (Nickname=="TT"):
-        #     weight *= 87.31*lumi/lNEvents
-        # elif (Nickname=="DY10"): # Zgamma+jets
-        #     weight *= 18610.0*lumi/lNEvents
-        # elif (Nickname=="WZ"):
-        #     weight *= 4.67*lumi/lNEvents
-        # elif (Nickname=="ZZ"):  # Irreducible bkg?
-        #     weight *= (1.256 * lumi * event.k_qqZZ_qcd_M * event.k_qqZZ_ewk) / lNEvents
         return new_weight
 
 def make_hist_name(kinem, control_reg, fs):
@@ -252,16 +236,18 @@ def reconstruct_Zcand_leptons(event):
     lep_2.SetPtEtaPhiM(event.lep_pt[ndx1], event.lep_eta[ndx1], event.lep_phi[ndx1], event.lep_mass[ndx1])
     return (lep_1, lep_2)
 
-def analyzeZX(fTemplateTree, Nickname, varName="ptl3", lumi=59700):
+def analyzeZX(fTemplateTree, Nickname, varName="ptl3", lumi=59700, kinem_ls):
+    """
 
+    TODO: Update docstring.
+
+    Parameters
+    ----------
+    kinem_ls : list of str
+    """
+    
     study_particle_origins = False
     max_events = -1
-
-    kinem_ls = [
-        "mass4l", "mass4lREFIT", "mass4lREFIT_vtx_BS",
-         "mass4lErr", "mass4lErrREFIT", "mass4lErrREFIT_vtx_BS",
-        "met", "D_bkg_kin", "D_bkg_kin_vtx_BS"
-        ]
         
     kinem_info_dct = {
         "mass4l" : {
@@ -404,7 +390,7 @@ def analyzeZX(fTemplateTree, Nickname, varName="ptl3", lumi=59700):
     for h in all_FR_hist_ls + list(hist_dct.values()):
         h.Sumw2()
 
-    isData = ("Data" in Nickname)
+    isData = "Data" in Nickname
     nentries = fTemplateTree.GetEntries()
     n_tot_failedleps = 0
 
@@ -661,7 +647,7 @@ def analyzeZX(fTemplateTree, Nickname, varName="ptl3", lumi=59700):
                 
     # Save the plots.
     Data_string = "Data" if isData else "MC"
-    outfile_path = "../data/Hist_"+Data_string+"_"+varName+"_"+Nickname+".root"
+    outfile_path = f"../data/Hist_{Data_string}_{varName}_{Nickname}.root"
     # check_overwrite(outfile_path, overwrite=False)
     suffix = 0
     while os.path.exists(outfile_path):
