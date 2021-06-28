@@ -19,7 +19,7 @@ wildcard_file_list=( crab_SingleMuon* )
 
 function get_lumi {
     # Print out the recorded lumi from the file ($1).
-    tail -n 5 $1 | head -n 1 | cut -d\|  -f7
+    tail -n 5 $1 | head -n 1 | cut -d\| -f7
 }
 
 echo -n > "${outfile}"

@@ -10,6 +10,15 @@ This repo contains scripts to:
 
 ---
 
+## Skim NTuples
+
+1. Use the UFHZZ4LAnalyzer to skim the MiniAOD files (Data or MC).
+1. Combine files (using `hadd`) of the same process (e.g., MuonEG runs A-D).
+1. Use `skimmers/removeDuplicatesH4l2018.py` on Data files.
+1. Combine `Data_*_NoDuplicates.root` files into a single file.
+
+---
+
 ## Calculate Fake Rates
 
 Use the Z+L background control region (CR) to calculate how often a non-signal

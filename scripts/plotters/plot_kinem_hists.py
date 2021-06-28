@@ -81,25 +81,25 @@ for rel_kin_tup in related_kinems:
                 # h_refit.Rebin(merge_n_bins)
                 # h_refit_vxbs.Rebin(merge_n_bins)
             
-            h.SetTitle(title)
-            # h1D_mass4l_3P1F_inclus.SetFillColor(4)
-            h_base.SetLineColor(color)
-            h_refit.SetLineColor(3)
-            h_refit_vxbs.SetLineColor(2)
+                # h.SetTitle(title)
+                # h1D_mass4l_3P1F_inclus.SetFillColor(4)
+                h_base.SetLineColor(color)
+                # h_refit.SetLineColor(3)
+                # h_refit_vxbs.SetLineColor(2)
 
-            opt = ' hist e '
-            h_base.Draw(opt)
-            h_refit.Draw('same' + opt)
-            h_refit_vxbs.Draw('same' + opt)
+                opt = ' hist e '
+                h_base.Draw(opt)
+                h_refit.Draw('same' + opt)
+                h_refit_vxbs.Draw('same' + opt)
 
-            leg = TLegend(0.15, 0.7, 0.45, 0.85)
-            leg.AddEntry(h_base, r"baseline", "f")
-            leg.AddEntry(h_refit, r"Z constraint", "f")
-            leg.AddEntry(h_refit_vxbs, r"Z constraint + BSC", "f")
+                leg = TLegend(0.15, 0.7, 0.45, 0.85)
+                leg.AddEntry(h_base, r"baseline", "f")
+                leg.AddEntry(h_refit, r"Z constraint", "f")
+                leg.AddEntry(h_refit_vxbs, r"Z constraint + BSC", "f")
 
-            leg.Draw("same")
+                leg.Draw("same")
 
-            c.Print(outfile)
+                c.Print(outfile)
 
 
 
