@@ -3,7 +3,7 @@ from helpers.estimateZX import estimateZX
 from constants.physics import LUMI_INT_2018_Jake
 
 # file_WZremoved = "Hist_Data_ptl3_WZremoved.root"
-file_fakerates_WZremoved = "../data/Hist_Data_ptl3_Data_WZremoved.root"
+file_fakerates_WZremoved = "/blue/avery/rosedj1/ZplusXpython/data/20210721_alljake/Hist_Data_ptl3_Data_WZremoved.root"
 
 filename_dct = {
     # "Data" : "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/smallerstats/Data_2018_smallerstats.root",
@@ -29,5 +29,6 @@ for name, filepath in filename_dct.items():
     print(f"Successfully opened file:\n  {filepath}")
     print(f"-- Nickname: {name}")
     print(f"-- Found {n_evts} events.")
-    estimateZX(file_fakerates_WZremoved, tree, name, lumi=LUMI_INT_2018_Jake)
+    estimateZX(FakeRateFile=file_fakerates_WZremoved, tree=tree,
+               Nickname=name, lumi=LUMI_INT_2018_Jake)
     inFile.Close()

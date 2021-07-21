@@ -25,7 +25,7 @@
 
 using namespace std;
 
-void apply_preselections_vxbs(){
+void apply_preselections(){
 
   bool isData = true;
 
@@ -93,10 +93,6 @@ void apply_preselections_vxbs(){
   TTreeReaderValue<vector<int>> lep_matchedR03_MomMomId_reader(reader, "lep_matchedR03_MomMomId");
   // DELETE THIS LINE.
   TTreeReaderValue<bool>            passedFiducialSelection_reader(reader, "passedFiducialSelection");
-  TTreeReaderValue<vector<double>> vtxLepFSR_BS_pt_reader(reader, "vtxLepFSR_BS_pt");
-  TTreeReaderValue<vector<double>> vtxLepFSR_BS_eta_reader(reader, "vtxLepFSR_BS_eta");
-  TTreeReaderValue<vector<double>> vtxLepFSR_BS_phi_reader(reader, "vtxLepFSR_BS_phi");
-  TTreeReaderValue<vector<double>> vtxLepFSR_BS_mass_reader(reader, "vtxLepFSR_BS_mass");
   TTreeReaderValue<vector<float>>  lepFSR_pt_reader(reader, "lepFSR_pt");
   TTreeReaderValue<vector<float>>  lepFSR_eta_reader(reader, "lepFSR_eta");
   TTreeReaderValue<vector<float>>  lepFSR_phi_reader(reader, "lepFSR_phi");
@@ -106,13 +102,7 @@ void apply_preselections_vxbs(){
   TTreeReaderValue<float>          mass4lErr_reader(reader, "mass4lErr");
   TTreeReaderValue<float>          mass4lREFIT_reader(reader, "mass4lREFIT");
   TTreeReaderValue<float>          mass4lErrREFIT_reader(reader, "mass4lErrREFIT");
-  TTreeReaderValue<float>          mass4l_vtx_BS_reader(reader, "mass4l_vtx_BS");
-  TTreeReaderValue<float>          mass4l_vtxFSR_BS_reader(reader, "mass4l_vtxFSR_BS");
-  TTreeReaderValue<float>          mass4lErr_vtx_BS_reader(reader, "mass4lErr_vtx_BS");
-  TTreeReaderValue<float>          mass4lREFIT_vtx_BS_reader(reader, "mass4lREFIT_vtx_BS");
-  TTreeReaderValue<float>          mass4lErrREFIT_vtx_BS_reader(reader, "mass4lErrREFIT_vtx_BS");
   TTreeReaderValue<float>          D_bkg_kin_reader(reader, "D_bkg_kin");
-  TTreeReaderValue<float>          D_bkg_kin_vtx_BS_reader(reader, "D_bkg_kin_vtx_BS");
 
   // Make variables which will attach to new branch.
   ULong64_t Event;
@@ -136,10 +126,6 @@ void apply_preselections_vxbs(){
   vector<int> lep_matchedR03_PdgId;
   vector<int> lep_matchedR03_MomId;
   vector<int> lep_matchedR03_MomMomId;
-  vector<double> vtxLepFSR_BS_pt;
-  vector<double> vtxLepFSR_BS_eta;
-  vector<double> vtxLepFSR_BS_phi;
-  vector<double> vtxLepFSR_BS_mass;
   vector<float>  lepFSR_pt;
   vector<float>  lepFSR_eta;
   vector<float>  lepFSR_phi;
@@ -149,13 +135,7 @@ void apply_preselections_vxbs(){
   float mass4lErr;
   float mass4lREFIT;
   float mass4lErrREFIT;
-  float mass4l_vtx_BS;
-  float mass4l_vtxFSR_BS;
-  float mass4lErr_vtx_BS;
-  float mass4lREFIT_vtx_BS;
-  float mass4lErrREFIT_vtx_BS;
   float D_bkg_kin;
-  float D_bkg_kin_vtx_BS;
 
   // Set vars to new branch.
   newtree->Branch("Event", &Event);
@@ -179,10 +159,6 @@ void apply_preselections_vxbs(){
   newtree->Branch("lep_matchedR03_MomId", &lep_matchedR03_MomId);
   newtree->Branch("lep_matchedR03_MomMomId", &lep_matchedR03_MomMomId);
   // Add TTreeReaders for these. DELETE THIS LINE.
-  newtree->Branch("vtxLepFSR_BS_pt", &vtxLepFSR_BS_pt);
-  newtree->Branch("vtxLepFSR_BS_eta", &vtxLepFSR_BS_eta);
-  newtree->Branch("vtxLepFSR_BS_phi", &vtxLepFSR_BS_phi);
-  newtree->Branch("vtxLepFSR_BS_mass", &vtxLepFSR_BS_mass);
   newtree->Branch("lepFSR_pt", &lepFSR_pt);
   newtree->Branch("lepFSR_eta", &lepFSR_eta);
   newtree->Branch("lepFSR_phi", &lepFSR_phi);
@@ -192,13 +168,7 @@ void apply_preselections_vxbs(){
   newtree->Branch("mass4lErr", &mass4lErr);
   newtree->Branch("mass4lREFIT", &mass4lREFIT);
   newtree->Branch("mass4lErrREFIT", &mass4lErrREFIT);
-  newtree->Branch("mass4l_vtx_BS", &mass4l_vtx_BS);
-  newtree->Branch("mass4l_vtxFSR_BS", &mass4l_vtxFSR_BS);
-  newtree->Branch("mass4lErr_vtx_BS", &mass4lErr_vtx_BS);
-  newtree->Branch("mass4lREFIT_vtx_BS", &mass4lREFIT_vtx_BS);
-  newtree->Branch("mass4lErrREFIT_vtx_BS", &mass4lErrREFIT_vtx_BS);
   newtree->Branch("D_bkg_kin", &D_bkg_kin);
-  newtree->Branch("D_bkg_kin_vtx_BS", &D_bkg_kin_vtx_BS);
 
   unsigned int eventCount = 0;
   // Begin iterating over the TTree.
@@ -244,10 +214,6 @@ void apply_preselections_vxbs(){
     lep_matchedR03_MomId = *lep_matchedR03_MomId_reader;
     lep_matchedR03_MomMomId = *lep_matchedR03_MomMomId_reader;
     // CONTINUE HERE.
-    vtxLepFSR_BS_pt = *vtxLepFSR_BS_pt_reader;
-    vtxLepFSR_BS_eta = *vtxLepFSR_BS_eta_reader;
-    vtxLepFSR_BS_phi = *vtxLepFSR_BS_phi_reader;
-    vtxLepFSR_BS_mass = *vtxLepFSR_BS_mass_reader;
     lepFSR_pt = *lepFSR_pt_reader;
     lepFSR_eta = *lepFSR_eta_reader;
     lepFSR_phi = *lepFSR_phi_reader;
@@ -257,13 +223,7 @@ void apply_preselections_vxbs(){
     mass4lErr = *mass4lErr_reader;
     mass4lREFIT = *mass4lREFIT_reader;
     mass4lErrREFIT = *mass4lErrREFIT_reader;
-    mass4l_vtx_BS = *mass4l_vtx_BS_reader;
-    mass4l_vtxFSR_BS = *mass4l_vtxFSR_BS_reader;
-    mass4lErr_vtx_BS = *mass4lErr_vtx_BS_reader;
-    mass4lREFIT_vtx_BS = *mass4lREFIT_vtx_BS_reader;
-    mass4lErrREFIT_vtx_BS = *mass4lErrREFIT_vtx_BS_reader;
     D_bkg_kin = *D_bkg_kin_reader;
-    D_bkg_kin_vtx_BS = *D_bkg_kin_vtx_BS_reader;
     passedFiducialSelection = *passedFiducialSelection_reader;
 
     // Save all values of this event in TTree.

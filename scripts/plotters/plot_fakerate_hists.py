@@ -9,15 +9,15 @@ Plots FRs before and after WZ removal
 from ROOT import TFile, TCanvas, kRed, kBlue, TLegend
 from Utils_Python.Utils_Files import check_overwrite
 
-infile = "../../data/Hist_Data_ptl3_Data.root"
-infile_wz = "../../data/Hist_Data_ptl3_Data_WZremoved.root"
-outfile = "../../plots/test/fakerate_hists_01.pdf"
+infile_data = "/blue/avery/rosedj1/ZplusXpython/data/20210721_alljake/Hist_Data_ptl3_Data.root"
+infile_wz_rmv = "/blue/avery/rosedj1/ZplusXpython/data/20210721_alljake/Hist_Data_ptl3_Data_WZremoved.root"
+outfile = "/blue/avery/rosedj1/ZplusXpython/plots/fakerate_hists/fakerate_hists_alljake_sumgenweights.pdf"
 overwrite = 0
 
 check_overwrite(outfile, overwrite=overwrite)
 
-f = TFile(infile)
-f_wz = TFile(infile_wz)
+f = TFile(infile_data)
+f_wz = TFile(infile_wz_rmv)
 key_ls = f.GetListOfKeys()
 
 c = TCanvas('c', 'c', 0, 67, 600, 600)
