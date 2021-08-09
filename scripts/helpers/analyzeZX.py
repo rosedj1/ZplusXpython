@@ -1,9 +1,22 @@
 """Determine Fake Rates and OS Z+LL Control Regions
 
-Syntax to run: `python this_script.py`
-Original Author: Vukasin Milosevic
-Modified by: Jake Rosenzweig
-Updated: 2021-06-18
+TODO: Finish code docstring.
+
+This code selects events from Data/MC samples which pass either Z+L or Z+LL
+control regions (CR), separating them by CRs.
+
+The following histograms are produced:
+- 
+
+- Fake rates (the number of leptons which )
+
+NOTE:
+- Recommended MC samples: WZ, ZZ, ttbar, DY
+
+Syntax to run: `python <this_script>.py`
+Author: Jake Rosenzweig
+Original logic from: Vukasin Milosevic
+Updated: 2021-07-23
 """
 import os
 import sys
@@ -11,7 +24,7 @@ import math
 import ROOT as rt
 import numpy as np
 # from Utils_Python.Utils_Files import check_overwrite
-from helpers.MC_composition import PartOrigin
+from scripts.helpers.MC_composition import PartOrigin
 from constants.physics import xs_dct, MZ_PDG, LUMI_INT_2018_Jake, n_totevts_dataset_dct, n_sumgenweights_dataset_dct
 # from HiggsMassMeasurement.Utils_ROOT.ROOT_classes import make_TH1F
 from Utils_ROOT.ROOT_classes import make_TH1F
@@ -160,8 +173,7 @@ def make_hist_name(kinem, control_reg, fs):
     return f"h1D_{kinem}_{control_reg}_{fs}"
 
 def make_hist_dct(kinem_ls, kinem_info_dct):
-    """
-    Return a dict of kinem hists made for 5 final states and 3 Z+LL CRs.
+    """Return a dict of kinem hists made for 5 final states and 3 Z+LL CRs.
     
     Example of key, val pair:
     h1D_m4l_2P2F : rt.TH1D("h1D_m4l_2P2F_4mu", "h1D_m4l_2P2F_4mu",
@@ -184,8 +196,8 @@ def make_hist_dct(kinem_ls, kinem_info_dct):
                 x_max = kinem_info_dct[kinem]["x_max"]
                 units = kinem_info_dct[kinem]["units"]
                 h = make_TH1F(name, title=name,
-                                    n_bins=n_bins, xlabel=xlabel,
-                                    x_min=x_min, x_max=x_max, units=units)
+                              n_bins=n_bins, xlabel=xlabel,
+                              x_min=x_min, x_max=x_max, units=units)
                 hist_d[name] = h.Clone()
     return hist_d
 
@@ -202,10 +214,22 @@ def fill_hists(event, weight, hist_dct, kinem_ls, control_reg, fs):
         h.Fill(val, weight)
 
 def fill_hists_in_controlreg(event, weight, hist_dct, kinem_ls,
-                                control_reg, finalstate_4L, finalstate_2L):
+                             control_reg, finalstate_4L, finalstate_2L):
     """Fill inclusive and `finalstate_4L` kinematic hists.
     
     NOTE: finalstate_2L is used to determine whether 2e2mu or 2mu2e.
+
+    Parameters
+    ----------
+    event : ROOT.TTree event
+    hist_dct : dict of empty TH1D
+    kinem_ls : list of str
+    control_reg : str
+        Either: '3P1F' or '2P2F'
+    finalstate_4L : float
+        The sum of the abs(lep IDs) in the 4 lepton final state.
+    finalstate_2L : float
+        The sum of the abs(lep IDs) of the 2 leptons comprising the Z2.
     """
     fill_hists(
         event=event, weight=weight, hist_dct=hist_dct,
@@ -243,35 +267,40 @@ def reconstruct_Zcand_leptons(event):
     lep_2.SetPtEtaPhiM(event.lep_pt[ndx1], event.lep_eta[ndx1], event.lep_phi[ndx1], event.lep_mass[ndx1])
     return (lep_1, lep_2)
 
-def analyzeZX(fTemplateTree, Nickname, lumi=59700, kinem_ls=['']):
-    """
-
-    TODO: Update docstring.
+def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi=59700, kinem_ls=['']):
+    """Analyze each event in sample `Nickname` and create histograms.
 
     Parameters
     ----------
+    fTemplateTree : ROOT.TTree
+        The TTree which holds events in each "row".
+        Must have branches corresponding to elements in `kinem_ls`.
+    Nickname : str
+        The shorthand name of the sample to-be processed.
+    lumi : float
+        The integrated luminosity of the Data sample.
     kinem_ls : list of str
+        The names of the branches for which histograms will be made.
     """
-    outfile_dir = "/blue/avery/rosedj1/ZplusXpython/data/"
-    suffix = "alljake"
-    overwrite = 0
-
     wgt_from_ntuple = False
     study_particle_origins = False
     # max_events = 1E5 #-1
         
     # Name the outfile and check for overwrite.
     isData = "Data" in Nickname
-    filename = f"Hist_Data_{suffix}.root" if isData else f"Hist_MC_{Nickname}_{suffix}.root"
+    filename = f"Hist_Data.root" if isData else f"Hist_MC_{Nickname}.root"
+    if len(suffix) > 0:
+        filename = filename.replace(".root", f"_{suffix}.root")
+    os.makedirs(outfile_dir, exist_ok=True)
     outfile_path = os.path.join(outfile_dir, filename)
     check_overwrite(outfile_path, overwrite=overwrite)
 
     kinem_info_dct = {
         "mass4l" : {
-            "n_bins" : 100,
+            "n_bins" : 410,
             "x_label" : r'm_{4#ell}',
-            "x_min" : 70,
-            "x_max" : 170,
+            "x_min" : 50,
+            "x_max" : 870,
             "units" : "GeV",
             },
         "mass4lREFIT" : {
@@ -650,10 +679,6 @@ def analyzeZX(fTemplateTree, Nickname, lumi=59700, kinem_ls=['']):
         #--- CR: Z+LL (XPYF) ---#
         #########################
         elif event.passedZXCRSelection:
-            ### DELETE BELOW
-            continue
-            ### DELETE ABOVE
-
             # Collect info about 4 leps from "H candidate".
             # We got at least 1 fake lepton.
             lep_tight = []
@@ -679,7 +704,6 @@ def analyzeZX(fTemplateTree, Nickname, lumi=59700, kinem_ls=['']):
             lep_1, lep_2 = reconstruct_Zcand_leptons(event)
             massZ1 = (lep_1+lep_2).M()
 
-            assert len(list(lep_tight)) < 5
             # failed lep = not (tight and good e/mu)
             nFailedLeptons1 = not (lep_tight[0] and ((abs(idL[0])==11) or (abs(idL[0])==13 and lep_iso[0]<0.35)))
             nFailedLeptons2 = not (lep_tight[1] and ((abs(idL[1])==11) or (abs(idL[1])==13 and lep_iso[1]<0.35)))
@@ -794,11 +818,6 @@ def analyzeZX(fTemplateTree, Nickname, lumi=59700, kinem_ls=['']):
                             n_muon_endcap_passtight)
 
     # Save the plots.
-    # suffix = 0
-    # while os.path.exists(outfile_path):
-    #     print(f"#--- Renaming: {outfile_path}")
-    #     outfile_path = f"""{outfile_path.rstrip('.root')}_{suffix}.root"""
-    #     suffix += 1
     SaveRootFile = rt.TFile(outfile_path, "RECREATE")
     
     h1D_FRel_EE_n = h1D_FRel_EE.Clone()
@@ -845,7 +864,7 @@ def analyzeZX(fTemplateTree, Nickname, lumi=59700, kinem_ls=['']):
     h1D_FRmu_EE_n.SetName("Data_FRmu_EE") 
     h1D_FRmu_EE_n.Write()
     
-    print("...Storing kinematic histograms in '.root' file.")
+    print("...Storing kinematic histograms in '.root' file.\n")
     for h in hist_dct.values():
         h.Write()
     

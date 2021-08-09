@@ -1,8 +1,16 @@
+"""
+Apply WZ-removed fake rates to 3P1F and 2P2F control regions (CRs).
+
+Syntax to run: `python <this_script>.py`
+Author: Jake Rosenzweig
+Original logic from: Vukasin Melosevic
+Updated: 2021-07-23
+"""
 import ROOT
 import math
 import sys
 import os
-from helpers.analyzeZX import get_evt_weight, setHistProperties
+from scripts.helpers.analyzeZX import get_evt_weight, setHistProperties
 from constants.physics import xs_dct, MZ_PDG, LUMI_INT_2018_Jake, n_sumgenweights_dataset_dct
 from Utils_Python.Utils_Files import check_overwrite
 
@@ -22,12 +30,11 @@ def getFR(lep_id, lep_pt, lep_eta, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FR
 
     return 0
 
-def estimateZX(FakeRateFile, tree, Nickname, lumi=59700):
-    outfile_dir = "/blue/avery/rosedj1/ZplusXpython/data/os_controlreg"
-    suffix = ""
-    overwrite = 1
-
+def estimateZX(FakeRateFile, tree, Nickname, outfile_dir, suffix="",
+               overwrite=0, lumi=59700):
+    #-- User Parameters --#
     wgt_from_ntuple = False
+
     # Name the outfile and check for overwrite.
     isData = "Data" in Nickname
     filename = f"estimateZX_{Nickname}.root"
@@ -86,9 +93,8 @@ def estimateZX(FakeRateFile, tree, Nickname, lumi=59700):
     h1D_m4l_Add_2P2F_2mu2e = ROOT.TH1D("h1D_m4l_Add_2P2F_2mu2e","h1D_m4l_Add_2P2F_2mu2e",var_nBins, var_plotLow, var_plotHigh) 
     h1D_m4l_Add_2P2F_2mu2e.Sumw2()
 
-    # Read in the FRs.
+    # Read in the FRs (with WZ removed).
     FR_file = ROOT.TFile(FakeRateFile, "READ")
-
     h1D_FRel_EB = FR_file.Get("Data_FRel_EB")
     h1D_FRel_EE = FR_file.Get("Data_FRel_EE")
     h1D_FRmu_EB = FR_file.Get("Data_FRmu_EB")
@@ -96,15 +102,16 @@ def estimateZX(FakeRateFile, tree, Nickname, lumi=59700):
 
     isData = "Data" in Nickname
     iEvt = -1
+    n_evts_tree = tree.GetEntries()
     if isData:
-        n_dataset_tot = tree.GetEntries()
+        n_dataset_tot = n_evts_tree
     else:
         n_dataset_tot = float(n_sumgenweights_dataset_dct[Nickname])
     # lNEvents = setNEvents(Nickname)
 
     for iEvt, event in enumerate(tree):
         if (iEvt % 50000) == 0:
-            print (f"Processing event: {iEvt}/{n_dataset_tot}")
+            print (f"Processing event: {iEvt}/{n_evts_tree}")
         # if iEvt > 50000:
         #     break
 
@@ -242,7 +249,8 @@ def estimateZX(FakeRateFile, tree, Nickname, lumi=59700):
                     if ((abs(idL[2])+abs(idL[3]))== 22):
                         h1D_m4l_SR_2P2F_2mu2e.Fill(m4l, wgt_2p2f_prod)
                         h1D_m4l_Add_2P2F_2mu2e.Fill(m4l, wgt_2p2f_sum)
-                    
+
+    print()
     SaveRootFile = ROOT.TFile(outfile_path, "RECREATE")
         
     h1D_FRel_EB.SetName("h1D_FRel_EB")

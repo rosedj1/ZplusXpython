@@ -9,9 +9,9 @@ Plots FRs before and after WZ removal
 from ROOT import TFile, TCanvas, kRed, kBlue, TLegend
 from Utils_Python.Utils_Files import check_overwrite
 
-infile_data = "/blue/avery/rosedj1/ZplusXpython/data/20210721_alljake/Hist_Data_ptl3_Data.root"
-infile_wz_rmv = "/blue/avery/rosedj1/ZplusXpython/data/20210721_alljake/Hist_Data_ptl3_Data_WZremoved.root"
-outfile = "/blue/avery/rosedj1/ZplusXpython/plots/fakerate_hists/fakerate_hists_alljake_sumgenweights.pdf"
+infile_data = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/Hist_Data_ptl3_Data.root"
+infile_wz_rmv = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/Hist_Data_ptl3_WZremoved.root"
+outfile = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/plots/fakerate_hists/jakes_files_vukasins_framework.pdf"
 overwrite = 0
 
 check_overwrite(outfile, overwrite=overwrite)

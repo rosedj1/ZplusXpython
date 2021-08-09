@@ -3,8 +3,8 @@ from Utils_Python.Utils_Files import check_overwrite
 
 overwrite = 0
 
-infile_Data = "/blue/avery/rosedj1/ZplusXpython/data/20210721_alljake/Hist_Data_ptl3_Data.root"
-infile_WZ   = "/blue/avery/rosedj1/ZplusXpython/data/20210721_alljake/Hist_MC_WZ-ext1-v2.root"
+infile_Data = "/blue/avery/rosedj1/ZplusXpython/data/20210802_alljake/Hist_Data.root"
+infile_WZ   = "/blue/avery/rosedj1/ZplusXpython/data/20210802_alljake/Hist_MC_WZ-ext1-v2.root"
 
 file_data = ROOT.TFile(infile_Data, "READ")
 print(f"Data file opened.")

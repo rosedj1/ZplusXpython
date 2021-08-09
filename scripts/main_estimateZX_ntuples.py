@@ -1,34 +1,32 @@
 import ROOT
-from helpers.estimateZX import estimateZX
+from scripts.helpers.estimateZX import estimateZX
 from constants.physics import LUMI_INT_2018_Jake
 
+outfile_dir = "/blue/avery/rosedj1/ZplusXpython/data/controlreg_OS/20210802"
+suffix = ""
+overwrite = 0
+
 # file_WZremoved = "Hist_Data_ptl3_WZremoved.root"
-file_fakerates_WZremoved = "/blue/avery/rosedj1/ZplusXpython/data/20210721_alljake/Hist_Data_ptl3_Data_WZremoved.root"
+file_fakerates_WZremoved = "/blue/avery/rosedj1/ZplusXpython/data/20210802_alljake/Hist_Data_WZremoved.root"
 
 filename_dct = {
-    # "Data" : "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/smallerstats/Data_2018_smallerstats.root",
-    # "ZZ"   : "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/MC/smallerstats/ZZTo4L_TuneCP5_13TeV_powheg_pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2_smallerstats.root"
-    # "Data" : "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZL_ZLL_CR/Data_2018.root",
-    "Data" : "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZL_ZLL_CR/Data_2018_NoDuplicates.root",  # n_evts_tot = 3,404,111
+    "Data" : "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZL_ZLL_CR/Data_2018_NoDuplicates_vxbs.root",  # n_evts_tot = 3,404,111
     "ZZ"   : "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/MC/fullstats/ZL_ZLL_CR/ZZTo4L_TuneCP5_13TeV_powheg_pythia8_2018.root"
 }
 
-# fileList = [
-#     "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/smallerstats/Data_2018_smallerstats.root",
-#     "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/MC/smallerstats/ZZTo4L_TuneCP5_13TeV_powheg_pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2_smallerstats.root"
-#     ]
-
-# RootNickNames = ["Data", "ZZ"]
-
-print("Second stage of processing (Creation of ZX SR contributions for Data and ZZ.\n")
+print("\nSecond stage of processing (Creation of ZX SR contributions for Data and ZZ.\n")
 
 for name, filepath in filename_dct.items():
     inFile =  ROOT.TFile.Open(filepath, "READ")
     tree = inFile.Get("passedEvents")
     n_evts = tree.GetEntries()
-    print(f"Successfully opened file:\n  {filepath}")
-    print(f"-- Nickname: {name}")
-    print(f"-- Found {n_evts} events.")
+    print(
+        f"Successfully opened file:\n"
+        f"-- {filepath}\n"
+        f"-- Nickname: {name}"
+        f"-- Found {n_evts} events in TTree."
+    )
     estimateZX(FakeRateFile=file_fakerates_WZremoved, tree=tree,
-               Nickname=name, lumi=LUMI_INT_2018_Jake)
+               Nickname=name, outfile_dir=outfile_dir, suffix=suffix,
+               overwrite=overwrite, lumi=LUMI_INT_2018_Jake)
     inFile.Close()
