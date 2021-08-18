@@ -170,11 +170,12 @@ def estimateZX(FakeRateFile, tree, Nickname, outfile_dir, suffix="",
 
             fr_lep3_odds = fr3 / (1 - fr3)
             fr_lep4_odds = fr4 / (1 - fr4)
-            # 2P2F has only 2 signal leptons.
+            # 2P2F has only 2 tight leptons.
             # Contributing processes: Z+jets and ttbar.
             # Obtain their contribution to signal region by weighting
             # each event in the 2P2F region by this factor:
             fr_product = fr_lep3_odds * fr_lep4_odds
+            
             # fr_sum = (fr3/(1-fr3)) + (fr4/(1-fr4))
             fr_sum = fr_lep3_odds + fr_lep4_odds
 

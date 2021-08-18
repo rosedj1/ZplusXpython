@@ -3,11 +3,11 @@
  * NOTES:
  * - Useful for reducible background studies.
  * - VX+BS info is saved.
- * - Only selecting events in the Z+L and Z+LL control regions).
+ * - Select events in the Z+L, Z+LL, and 4P control regions.
  * - Specify either Data or MC using `isData` and check file paths!
  * AUTHOR: Jake Rosenzweig, jake.rose@cern.ch
  * CREATED: 2021-05-20, happy birthday, Sheldoni!
- * UPDATED: 2021-06-30
+ * UPDATED: 2021-08-18
  */
 
 #include <iostream>
@@ -22,77 +22,80 @@
 #include "TTreeReader.h"
 #include "TTreeReaderValue.h"
 #include "TTreeReaderArray.h"
+#include <numeric>
 
 using namespace std;
 
-void apply_preselections_vxbs(){
-
-  bool isData = true;
-
-  TString infile1;
-  TString infilename;
-  TString outfilename;
-  TString outfile_path;
+void apply_redbkg_evt_selection_vxbs(
+  TString infile,
+  TString outfile,
+  bool isData = true,
+  bool do_Z1LSelection = true,
+  bool do_ZXCRSelection = true,
+  bool do_4PSelection = true
+  ){
+  /**
+   * do_Z1LSelection  : Use for fake rate studies.
+   * do_ZXCRSelection : Use for RedBkg estimation (apply fake rates).
+   * do_4PSelection   : 4 prompt leptons.
+   */
   TString intree;
-
   if (isData) {
-    // Data.
-    infilename = "Data_skimmed_vukasin_original.root"; //"WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
-    // infilename = "Data_2018_NoDuplicates.root"; //"WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
-    infile1 = "/blue/avery/rosedj1/ZplusXpython/data/vukasin/" + infilename;
-    // infile1 = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/noduplicates/" + infilename;
-    outfilename = "Data_2018_vukasin_skimmedskimmed.root";
-  // TString infile1 = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/DoubleMuon_2018.root";
+    // infilename = "Data_2018_NoDuplicates.root";
+    // indir = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/noduplicates/"
+    // outfilename = "Data_2018_4P_CR.root";
+  // TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/DoubleMuon_2018.root";
   // TString infile2 = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/EGamma_2018.root";
   // TString infile3 = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/MuonEG_2018.root";
   // TString infile4 = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/SingleMuon_2018.root";
-    // outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZL_ZLL_CR/" + outfilename;
-    outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/" + outfilename;
+    // outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZL_ZLL_CR/" + outfilename;
+    // outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/" + outfilename;
     intree = "passedEvents";
   } else {
     // MC.
-    infilename = "WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_realistic_v15_ext1-v2_2018.root"; //"FILENAME"; // Will be replaced by bash script.
-    infile1 = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/MC/fullstats/" + infilename;
-    outfilename = infilename;
-    outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/MC/fullstats/ZL_ZLL_CR/" + outfilename;
+    // infilename = "FILENAME"; // Will be replaced by bash script.
+    // infilename = "WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_realistic_v15_ext1-v2_2018.root"; //"FILENAME"; // Will be replaced by bash script.
+    // infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/MC/fullstats/" + infilename;
+    // outfilename = infilename;
+    // outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/MC/fullstats/4P_CR/" + outfilename;
     intree = "Ana/passedEvents";
   }
 
-  // TString outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/Data_2018_ZL_ZLL_CRs.root";
-  TFile *outfile = new TFile(outfile_path, "RECREATE");
+  // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/Data_2018_ZL_ZLL_CRs.root";
+  TFile *tf_out = new TFile(outfile, "RECREATE");
   TTree *newtree = new TTree("passedEvents","passedEvents");
 
   TChain *cc = new TChain(intree);
 
-  cc->Add(infile1);
-  cout << "Successfully opened file:\n" << infile1 << endl;
+  cc->Add(infile);
+  cout << "Successfully opened file:\n" << infile << endl;
   // cc->Add(infile2);
   // cc->Add(infile3);
   // cc->Add(infile4);
 
   TTreeReader reader(cc);
+  unsigned int n_tot_tree = reader.GetEntries(true);
   // Assign TTreeReader to a branch on old tree.
-  TTreeReaderValue<ULong64_t> Event_reader(reader, "Event");
-  TTreeReaderValue<bool> passedZ1LSelection_reader(reader, "passedZ1LSelection");
-  TTreeReaderValue<bool> passedZXCRSelection_reader(reader, "passedZXCRSelection");
-  TTreeReaderValue<float> eventWeight_reader(reader, "eventWeight");
-  TTreeReaderValue<float> k_qqZZ_qcd_M_reader(reader, "k_qqZZ_qcd_M");
-  TTreeReaderValue<float> k_qqZZ_ewk_reader(reader, "k_qqZZ_ewk");
-  TTreeReaderValue<float> met_reader(reader, "met");
-  TTreeReaderValue<float> mass4l_reader(reader, "mass4l");
-  TTreeReaderArray<int> lep_Hindex_reader(reader, "lep_Hindex");
-  TTreeReaderValue<vector<float>> lep_pt_reader(reader, "lep_pt");
-  TTreeReaderValue<vector<float>> lep_eta_reader(reader, "lep_eta");
-  TTreeReaderValue<vector<float>> lep_phi_reader(reader, "lep_phi");
-  TTreeReaderValue<vector<float>> lep_mass_reader(reader, "lep_mass");
-  TTreeReaderValue<vector<float>> lep_RelIsoNoFSR_reader(reader, "lep_RelIsoNoFSR");
-  TTreeReaderValue<vector<int>> lep_id_reader(reader, "lep_id");
-  TTreeReaderValue<vector<int>> lep_tightId_reader(reader, "lep_tightId");
-  TTreeReaderValue<vector<int>> lep_matchedR03_PdgId_reader(reader, "lep_matchedR03_PdgId");
-  TTreeReaderValue<vector<int>> lep_matchedR03_MomId_reader(reader, "lep_matchedR03_MomId");
-  TTreeReaderValue<vector<int>> lep_matchedR03_MomMomId_reader(reader, "lep_matchedR03_MomMomId");
-  // DELETE THIS LINE.
-  TTreeReaderValue<bool>            passedFiducialSelection_reader(reader, "passedFiducialSelection");
+  // TTreeReaderValue<ULong64_t> Event_reader(reader, "Event"); Doesn't store useful info.
+  TTreeReaderValue<bool>           passedZ1LSelection_reader(reader, "passedZ1LSelection");
+  TTreeReaderValue<bool>           passedZXCRSelection_reader(reader, "passedZXCRSelection");
+  TTreeReaderValue<float>          eventWeight_reader(reader, "eventWeight");
+  TTreeReaderValue<float>          k_qqZZ_qcd_M_reader(reader, "k_qqZZ_qcd_M");
+  TTreeReaderValue<float>          k_qqZZ_ewk_reader(reader, "k_qqZZ_ewk");
+  TTreeReaderValue<float>          met_reader(reader, "met");
+  TTreeReaderValue<float>          mass4l_reader(reader, "mass4l");
+  TTreeReaderArray<int>            lep_Hindex_reader(reader, "lep_Hindex");
+  TTreeReaderValue<vector<float>>  lep_pt_reader(reader, "lep_pt");
+  TTreeReaderValue<vector<float>>  lep_eta_reader(reader, "lep_eta");
+  TTreeReaderValue<vector<float>>  lep_phi_reader(reader, "lep_phi");
+  TTreeReaderValue<vector<float>>  lep_mass_reader(reader, "lep_mass");
+  TTreeReaderValue<vector<float>>  lep_RelIsoNoFSR_reader(reader, "lep_RelIsoNoFSR");
+  TTreeReaderValue<vector<int>>    lep_id_reader(reader, "lep_id");
+  TTreeReaderValue<vector<int>>    lep_tightId_reader(reader, "lep_tightId");
+  TTreeReaderValue<vector<int>>    lep_matchedR03_PdgId_reader(reader, "lep_matchedR03_PdgId");
+  TTreeReaderValue<vector<int>>    lep_matchedR03_MomId_reader(reader, "lep_matchedR03_MomId");
+  TTreeReaderValue<vector<int>>    lep_matchedR03_MomMomId_reader(reader, "lep_matchedR03_MomMomId");
+  TTreeReaderValue<bool>           passedFiducialSelection_reader(reader, "passedFiducialSelection");
   TTreeReaderValue<vector<double>> vtxLepFSR_BS_pt_reader(reader, "vtxLepFSR_BS_pt");
   TTreeReaderValue<vector<double>> vtxLepFSR_BS_eta_reader(reader, "vtxLepFSR_BS_eta");
   TTreeReaderValue<vector<double>> vtxLepFSR_BS_phi_reader(reader, "vtxLepFSR_BS_phi");
@@ -178,7 +181,6 @@ void apply_preselections_vxbs(){
   newtree->Branch("lep_matchedR03_PdgId", &lep_matchedR03_PdgId);
   newtree->Branch("lep_matchedR03_MomId", &lep_matchedR03_MomId);
   newtree->Branch("lep_matchedR03_MomMomId", &lep_matchedR03_MomMomId);
-  // Add TTreeReaders for these. DELETE THIS LINE.
   newtree->Branch("vtxLepFSR_BS_pt", &vtxLepFSR_BS_pt);
   newtree->Branch("vtxLepFSR_BS_eta", &vtxLepFSR_BS_eta);
   newtree->Branch("vtxLepFSR_BS_phi", &vtxLepFSR_BS_phi);
@@ -201,11 +203,18 @@ void apply_preselections_vxbs(){
   newtree->Branch("D_bkg_kin_vtx_BS", &D_bkg_kin_vtx_BS);
 
   unsigned int eventCount = 0;
+  unsigned int n_tot_evts_found = 0;
+  bool keep_event;
+  int n_leps;
+  int n_tight;
+  int n_iso;
   // Begin iterating over the TTree.
   while (reader.Next()) {
     eventCount++;
+    keep_event = false;
+
     if (eventCount % 1000000 == 0) {
-      std::cout << eventCount << " events read." << std::endl;
+      std::cout << eventCount << "/" << n_tot_tree << " events read." << std::endl;
     }
 
     //--- Event selection ---//
@@ -216,23 +225,29 @@ void apply_preselections_vxbs(){
     passedZ1LSelection = *passedZ1LSelection_reader;
     passedZXCRSelection = *passedZXCRSelection_reader;
 
-    // Must pass either passedZ1LSelection or passedZXCRSelection.
-    if (!passedZ1LSelection && !passedZXCRSelection) continue;
+    // Only interested in events which go into Z+L, Z+LL, or 4P CRs.
+    // 4P: Have exactly 4 tight and isolated leps (they look like 4 prompt).
+    if (do_Z1LSelection && passedZ1LSelection) {keep_event = true;}
+    if (do_ZXCRSelection && passedZXCRSelection) {keep_event = true;}
+    if (do_4PSelection) {
+      n_leps  = lepFSR_pt_reader->size();
+      n_tight = std::accumulate(lep_tightId_reader->begin(), lep_tightId_reader->end(), 0);
+      n_iso   = std::accumulate(lep_RelIsoNoFSR_reader->begin(), lep_RelIsoNoFSR_reader->end(), 0);
+      if ((n_leps==4) && (n_tight==4) && (n_iso==4)) {keep_event = true;}
+    }
+    if (!keep_event) continue;
+    // Found a good 4l event.
+    n_tot_evts_found += 1;
 
     eventWeight = *eventWeight_reader;
     k_qqZZ_qcd_M = *k_qqZZ_qcd_M_reader;
     k_qqZZ_ewk = *k_qqZZ_ewk_reader;
     met = *met_reader;
     mass4l = *mass4l_reader;
-    // Arrays must be dealt with separately.
+    // Arrays must be dealt with differently.
     for (int k : lep_Hindex_reader) {
       lep_Hindex.push_back(k);
     }
-    // lep_Hindex = *lep_Hindex_reader;
-  // lep_Hindex[0] = lep_Hindex_reader[0];  // Changing this from int[4] to vector<int>.
-  // lep_Hindex[1] = lep_Hindex_reader[1];  // Changing this from int[4] to vector<int>.
-  // lep_Hindex[2] = lep_Hindex_reader[2];  // Changing this from int[4] to vector<int>.
-  // lep_Hindex[3] = lep_Hindex_reader[3];  // Changing this from int[4] to vector<int>.
     lep_pt = *lep_pt_reader;
     lep_eta = *lep_eta_reader;
     lep_phi = *lep_phi_reader;
@@ -243,7 +258,6 @@ void apply_preselections_vxbs(){
     lep_matchedR03_PdgId = *lep_matchedR03_PdgId_reader;
     lep_matchedR03_MomId = *lep_matchedR03_MomId_reader;
     lep_matchedR03_MomMomId = *lep_matchedR03_MomMomId_reader;
-    // CONTINUE HERE.
     vtxLepFSR_BS_pt = *vtxLepFSR_BS_pt_reader;
     vtxLepFSR_BS_eta = *vtxLepFSR_BS_eta_reader;
     vtxLepFSR_BS_phi = *vtxLepFSR_BS_phi_reader;
@@ -273,7 +287,7 @@ void apply_preselections_vxbs(){
   } // end event loop
   
   newtree->Write();
-  cout << "New TTree saved to file:\n" << outfile_path << endl;
-
+  cout << "New TTree saved to file:\n" << outfile << endl;
+  cout << "Found " << n_tot_evts_found << " tight, iso, 4-lep events." << endl;
   return;
 } // end function

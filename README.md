@@ -27,17 +27,25 @@ This repo contains scripts to:
 
 ### Cross Sections for MC
 
-MCM xs vals obtained by going to:
-https://cms-pdmv.cern.ch/mcm/ > Request > Output Dataset >
-Search for your data set by providing the data set name.
-Under 'PrepId' column, copy the name of the file.
-Under 'Dataset name' column, click on the icon to the right of the name
+You will find many different values for cross section.
+After some comparisons and asking the experts, it seems it is best to use the [values recommended](https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#DY_Z) by the Higgs MC working group.
+
+For historical purposes, let it be noted that the CJLST group uses
+[these values](https://github.com/CJLST/ZZAnalysis/blob/Run2_CutBased/AnalysisStep/test/prod/samples_2018_MC.csv).
+
+You can also find cross sections associated with the generated samples, found on McM:
+
+
+1. Going to https://cms-pdmv.cern.ch/mcm/ > Request > Output Dataset
+1. Search for your data set by providing the data set name.
+2. Under 'PrepId' column, copy the name of the file.
+3. Under 'Dataset name' column, click on the icon to the right of the name
 of the data set (it looks like a file explorer).
-Show all results (bottom-righthand corner).
-Search (Ctrl-F) for the PrepId.
+4. Show all results (bottom-righthand corner).
+1. Search (Ctrl-F) for the PrepId.
 Even if a few options are found, they should all have the same LHEGS
 file. Click this LHEGS file name.
-Then Select View > Generator parameters.
+1. Then Select View > Generator parameters.
 The cross section is in the 'Generator Parameters' column to the right.
 
 Put the cross section into the dict in `physics.py`.
@@ -66,7 +74,7 @@ Put this number in `physics.py`
 
 ## Calculate Fake Rates
 
-Use the Z+L background control region (CR) to calculate how often a non-signal
+Use the Z+L background control region (CR) to calculate how often a non-prompt
 lepton passes tight selection:
 
 ```bash
@@ -80,9 +88,6 @@ ratio (fake rate) in bins of pT(lep3).
 - Uses `MC_composition.py` to call `PartOrigin()`.
    -  Checks the type of fake procedure (checking the ID of the parent).
 
-Plot the histograms with:
-`ZplusXpython/scripts/plotters/plot_fakerate_hists.py`.
-
 ---
 
 ## WZ Removal
@@ -92,6 +97,12 @@ we must subtract this from the Z+L CR:
 
 ```bash
 python WZremoval_from_FR_comp.py
+```
+
+Plot the fake rate histograms (before and after WZ removal) with:
+
+```bash
+ZplusXpython/scripts/plotters/plot_fakerate_hists.py
 ```
 
 ---
@@ -116,7 +127,7 @@ python estimate_final_numbers_macro.py
 
 ---
 
-## Plot the Histograms
+## Plot the 2P2F/3P1F distributions
 
 ```bash
 python plotting_macros.py

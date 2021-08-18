@@ -15,8 +15,8 @@ NOTE:
 
 Syntax to run: `python <this_script>.py`
 Author: Jake Rosenzweig
-Original logic from: Vukasin Milosevic
-Updated: 2021-07-23
+Original code: Vukasin Milosevic
+Updated: 2021-08-17
 """
 import os
 import sys
