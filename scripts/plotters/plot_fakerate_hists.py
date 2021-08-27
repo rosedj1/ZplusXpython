@@ -8,11 +8,23 @@ Plots FRs before and after WZ removal
 # import ROOT as rt
 from ROOT import TFile, TCanvas, kRed, kBlue, TLegend
 from Utils_Python.Utils_Files import check_overwrite
+import argparse
 
-infile_data = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/Hist_Data_ptl3_Data.root"
-infile_wz_rmv = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/Hist_Data_ptl3_WZremoved.root"
-outfile = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/plots/fakerate_hists/jakes_files_vukasins_framework.pdf"
-overwrite = 0
+parser = argparse.ArgumentParser()
+parser.add_argument('-v', '--verbose',     dest="verbose", action="store_true")
+parser.add_argument('-d', '--infile_data', dest="infile_data", type=str, help='input Data rootfile')
+parser.add_argument('-f', '--infile_fr',   dest="infile_fr", type=str, help='input rootfile with fake rates (WZ removed)')
+parser.add_argument('-o', '--outfile',     dest="outfile", type=str, help='output pdf with fake rate plots')
+parser.add_argument('-x', '--overwrite',   dest="overwrite", action="store_true", help='will overwrite output pdf')
+args = parser.parse_args()
+
+infile_data = args.infile_data
+infile_wz_rmv = args.infile_fr
+outfile = args.outfile
+# infile_data = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/Hist_Data_ptl3_Data.root"
+# infile_wz_rmv = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/fakerate_hists/Hist_Data_ptl3_WZremoved.root"
+# outfile = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/plots/fakerate_hists/jakesfiles_vukasinsframework_20210827.pdf"
+overwrite = args.overwrite
 
 check_overwrite(outfile, overwrite=overwrite)
 

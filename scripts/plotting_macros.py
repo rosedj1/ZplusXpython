@@ -11,9 +11,9 @@ bin_width = 5  # GeV.
 lumi = LUMI_INT_2018_Jake / 1000.0
 overwrite = 0
 
-estimateZX_Data_file = "/blue/avery/rosedj1/ZplusXpython/data/controlreg_OS/estimateZX_Data.root"
-# outfile_path = "/blue/avery/rosedj1/ZplusXpython/plots/hist_controlreg/test/testplots2.pdf"
-outfile_path = "/blue/avery/rosedj1/ZplusXpython/plots/hist_controlreg/CR_OS_2P2F_4e.pdf"
+estimateZX_Data_file = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/estimateZX_Data.root"
+# outfile_path = "/blue/avery/rosedj1/ZplusXpython/plots/hist_controlreg/CR_OS_2P2F_4e.pdf"
+outfile_path = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/plots/CR_OS_2P2F_4e.pdf"
 
 sample_dct = {
     # Nickname : {"filepath", "label", "fillcolor", "linecolor", "isData"}
@@ -69,7 +69,7 @@ class ControlRegPlot:
     """
 
     def __init__(self, controlreg, finalstate=""):
-        assert controlreg in ("2P2F", "3P1F")
+        assert controlreg in ("2P2F", "3P1F", "4P0F")
         assert finalstate in ("", "4e", "4mu", "2e2mu", "2mu2e")
         self.controlreg = controlreg
         self.finalstate = finalstate
@@ -146,7 +146,7 @@ class ControlRegPlot:
         canv = TColor.GetColor("#cc0099")
         entry.SetFillColor(canv)
         entry.SetFillStyle(1001)
-        # Zgamma, ZZ.
+        # Zgammastar, ZZ.
         canv = TColor.GetColor("#990066")
         entry.SetLineColor(canv)
         entry.SetLineStyle(1)
@@ -163,6 +163,27 @@ class ControlRegPlot:
         
         # If control region = 3P1F.
         if "3P1F" in self.controlreg:
+            canv = TColor.GetColor("#000099")
+            entry.SetLineColor(canv)
+            # entry.SetLineStyle(1)
+            # entry.SetLineWidth(1)
+            # entry.SetMarkerColor(1)
+            # entry.SetMarkerStyle(21)
+            # entry.SetMarkerSize(1)
+            # entry.SetTextFont(42)
+            entry=leg.AddEntry("NULL", "2P2F contribution", "F")
+            entry.SetFillStyle(4000)
+            entry.SetLineColor(6)
+            entry.SetLineStyle(1)
+            entry.SetLineWidth(2)
+            entry.SetMarkerColor(1)
+            entry.SetMarkerStyle(21)
+            entry.SetMarkerSize(1)
+            entry.SetTextFont(42)
+        self.leg = leg
+
+        # If control region = 4P0F.
+        if "4P0F" in self.controlreg:
             canv = TColor.GetColor("#000099")
             entry.SetLineColor(canv)
             entry.SetLineStyle(1)
