@@ -3,11 +3,11 @@
  * NOTES:
  * - Useful for reducible background studies.
  * - VX+BS info is saved.
- * - Select events in the Z+L, Z+LL, and 4P control regions.
+ * - Select events in the Z+L, Z+LL, and/or 4P control regions.
  * - Specify either Data or MC using `isData` and check file paths!
  * AUTHOR: Jake Rosenzweig, jake.rose@cern.ch
  * CREATED: 2021-05-20, happy birthday, Sheldoni!
- * UPDATED: 2021-08-18
+ * UPDATED: 2021-08-31
  */
 
 #include <iostream>
@@ -77,13 +77,13 @@ void apply_redbkg_evt_selection_vxbs(
   unsigned int n_tot_tree = reader.GetEntries(true);
   // Assign TTreeReader to a branch on old tree.
   // TTreeReaderValue<ULong64_t> Event_reader(reader, "Event"); Doesn't store useful info.
+  TTreeReaderValue<int>            finalState_reader(reader, "finalState");
   TTreeReaderValue<bool>           passedZ1LSelection_reader(reader, "passedZ1LSelection");
   TTreeReaderValue<bool>           passedZXCRSelection_reader(reader, "passedZXCRSelection");
   TTreeReaderValue<float>          eventWeight_reader(reader, "eventWeight");
   TTreeReaderValue<float>          k_qqZZ_qcd_M_reader(reader, "k_qqZZ_qcd_M");
   TTreeReaderValue<float>          k_qqZZ_ewk_reader(reader, "k_qqZZ_ewk");
   TTreeReaderValue<float>          met_reader(reader, "met");
-  TTreeReaderValue<float>          mass4l_reader(reader, "mass4l");
   TTreeReaderArray<int>            lep_Hindex_reader(reader, "lep_Hindex");
   TTreeReaderValue<vector<float>>  lep_pt_reader(reader, "lep_pt");
   TTreeReaderValue<vector<float>>  lep_eta_reader(reader, "lep_eta");
@@ -95,7 +95,6 @@ void apply_redbkg_evt_selection_vxbs(
   TTreeReaderValue<vector<int>>    lep_matchedR03_PdgId_reader(reader, "lep_matchedR03_PdgId");
   TTreeReaderValue<vector<int>>    lep_matchedR03_MomId_reader(reader, "lep_matchedR03_MomId");
   TTreeReaderValue<vector<int>>    lep_matchedR03_MomMomId_reader(reader, "lep_matchedR03_MomMomId");
-  TTreeReaderValue<bool>           passedFiducialSelection_reader(reader, "passedFiducialSelection");
   TTreeReaderValue<vector<double>> vtxLepFSR_BS_pt_reader(reader, "vtxLepFSR_BS_pt");
   TTreeReaderValue<vector<double>> vtxLepFSR_BS_eta_reader(reader, "vtxLepFSR_BS_eta");
   TTreeReaderValue<vector<double>> vtxLepFSR_BS_phi_reader(reader, "vtxLepFSR_BS_phi");
@@ -105,23 +104,36 @@ void apply_redbkg_evt_selection_vxbs(
   TTreeReaderValue<vector<float>>  lepFSR_phi_reader(reader, "lepFSR_phi");
   TTreeReaderValue<vector<float>>  lepFSR_mass_reader(reader, "lepFSR_mass");
   TTreeReaderValue<vector<int>>    lep_genindex_reader(reader, "lep_genindex");
-  TTreeReaderValue<float>          mass4l_noFSR_reader(reader, "mass4l_noFSR");
-  TTreeReaderValue<float>          mass4lErr_reader(reader, "mass4lErr");
-  TTreeReaderValue<float>          mass4lREFIT_reader(reader, "mass4lREFIT");
-  TTreeReaderValue<float>          mass4lErrREFIT_reader(reader, "mass4lErrREFIT");
-  TTreeReaderValue<float>          mass4l_vtx_BS_reader(reader, "mass4l_vtx_BS");
-  TTreeReaderValue<float>          mass4l_vtxFSR_BS_reader(reader, "mass4l_vtxFSR_BS");
-  TTreeReaderValue<float>          mass4lErr_vtx_BS_reader(reader, "mass4lErr_vtx_BS");
-  TTreeReaderValue<float>          mass4lREFIT_vtx_BS_reader(reader, "mass4lREFIT_vtx_BS");
-  TTreeReaderValue<float>          mass4lErrREFIT_vtx_BS_reader(reader, "mass4lErrREFIT_vtx_BS");
-  TTreeReaderValue<float>          D_bkg_kin_reader(reader, "D_bkg_kin");
-  TTreeReaderValue<float>          D_bkg_kin_vtx_BS_reader(reader, "D_bkg_kin_vtx_BS");
-
+  // Various mass4l values and associated errors.
+  TTreeReaderValue<float>  mass4l_reader(reader, "mass4l");
+  TTreeReaderValue<float>  mass4lErr_reader(reader, "mass4lErr");
+  //
+  TTreeReaderValue<float>  mass4l_vtx_reader(reader, "mass4l_vtx");
+  TTreeReaderValue<float>  mass4lErr_vtx_reader(reader, "mass4lErr_vtx");
+  //
+  TTreeReaderValue<float>  mass4l_vtx_BS_reader(reader, "mass4l_vtx_BS");
+  TTreeReaderValue<float>  mass4lErr_vtx_BS_reader(reader, "mass4lErr_vtx_BS");
+  //
+  TTreeReaderValue<float>  mass4lREFIT_reader(reader, "mass4lREFIT");
+  TTreeReaderValue<float>  mass4lErrREFIT_reader(reader, "mass4lErrREFIT");
+  //
+  TTreeReaderValue<float>  mass4lREFIT_vtx_reader(reader, "mass4lREFIT_vtx");
+  TTreeReaderValue<float>  mass4lErrREFIT_vtx_reader(reader, "mass4lErrREFIT_vtx");
+  //
+  TTreeReaderValue<float>  mass4lREFIT_vtx_BS_reader(reader, "mass4lREFIT_vtx_BS");
+  TTreeReaderValue<float>  mass4lErrREFIT_vtx_BS_reader(reader, "mass4lErrREFIT_vtx_BS");
+  // These have no associated error in Analyzer.
+  TTreeReaderValue<float>  mass4l_vtxFSR_reader(reader, "mass4l_vtxFSR");
+  TTreeReaderValue<float>  mass4l_vtxFSR_BS_reader(reader, "mass4l_vtxFSR_BS");
+  TTreeReaderValue<float>  mass4l_noFSR_reader(reader, "mass4l_noFSR");
+  //
+  TTreeReaderValue<float>  D_bkg_kin_reader(reader, "D_bkg_kin");
+  TTreeReaderValue<float>  D_bkg_kin_vtx_BS_reader(reader, "D_bkg_kin_vtx_BS");
   // Make variables which will attach to new branch.
-  ULong64_t Event;
+  // ULong64_t Event;
+  int finalState;
   bool passedZ1LSelection;
   bool passedZXCRSelection;
-  bool passedFiducialSelection;
   float eventWeight;
   float k_qqZZ_qcd_M;
   float k_qqZZ_ewk;
@@ -151,7 +163,12 @@ void apply_redbkg_evt_selection_vxbs(
   float mass4l_noFSR;
   float mass4lErr;
   float mass4lREFIT;
+  float mass4lREFIT_vtx;
   float mass4lErrREFIT;
+  float mass4lErrREFIT_vtx;
+  float mass4l_vtx;
+  float mass4lErr_vtx;
+  float mass4l_vtxFSR;
   float mass4l_vtx_BS;
   float mass4l_vtxFSR_BS;
   float mass4lErr_vtx_BS;
@@ -161,15 +178,16 @@ void apply_redbkg_evt_selection_vxbs(
   float D_bkg_kin_vtx_BS;
 
   // Set vars to new branch.
-  newtree->Branch("Event", &Event);
+  // newtree->Branch("Event", &Event);
+  newtree->Branch("finalState", &finalState);
   newtree->Branch("passedZ1LSelection", &passedZ1LSelection);
   newtree->Branch("passedZXCRSelection", &passedZXCRSelection);
-  newtree->Branch("passedFiducialSelection", &passedFiducialSelection);
   newtree->Branch("eventWeight", &eventWeight);
   newtree->Branch("k_qqZZ_qcd_M", &k_qqZZ_qcd_M);
   newtree->Branch("k_qqZZ_ewk", &k_qqZZ_ewk);
   newtree->Branch("met", &met);
   newtree->Branch("mass4l", &mass4l);
+  // Lepton kinematics.
   newtree->Branch("lep_Hindex", &lep_Hindex);
   newtree->Branch("lep_pt", &lep_pt);
   newtree->Branch("lep_eta", &lep_eta);
@@ -190,10 +208,16 @@ void apply_redbkg_evt_selection_vxbs(
   newtree->Branch("lepFSR_phi", &lepFSR_phi);
   newtree->Branch("lepFSR_mass", &lepFSR_mass);
   newtree->Branch("lep_genindex", &lep_genindex);
+  // m4l.
   newtree->Branch("mass4l_noFSR", &mass4l_noFSR);
   newtree->Branch("mass4lErr", &mass4lErr);
   newtree->Branch("mass4lREFIT", &mass4lREFIT);
   newtree->Branch("mass4lErrREFIT", &mass4lErrREFIT);
+  newtree->Branch("mass4lErrREFIT_vtx", &mass4lErrREFIT_vtx);
+  newtree->Branch("mass4lREFIT_vtx", &mass4lREFIT_vtx);
+  newtree->Branch("mass4l_vtx",    &mass4l_vtx);
+  newtree->Branch("mass4lErr_vtx", &mass4lErr_vtx);
+  newtree->Branch("mass4l_vtxFSR", &mass4l_vtxFSR);
   newtree->Branch("mass4l_vtx_BS", &mass4l_vtx_BS);
   newtree->Branch("mass4l_vtxFSR_BS", &mass4l_vtxFSR_BS);
   newtree->Branch("mass4lErr_vtx_BS", &mass4lErr_vtx_BS);
@@ -203,7 +227,9 @@ void apply_redbkg_evt_selection_vxbs(
   newtree->Branch("D_bkg_kin_vtx_BS", &D_bkg_kin_vtx_BS);
 
   unsigned int eventCount = 0;
-  unsigned int n_tot_evts_found = 0;
+  unsigned int n_tot_Z1L = 0;
+  unsigned int n_tot_ZXCR = 0;
+  unsigned int n_tot_4P = 0;
   unsigned int n_leps;
   unsigned int n_muons;
   unsigned int n_tight;
@@ -233,8 +259,14 @@ void apply_redbkg_evt_selection_vxbs(
     lep_tightId = (*lep_tightId_reader);
     lep_RelIsoNoFSR = (*lep_RelIsoNoFSR_reader);
 
-    if (do_Z1LSelection && passedZ1LSelection) {keep_event = true;}
-    if (do_ZXCRSelection && passedZXCRSelection) {keep_event = true;}
+    if (do_Z1LSelection && passedZ1LSelection) {
+      n_tot_Z1L += 1;
+      keep_event = true;
+      }
+    if (do_ZXCRSelection && passedZXCRSelection) {
+      n_tot_ZXCR += 1;
+      keep_event = true;
+      }
     if (do_4PSelection) {
       // Need exactly 4 leps.
       n_leps = lepFSR_pt_reader->size();
@@ -252,15 +284,18 @@ void apply_redbkg_evt_selection_vxbs(
               }
             }
           }
-          if (n_muons == n_iso) {keep_event = true;}
+          if (n_muons == n_iso) {
+            n_tot_4P += 1;
+            keep_event = true;
+            }
         }
       }
     }
     if (!keep_event) continue;
-    // Found a good 4l event.
-    n_tot_evts_found += 1;
+    // Found an event worth keeping.
 
     // Store the values in the new branches: branch = reader_val    
+    finalState = *finalState_reader;
     eventWeight = *eventWeight_reader;
     k_qqZZ_qcd_M = *k_qqZZ_qcd_M_reader;
     k_qqZZ_ewk = *k_qqZZ_ewk_reader;
@@ -286,18 +321,23 @@ void apply_redbkg_evt_selection_vxbs(
     lepFSR_phi = *lepFSR_phi_reader;
     lepFSR_mass = *lepFSR_mass_reader;
     lep_genindex = *lep_genindex_reader;
+    //
     mass4l_noFSR = *mass4l_noFSR_reader;
     mass4lErr = *mass4lErr_reader;
     mass4lREFIT = *mass4lREFIT_reader;
+    mass4lREFIT_vtx = *mass4lREFIT_vtx_reader;
     mass4lErrREFIT = *mass4lErrREFIT_reader;
+    mass4lErrREFIT_vtx = *mass4lErrREFIT_vtx_reader;
+    mass4l_vtx = *mass4l_vtx_reader;
+    mass4lErr_vtx = *mass4lErr_vtx_reader;
     mass4l_vtx_BS = *mass4l_vtx_BS_reader;
     mass4l_vtxFSR_BS = *mass4l_vtxFSR_BS_reader;
     mass4lErr_vtx_BS = *mass4lErr_vtx_BS_reader;
     mass4lREFIT_vtx_BS = *mass4lREFIT_vtx_BS_reader;
     mass4lErrREFIT_vtx_BS = *mass4lErrREFIT_vtx_BS_reader;
+    //
     D_bkg_kin = *D_bkg_kin_reader;
     D_bkg_kin_vtx_BS = *D_bkg_kin_vtx_BS_reader;
-    passedFiducialSelection = *passedFiducialSelection_reader;
 
     // Save all values of this event in TTree.
     newtree->Fill();
@@ -307,6 +347,9 @@ void apply_redbkg_evt_selection_vxbs(
 
   newtree->Write();
   cout << "New TTree saved to file:\n" << outfile << endl;
-  cout << "Found " << n_tot_evts_found << " tight, iso, 4-lep events." << endl;
+  cout << "Found " << n_tot_Z1L << " Z+L events (for fake rate studies)." << endl;
+  cout << "Found " << n_tot_ZXCR << " Z+LL events (2P2F or 3P1F)." << endl;
+  cout << "Found " << n_tot_4P << " tight, iso, 4-lep events (for signal region comparison)." << endl;
+  cout << "Total events: " << n_tot_Z1L + n_tot_ZXCR + n_tot_4P << endl;
   return;
 } // end function

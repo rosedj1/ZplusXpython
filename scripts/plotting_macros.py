@@ -15,16 +15,27 @@ estimateZX_Data_file = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/est
 # outfile_path = "/blue/avery/rosedj1/ZplusXpython/plots/hist_controlreg/CR_OS_2P2F_4e.pdf"
 outfile_path = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/plots/CR_OS_2P2F_4e.pdf"
 
+
+class Sample:
+
+    def __init__(self, filepath, label, sample_type, isData):
+        self.filepath = filepath
+        self.label = label
+        self.sample_type = sample_type
+        self.isData = isData
+
+    
+
 sample_dct = {
     # Nickname : {"filepath", "label", "fillcolor", "linecolor", "isData"}
-    "Data" : {
-        "filepath" : "/blue/avery/rosedj1/ZplusXpython/data/20210723_alljake/Hist_Data.root",
-        "label" : "Data",
-        "sample" : "Data",
-        "isData" : True,
-        },
+    "Data" : Sample(
+                filepath="/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/nolepFSRtocalc_mZ1/estimateZX_Data.root",
+                label="Data",
+                sample_type="Data",
+                isData=True,
+             ),
     "ZZ" : {
-        "filepath" : "/blue/avery/rosedj1/ZplusXpython/data/20210723_alljake/Hist_MC_ZZ.root",
+        "filepath" : "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/nolepFSRtocalc_mZ1/estimateZX_ZZ.root",
         "label" : "#Z\\gamma^*, ZZ#",
         "fillcolor" : "#99ccff",  # Sky blue.
         "linecolor" : "#000099",  # Dark blue.
@@ -32,7 +43,7 @@ sample_dct = {
         "isData" : False,
         },
     "WZ" : {
-        "filepath" : "/blue/avery/rosedj1/ZplusXpython/data/20210723_alljake/Hist_MC_WZ-ext1-v2.root",
+        "filepath" : "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/nolepFSRtocalc_mZ1/",
         "label" : "#WZ#",
         "fillcolor" : "#cc0099",  # Dark pink.
         "linecolor" : "#990066",  # Another dark pink
@@ -40,7 +51,7 @@ sample_dct = {
         "isData" : False,
         },
     "TT" : {
-        "filepath" : "/blue/avery/rosedj1/ZplusXpython/data/20210723_alljake/Hist_MC_TT.root",
+        "filepath" : "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/nolepFSRtocalc_mZ1/",
         "label" : "#t\\bar{t}+jets#",
         "fillcolor" : "#996666",  # Brown.
         "linecolor" : "#5f3f3f",  # Another brown.
@@ -48,7 +59,7 @@ sample_dct = {
         "isData" : False,
         },
     "DY50" : {
-        "filepath" : "/blue/avery/rosedj1/ZplusXpython/data/20210723_alljake/Hist_MC_DY50.root",
+        "filepath" : "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/nolepFSRtocalc_mZ1/",
         "label" : "#Z+jets#",
         "fillcolor" : "#669966",  # Army green.
         "linecolor" : "#003300",  # Super dark green.
@@ -73,9 +84,71 @@ class ControlRegPlot:
         assert finalstate in ("", "4e", "4mu", "2e2mu", "2mu2e")
         self.controlreg = controlreg
         self.finalstate = finalstate
-        self.h_stack = None
+
+        self.h_stack = self.make_hstack()
+
         self.dataPlot = None
         self.hist_ls = []
+        self.label_ls = []
+
+    def make_hstack(self):
+        """Return a THStack with a TH1 already set to it."""
+        h_stack = ROOT.THStack(self.get_cr_fs_str(), self.get_cr_fs_str())
+        h_addtostack = ROOT.TH1F(
+            f"h_addtostack_{self.get_cr_fs_str()}",  # Internal name.
+            self.get_cr_fs_str(title_friendly=True), # Title.
+            100, 0, 2000)
+        h_addtostack.SetMinimum(-5.608576)
+        h_addtostack.SetMaximum(51.10072)
+        h_addtostack.SetDirectory(0)
+        h_addtostack.SetStats(0)
+        h_addtostack.SetLineColor(TColor.GetColor("#000099"))
+        h_addtostack.SetLineStyle(0)
+        h_addtostack.SetMarkerStyle(20)
+        h_addtostack.GetXaxis().SetLabelFont(42)
+        h_addtostack.GetXaxis().SetLabelOffset(0.007)
+        h_addtostack.GetXaxis().SetLabelSize(0.05)
+        h_addtostack.GetXaxis().SetTitleSize(0.06)
+        h_addtostack.GetXaxis().SetTitleOffset(0.9)
+        h_addtostack.GetXaxis().SetTitleFont(42)
+        h_addtostack.GetYaxis().SetLabelFont(42)
+        h_addtostack.GetYaxis().SetLabelOffset(0.007)
+        h_addtostack.GetYaxis().SetLabelSize(0.05)
+        h_addtostack.GetYaxis().SetTitleSize(0.06)
+        h_addtostack.GetYaxis().SetTitleOffset(1.25)
+        h_addtostack.GetYaxis().SetTitleFont(42)
+        h_addtostack.GetZaxis().SetLabelFont(42)
+        h_addtostack.GetZaxis().SetLabelOffset(0.007)
+        h_addtostack.GetZaxis().SetLabelSize(0.05)
+        h_addtostack.GetZaxis().SetTitleSize(0.06)
+        h_addtostack.GetZaxis().SetTitleFont(42)
+
+        h_stack.SetHistogram(h_addtostack)
+        return h_stack
+
+    def add_sample(self, sub_sample_dict):
+        """
+
+        Parameters
+        ----------
+        sub_sample_dict : dict
+            Example structure:
+            {
+                "filepath" : "/path/to/file.root",
+                "label" : "Data",
+                "sample" : "Data",
+                "isData" : True,
+            },
+        """
+        infile = sub_sample_dict["filepath"]
+        isData = sub_sample_dict["isData"]
+
+        h = self.get_hist(sample, nickname)
+        h_rebin = h.Rebin(len(newbins)-1, f"{h.GetName()}_rebin", newbins)
+        self.store_hist(h_rebin, sample_dct, nickname)
+
+
+
 
     def make_title(self):
         return f"Control Region {self.get_cr_fs_str(title_friendly=True)}"
@@ -211,45 +284,10 @@ class ControlRegPlot:
             words = words.replace("_", " ")
         return words
         
-    def make_hstack(self):
-        """Return a THStack with a TH1 already set to it."""
-        h_stack = ROOT.THStack(self.get_cr_fs_str(), self.get_cr_fs_str())
-        h_addtostack = ROOT.TH1F(
-            f"h_addtostack_{self.get_cr_fs_str()}", self.get_cr_fs_str(title_friendly=True),
-            100, 0, 2000)
-        h_addtostack.SetMinimum(-5.608576)
-        h_addtostack.SetMaximum(51.10072)
-        h_addtostack.SetDirectory(0)
-        h_addtostack.SetStats(0)
-        h_addtostack.SetLineColor(TColor.GetColor("#000099"))
-        h_addtostack.SetLineStyle(0)
-        h_addtostack.SetMarkerStyle(20)
-        h_addtostack.GetXaxis().SetLabelFont(42)
-        h_addtostack.GetXaxis().SetLabelOffset(0.007)
-        h_addtostack.GetXaxis().SetLabelSize(0.05)
-        h_addtostack.GetXaxis().SetTitleSize(0.06)
-        h_addtostack.GetXaxis().SetTitleOffset(0.9)
-        h_addtostack.GetXaxis().SetTitleFont(42)
-        h_addtostack.GetYaxis().SetLabelFont(42)
-        h_addtostack.GetYaxis().SetLabelOffset(0.007)
-        h_addtostack.GetYaxis().SetLabelSize(0.05)
-        h_addtostack.GetYaxis().SetTitleSize(0.06)
-        h_addtostack.GetYaxis().SetTitleOffset(1.25)
-        h_addtostack.GetYaxis().SetTitleFont(42)
-        h_addtostack.GetZaxis().SetLabelFont(42)
-        h_addtostack.GetZaxis().SetLabelOffset(0.007)
-        h_addtostack.GetZaxis().SetLabelSize(0.05)
-        h_addtostack.GetZaxis().SetTitleSize(0.06)
-        h_addtostack.GetZaxis().SetTitleFont(42)
-
-        h_stack.SetHistogram(h_addtostack)
-        return h_stack
-
     def get_hist(self, sample_dct, Nickname):
         """Return hist from infile. If hist is MC, make it pretty."""
-        infile = sample_dct[Nickname]["filepath"]
-        isData = sample_dct[Nickname]["isData"]
-
+        # infile = sample_dct[Nickname]["filepath"]
+        # isData = sample_dct[Nickname]["isData"]
         f = ROOT.TFile(infile, "READ")
 
         histname = f"h1D_mass4l_{self.get_cr_fs_str()}"
@@ -412,12 +450,12 @@ class ControlRegPlot:
         n_bins = int((x_lim[1] - x_lim[0]) / bin_width)
         newbins = np.linspace(x_lim[0], x_lim[1], n_bins + 1)
 
-        self.h_stack = self.make_hstack()
+        # self.h_stack = self.make_hstack()
 
-        for Nickname in sample_dct.keys():
-            h = self.get_hist(sample_dct, Nickname)
-            h_rebin = h.Rebin(len(newbins)-1, f"{h.GetName()}_rebin", newbins)
-            self.store_hist(h_rebin, sample_dct, Nickname)
+        # for nickname in sample_dct.keys():
+        #     h = self.get_hist(sample_dct, nickname)
+        #     h_rebin = h.Rebin(len(newbins)-1, f"{h.GetName()}_rebin", newbins)
+        #     self.store_hist(h_rebin, sample_dct, nickname)
 
         self.make_legend(canv)
 
@@ -429,39 +467,49 @@ class ControlRegPlot:
 def checktype(msg="", obj=None):
     print(f"[INFO] {msg}: obj={obj}, type={type(obj)}")
 
-if __name__ == "__main__":
-    # ControlRegPlot(controlreg="3P1F", finalstate="2e2mu")
+def make_pretty_canvas():
+    """Return a prettied-up TCanvas."""
     ROOT.gROOT.SetBatch(True)
-    canv = ROOT.TCanvas("canv", "myPlots",0,67,600,600)
+    c = ROOT.TCanvas("canv", "myPlots",0,67,600,600)
     setCavasAndStyles("canv",canv,"")   
     ROOT.gStyle.SetOptFit(1)
     ROOT.gStyle.SetOptStat(0)
     ROOT.gStyle.SetOptTitle(0)
     # canv.Range(-102.5,-10.38415,847.5,69.4939) 
-    canv.Range(0,-10.38415,847.5,69.4939)
-    canv.SetFillColor(0)
-    canv.SetBorderMode(0)
-    canv.SetBorderSize(2)
-    canv.SetLeftMargin(0.15)
-    canv.SetRightMargin(0.05)
-    canv.SetTopMargin(0.05)
-    canv.SetBottomMargin(0.13)
-    canv.SetFrameFillStyle(0)
-    canv.SetFrameBorderMode(0)
-    canv.SetFrameFillStyle(0)
-    canv.SetFrameBorderMode(0)
-    canv.SetTickx(1)
-    canv.SetTicky(1)
-    canv.SetLogy()
+    c.Range(0,-10.38415,847.5,69.4939)
+    c.SetFillColor(0)
+    c.SetBorderMode(0)
+    c.SetBorderSize(2)
+    c.SetLeftMargin(0.15)
+    c.SetRightMargin(0.05)
+    c.SetTopMargin(0.05)
+    c.SetBottomMargin(0.13)
+    c.SetFrameFillStyle(0)
+    c.SetFrameBorderMode(0)
+    c.SetFrameFillStyle(0)
+    c.SetFrameBorderMode(0)
+    c.SetTickx(1)
+    c.SetTicky(1)
+    c.SetLogy()
+    return c
 
+if __name__ == "__main__":
+    # ControlRegPlot(controlreg="3P1F", finalstate="2e2mu")
     os.makedirs(os.path.dirname(outfile_path), exist_ok=True)
     check_overwrite(outfile_path, overwrite=overwrite)
 
+    canv = make_pretty_canvas()
     canv.Print(outfile_path + "[")
 
     # for fs in "4e 4mu 2e2mu 2mu2e".split():
         
-    crp = ControlRegPlot(controlreg="2P2F", finalstate="4e")
+    crp = ControlRegPlot(controlreg="2P2F", finalstate="4mu")
+    crp.add_sample(sample_dct["Data"])
+    crp.add_sample(sample_dct["DY50"])
+    crp.make_plot_from_samples()
+
+
+
     crp.make_plot_from_samples(
         canv=canv,
         sample_dct=sample_dct,

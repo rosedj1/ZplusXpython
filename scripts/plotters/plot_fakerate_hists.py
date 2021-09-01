@@ -15,7 +15,7 @@ parser.add_argument('-v', '--verbose',     dest="verbose", action="store_true")
 parser.add_argument('-d', '--infile_data', dest="infile_data", type=str, help='input Data rootfile')
 parser.add_argument('-f', '--infile_fr',   dest="infile_fr", type=str, help='input rootfile with fake rates (WZ removed)')
 parser.add_argument('-o', '--outfile',     dest="outfile", type=str, help='output pdf with fake rate plots')
-parser.add_argument('-x', '--overwrite',   dest="overwrite", action="store_true", help='will overwrite output pdf')
+parser.add_argument('-x', '--overwrite',   dest="overwrite", type=str, help='`1` will overwrite output pdf (0 otherwise)')
 args = parser.parse_args()
 
 infile_data = args.infile_data
