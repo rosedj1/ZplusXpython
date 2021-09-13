@@ -9,7 +9,7 @@ class RelMassErrBinEdges:
 
     def __init__(self):
         self.alphabet_indextup_dct = self.make_alphabet_to_binedge_index_dct()
-        self.mass4lErr_binedge_dct = {
+        self.relmass4lErr_binedge_dct = {
             # 4l final state code : bin edge values
             # WARNING: Filippo is inconsistent about using final state codes!
             # The keys below are 1 less than the typical values.
@@ -81,7 +81,7 @@ class RelMassErrBinEdges:
         ls_of_tup_of_indices = zip(indices[:-1], indices[1:])
         return dict(zip(alphabet_ls, ls_of_tup_of_indices))
 
-    def get_edges_mass4lErr_bin(self, finalstate_dct, fs_str=None, fs_int=None, m4lErr_bin_code=""):
+    def get_edges_mass4lErr_bin(self, finalstate_dct, fs_str=None, fs_int=None, relm4lErr_bin_code=""):
         """
         Return binedges (2-tup) corresponding to final state and relmasserr
         code.
@@ -96,7 +96,7 @@ class RelMassErrBinEdges:
                 "4e"    : 2,
                 "2e2mu" : 3,
                 "2mu2e" : 4
-        m4lErr_bin_code : str
+        relm4lErr_bin_code : str
             The code corresponding to the relative mass error bin.
             Accepts: "A", "B", ..., "I"
         """
@@ -109,7 +109,7 @@ class RelMassErrBinEdges:
         else:
             assert fs_int in (1, 2, 3, 4)
         fs_int -= 1  # Must subtract 1 to match the weird keys.
-        all_binedges_for_fs = self.mass4lErr_binedge_dct[fs_int]
-        ndx1, ndx2 = self.alphabet_indextup_dct[m4lErr_bin_code]
+        all_binedges_for_fs = self.relmass4lErr_binedge_dct[fs_int]
+        ndx1, ndx2 = self.alphabet_indextup_dct[relm4lErr_bin_code]
         binedge_tup = (all_binedges_for_fs[ndx1], all_binedges_for_fs[ndx2])
         return binedge_tup

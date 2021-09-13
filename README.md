@@ -105,6 +105,14 @@ Plot the fake rate histograms (before and after WZ removal) with:
 ZplusXpython/scripts/plotters/plot_fakerate_hists.py
 ```
 
+### Optional - Add New Branches
+
+Add new branches like (`is2P2F`, `isMCzz`, `fr2`, etc.) with:
+
+```bash
+skimmers/skim_ZLL_addbranches.py
+```
+
 ---
 
 ## Estimate Non-ZZ Contribution
