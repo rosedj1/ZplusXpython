@@ -1,16 +1,17 @@
 """Create new root file with copy of old TTree plus a few more branches.
 
+Only keep events which passedZXCRSelection.
+
 New branches added:
 - is2P2F : int
 - is3P1F : int
-# - is3P1F_zz : int
 - isMCzz : int
 - weightwithFRratios : float
     For 3P1F: event.eventWeight * (fr / (1-fr))
     For 2P2F: event.eventWeight * (fr2 / (1-fr2)) * (fr3 / (1-fr3))
     NOTE: 
-        Data returns events with old_weight = 1.
-        ZZ has eventWeight scaled by k_qqZZ_qcd_M * k_qqZZ_ewk * xs * LUMI_INT / sum_weights
+        Data returns events with old_calculated_weight = 1.
+        ZZ has NTuple eventWeight scaled by k_qqZZ_qcd_M * k_qqZZ_ewk * xs * LUMI_INT / sum_weights
 """
 import ROOT as rt
 import os
@@ -23,11 +24,11 @@ from vukasin_version_of_code.analyzeZX import setNEvents
 from Utils_Python.Utils_Files import check_overwrite
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--infile',            type=str, dest="infile", help="input root file")
-parser.add_argument('-r', '--infile_fakerate',   type=str, dest="infile_fr", help="input root file with fake rate hists (WZ removed)")
-parser.add_argument('-o', '--outfile',           type=str, dest="outfile", help="output rootfile")
-parser.add_argument('-n', '--nickname',           type=str, dest="name", help="nickname of file/process")
-parser.add_argument('-x', '--overwrite',         dest="overwrite", action="store_true", help="overwrite output file (1) or not (0)")
+parser.add_argument('-i', '--infile',          type=str, dest="infile", help="input root file")
+parser.add_argument('-r', '--infile_fakerate', type=str, dest="infile_fr", help="input root file with fake rate hists (WZ removed)")
+parser.add_argument('-o', '--outfile',         type=str, dest="outfile", help="output rootfile")
+parser.add_argument('-n', '--nickname',        type=str, dest="name", help="nickname of file/process ('ZZ' or 'Data')")
+parser.add_argument('-x', '--overwrite',       dest="overwrite", action="store_true", help="overwrite output file (1) or not (0)")
 args = parser.parse_args()
 
 infile = args.infile
@@ -41,7 +42,7 @@ name = args.name
 # infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/nolepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
 # infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
 
-isMCzz = 1 if "ZZ" in name else 0
+isMCzz = 1 if name in "ZZ" else 0
 if "/" in new_rootfile:
     os.makedirs(os.path.dirname(new_rootfile), exist_ok=True)
 
@@ -57,11 +58,12 @@ def get_evt_weight(name, evt, isMCzz, LUMI_INT=57750):
     """
     if name in "Data":
         return 1
-    wt = evt.eventWeight
-    sum_weights = setNEvents(name)
-    if isMCzz:
+    elif name in "ZZ":
+        wt = evt.eventWeight
+        sum_weights = setNEvents(name)
         return wt * evt.k_qqZZ_qcd_M * evt.k_qqZZ_ewk * (1.256 * LUMI_INT) / sum_weights
-    return 0
+    else:
+        return 0
     # if (name == "DY10"):
     #     return wt * 18610.0 * LUMI_INT/sum_weights
     # if (name == "DY50"):
@@ -134,7 +136,8 @@ newtree.Branch("fr3", ptr_fr3, "fr3/F")
 print("Adding new branches...")
 n_tot = t.GetEntries()
 for ct, evt in enumerate(t, 1):
-    if not evt.passedZXCRSelection: continue
+    if not evt.passedZXCRSelection:
+        continue
     if (ct % 10000) == 0: print(f"  Event {ct}/{n_tot}")
     # if (ct % 10000) == 0: break
     # Get kinematics of 4 leptons from "Higgs mass candidate".
@@ -151,7 +154,7 @@ for ct, evt in enumerate(t, 1):
         lep_iso.append( evt.lep_RelIsoNoFSR[evt.lep_Hindex[k]] )
     # See which leptons from Z2 failed.
     n_fail_code = check_which_Z2_leps_failed(lep_tight=lep_tight, idL=idL, lep_iso=lep_iso)
-    old_weight = get_evt_weight(name=name, evt=evt, isMCzz=isMCzz, LUMI_INT=57750)
+    old_calculated_weight = get_evt_weight(name=name, evt=evt, isMCzz=isMCzz, LUMI_INT=57750)
     # 3P1F.
     if (n_fail_code == 2) or (n_fail_code == 3):
         is2P2F = 0
@@ -164,7 +167,7 @@ for ct, evt in enumerate(t, 1):
                 h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE
                 )
             fr3 = 0
-            new_weight = (fr2 / (1-fr2)) * old_weight
+            new_weight = (fr2 / (1-fr2)) * old_calculated_weight
         else:
             # Second lep from Z2 failed.
             fr2 = 0
@@ -172,7 +175,7 @@ for ct, evt in enumerate(t, 1):
                 idL[3], pTL[3], etaL[3],
                 h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE
                 )
-            new_weight = (fr3 / (1-fr3)) * old_weight
+            new_weight = (fr3 / (1-fr3)) * old_calculated_weight
     # 2P2F.
     elif n_fail_code == 5:
         # Both leps failed.
@@ -181,7 +184,7 @@ for ct, evt in enumerate(t, 1):
         # is3P1F_zz = 0
         fr2 = getFR(idL[2], pTL[2], etaL[2], h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE)
         fr3 = getFR(idL[3], pTL[3], etaL[3], h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE)
-        new_weight = (fr2 / (1-fr2)) * (fr3 / (1-fr3)) * old_weight
+        new_weight = (fr2 / (1-fr2)) * (fr3 / (1-fr3)) * old_calculated_weight
     # Fill branches.
     ptr_is2P2F[0] = is2P2F
     ptr_is3P1F[0] = is3P1F
@@ -192,4 +195,5 @@ for ct, evt in enumerate(t, 1):
     ptr_fr3[0] = fr3
     newtree.Fill()
 
+print(f"Writing new root file:\n{new_rootfile}")
 newtree.Write()

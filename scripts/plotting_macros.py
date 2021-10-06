@@ -24,8 +24,6 @@ class Sample:
         self.sample_type = sample_type
         self.isData = isData
 
-    
-
 sample_dct = {
     # Nickname : {"filepath", "label", "fillcolor", "linecolor", "isData"}
     "Data" : Sample(
@@ -104,7 +102,7 @@ class ControlRegPlot:
         h_addtostack.SetStats(0)
         h_addtostack.SetLineColor(TColor.GetColor("#000099"))
         h_addtostack.SetLineStyle(0)
-        h_addtostack.SetMarkerStyle(20)
+        h_addtostack.SetMarkerStyle(20)  # Black data points.
         h_addtostack.GetXaxis().SetLabelFont(42)
         h_addtostack.GetXaxis().SetLabelOffset(0.007)
         h_addtostack.GetXaxis().SetLabelSize(0.05)
