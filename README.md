@@ -15,8 +15,10 @@ This repo contains scripts to:
 
 1. Use the UFHZZ4LAnalyzer to skim the MiniAOD files (Data or MC).
 1. Combine files (using `hadd`) of the same process (e.g., MuonEG runs A-D).
+   - Use `notebooks/slurm_script_maker.ipynb` to submit `hadd` jobs to SLURM.
 1. Remove duplicate events from Data with:
-`skimmers/removeDuplicatesH4l2018.py`.
+<!-- `skimmers/removeDuplicatesH4l2018.py`. -->
+`skimmers/removeDuplicatesH4l2018.ipynb`
 1. Combine Data files into a single file (e.g. `Data_*_NoDuplicates.root`).
 1. Select only the important branches with:
 `skimmers/apply_preselections_vxbs.C`.
@@ -34,7 +36,6 @@ For historical purposes, let it be noted that the CJLST group uses
 [these values](https://github.com/CJLST/ZZAnalysis/blob/Run2_CutBased/AnalysisStep/test/prod/samples_2018_MC.csv).
 
 You can also find cross sections associated with the generated samples, found on McM:
-
 
 1. Going to https://cms-pdmv.cern.ch/mcm/ > Request > Output Dataset
 1. Search for your data set by providing the data set name.
