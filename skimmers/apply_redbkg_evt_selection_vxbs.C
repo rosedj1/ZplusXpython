@@ -50,7 +50,7 @@ void apply_redbkg_evt_selection_vxbs(
   // TString infile4 = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/SingleMuon_2018.root";
     // outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZL_ZLL_CR/" + outfilename;
     // outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/" + outfilename;
-    intree = "passedEvents";
+    intree = "Ana/passedEvents";
   } else {
     // MC.
     // infilename = "FILENAME"; // Will be replaced by bash script.
