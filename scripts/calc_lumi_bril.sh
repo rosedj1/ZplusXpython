@@ -12,7 +12,7 @@
 # UPDATED: 
 ##############################################################################
 # The name of the file to store each L_int.
-outfile="lumi_2018_test.txt"
+outfile="lumi_2018_test2.txt"
 lumifile="processedLumis.json"
 # wildcard_file_list=crab_[DEMS][oGui]*
 wildcard_file_list=( crab_SingleMuon* )

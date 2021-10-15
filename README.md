@@ -23,10 +23,8 @@ This repo contains scripts to:
 1. Combine data files into a single file (e.g. `Data2018_Duplicates.root`) using `hadd`.
    - You can probably do it locally, but if the files are still large, use:
       - `hadders/haddfiles_on_slurm.ipynb`
-1. Remove duplicate events with one of these:
+1. Remove duplicate events with:
    - `skimmers/remove_duplicates.py`
-   - `skimmers/remove_duplicates.sbatch` (using SLURM)
-   - `skimmers/remove_duplicates.ipynb`
 <!-- 1. [OPTIONAL] Combine Data files into a single file (e.g. `Data_*_NoDuplicates.root`).
    - May not be possible due to memory issues! May get `'bytecount too large'` error. 
    - Work around: skim these big files, hadd together, and THEN remove duplicates. -->
@@ -57,7 +55,7 @@ file. Click this LHEGS file name.
 1. Then Select View > Generator parameters.
 The cross section is in the 'Generator Parameters' column to the right.
 
-Put the cross section into the dict in `physics.py`.
+Put cross sections in `analysis_params.py`.
 
 ### L_int for Data
 
@@ -69,15 +67,15 @@ crab report -d <crab_dir>
 
 This produces the file `<crabdir>/results/processedLumis.json`.
 It also tells you the 'Number of events read' which is needed for scaling MC.
-Put this number of events in `physics.py`.
+Put this number of events in `analysis_params.py`.
 Now do:
 
 ```bash
 brilcalc lumi -c web -i <crabdir>/results/processedLumis.json
 ```
 
-Add up the L_int for all data sets of a _single kind_ (e.g. only SingleMuon).
-Put this number in `physics.py`
+Add up the **L_int** for all data sets of a _single kind_ (e.g. only SingleMuon).
+Put this number in `analysis_params.py`
 
 ---
 

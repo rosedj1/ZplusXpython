@@ -1,3 +1,8 @@
+/**
+ * This code is unusably slow!
+ * Instead use: ZplusXpython/skimmers/remove_duplicates.py
+ */
+
 #include "TTree.h"
 #include "TFile.h"
 #include <vector>
@@ -34,23 +39,25 @@ int remove_duplicates() {
 
     n_evts_max = tree->GetEntries();
     // Vector to hold keys of unique events: `Run:LumiSect:Event`
-    vector<TString> key_vec;
-    // TString key_arr[n_evts_max];
+    // vector<TString> key_vec;
+    // Array to hold keys of unique events: `Run:LumiSect:Event`
+    TString good_evt_arr[n_evts_max];
 
     // Event loop.
     for (unsigned int k = 0 ; k < n_evts_max; k++) {
     // for (unsigned int k; k < n_evts_max; k++) {
-        if ((k % 1000) == 0) {
+        if ((k % 10000) == 0) {
             cout << "Event: " << k+1 << "/" << n_evts_max << endl;
         }
         dup_found = false;
 
         tree->GetEntry(k);
 
-        key = Form("%llu:%llu:%llu", Run, LumiSect, Event);
-        // TString* arr_p = std::find(std::begin(key_arr), std::end(key_arr), key);
+        // key = Form("%llu:%llu:%llu", Run, LumiSect, Event);
+        // TString* arr_p = std::find(std::begin(good_evt_arr), std::end(good_evt_arr), key);
 
         // If the key is already in the array, this is a duplicate event; skip it!
+        /*
         for (const auto &item : key_vec) {
             if (item == key) {
                 // Duplicate found.
@@ -60,16 +67,18 @@ int remove_duplicates() {
                 break;
             }
         }
-        /*
+        */
         //--- Array-based method ---//
-        // Also skip if an element of the array is blank
+        // Check if this new event matches any of the saved good events.
+        // Skip this new event if an element of the array is blank
         // (this is part of the array which has not yet been filled).
-        for (unsigned int j = 0; j < n_evts_max; j++) {
-            if (key_arr[j] == "") {
+
+        // NOTE: For any event, Run, LumiSect, Event never equal zero!
+        for (unsigned int good_evt_elem = 0; j < last_filled_elem; j++) {
+            if (good_evt_arr[good_evt_elem] == 0) {
                 // Reached unexplored part of array.
                 break;
             }
-            */
         // }
         if (dup_found) {
             continue;

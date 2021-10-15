@@ -1,6 +1,6 @@
 from ROOT import TFile
 from helpers.analyzeZX import analyzeZX
-from constants.physics import LUMI_INT_2018_Jake, LUMI_INT_2018_Vukasin, n_totevts_dataset_dct, n_sumgenweights_dataset_dct
+from constants.analysis_params import LUMI_INT_2018_Jake, LUMI_INT_2018_Vukasin, n_totevts_dataset_dct, n_sumgenweights_dataset_dct
 
 out_rootfile_dir = "/blue/avery/rosedj1/ZplusXpython/data/20210802_alljake"
 suffix = ""

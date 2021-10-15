@@ -3,7 +3,7 @@ import ROOT
 import numpy as np
 from ROOT import TColor
 from helpers.analyzeZX import setCavasAndStyles
-from constants.physics import LUMI_INT_2018_Jake
+from constants.analysis_params import LUMI_INT_2018_Jake
 from Utils_Python.Utils_Files import check_overwrite
 
 x_lim = [70.0, 170.0]  # GeV.
