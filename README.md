@@ -81,6 +81,11 @@ Take the average or the min and put this number in
 
 Get the effective number of MC events (the sum of gen weights) with:
    - `scripts/helpers/print_sumWeights.py`
+
+```python
+h = f.Get('Ana/sumWeights')
+h.GetBinContent(1)
+```
    
 Put the number of events in `constants/analysis_params.py`.
 
