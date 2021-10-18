@@ -25,7 +25,7 @@ import ROOT as rt
 import numpy as np
 # from Utils_Python.Utils_Files import check_overwrite
 from scripts.helpers.MC_composition import PartOrigin
-from constants.analysis_params import xs_dct_jake, MZ_PDG, LUMI_INT_2018_Jake, n_totevts_dataset_dct, n_sumgenweights_dataset_dct
+from constants.analysis_params import xs_dct_jake, MZ_PDG, LUMI_INT_2018_Jake, n_sumgenweights_dataset_dct_jake
 # from HiggsMassMeasurement.Utils_ROOT.ROOT_classes import make_TH1F
 from Utils_ROOT.ROOT_classes import make_TH1F
 from Utils_Python.Utils_Files import check_overwrite
@@ -547,8 +547,8 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
             
         # Get total number of events from MC/Data files.
         # Use the L_int and xs to determine n_expected and event weights.
-        # n_dataset_tot = float(n_totevts_dataset_dct[Nickname])
-        n_dataset_tot = float(n_sumgenweights_dataset_dct[Nickname])
+        # n_dataset_tot = floa[Nickname])
+        n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[Nickname])
         weight = get_evt_weight(isData, xs_dct_jake, Nickname, lumi, event, n_dataset_tot, wgt_from_ntuple=wgt_from_ntuple)
 
         #######################################

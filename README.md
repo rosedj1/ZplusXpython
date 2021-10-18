@@ -55,7 +55,7 @@ file. Click this LHEGS file name.
 1. Then Select View > Generator parameters.
 The cross section is in the 'Generator Parameters' column to the right.
 
-Put cross sections in `analysis_params.py`.
+Put cross sections in `constants/analysis_params.py`.
 
 ### L_int for Data
 
@@ -66,16 +66,23 @@ crab report -d <crab_dir>
 ```
 
 This produces the file `<crabdir>/results/processedLumis.json`.
-It also tells you the 'Number of events read' which is needed for scaling MC.
-Put this number of events in `analysis_params.py`.
-Now do:
+Then do:
 
 ```bash
 brilcalc lumi -c web -i <crabdir>/results/processedLumis.json
 ```
 
 Add up the **L_int** for all data sets of a _single kind_ (e.g. only SingleMuon).
-Put this number in `analysis_params.py`
+Each data set should give a similar value as the other data sets.
+Take the average or the min and put this number in
+`constants/analysis_params.py`
+
+### Sum GenWeights for MC
+
+Get the effective number of MC events (the sum of gen weights) with:
+   - `scripts/helpers/print_sumWeights.py`
+   
+Put the number of events in `constants/analysis_params.py`.
 
 ---
 
@@ -85,7 +92,7 @@ Use the Z+L background control region (CR) to calculate how often a non-prompt
 lepton passes tight selection:
 
 ```bash
-python main_FR_CR.py
+python scripts/main_FR_CR.py
 ```
 
 - Produces a `.root` file which contains histograms of the total number of

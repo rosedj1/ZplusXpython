@@ -7,8 +7,8 @@ MZ_PDG = 91.1876  # GeV
 
 LUMI_INT_2016 = -1  # pb^{-1}
 LUMI_INT_2017 = -1  # pb^{-1}
-# LUMI_INT_2018_Jake = 57750  # pb^{-1}, PARTIALLY-PROCESSED 2018 DATA.
-LUMI_INT_2018_Jake = 57750  # pb^{-1}
+LUMI_INT_2018_Jake_OLD = 57750  # pb^{-1}, PARTIALLY-PROCESSED 2018 DATA.
+LUMI_INT_2018_Jake = 58474  # pb^{-1}, PARTIALLY-PROCESSED 2018 DATA.
 LUMI_INT_2018_Vukasin = 59700  # pb^{-1}
 LUMI_INT_2018_TWiki = 59740  # pb^{-1}, from Ref [1].
 
@@ -57,15 +57,40 @@ n_totevts_dataset_dct = {
     'Data'       : 1,  # Can be anything.
 }
 
-n_sumgenweights_dataset_dct = {
+n_sumgenweights_dataset_dct_jake = {
     # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
-    'DY10'       : -1,  # Not yet analyzed. Vukasin=37951928.0
-    'DY50'       : 127085880.0, # Vukasin=99795992.0
-    'TT'         : 62977964.0, # Vukasin=63667448.0
+    'DY10'       : -1,  # Not yet analyzed.
+    'DY50'       : 127085880.0,
+    'TT'         : 62977964.0,
     'WZ'         : 6397150.0,  # v1.
     'WZ-ext1-v2' : 6967813.0,
     'WZ_vukasin' : 6739437,
-    'ZZ'         : 95655496.0,  # Vukasin=97457264.0
+    'ZZ'         : 95655496.0,
+    'Data'       : 1,  # Can be anything.
+}
+
+n_sumgenweights_dataset_dct_vukasin = {
+    # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
+    'DY10'       : 37951928.0,
+    'DY50'       : 99795992.0,
+    'TT'         : 63667448.0,
+    'WZ'         : 6397150.0,  # v1.
+    'WZ-ext1-v2' : 6967813.0,
+    'WZ_vukasin' : 6739437,
+    'ZZ'         : 97457264.0,
+    'Data'       : 1,  # Can be anything.
+}
+
+#--- OLD 2018 DATA (not fully processed) ---#
+n_totevts_dataset_dct_OLD = {
+    # 'Nickname' : n_evts in MC file. Obtained from `crab report -d <dir>`.
+    'DY10'       : -1,  # Not yet analyzed.
+    'DY50'       : 187531221,
+    'TT'         : 63405000,
+    'WZ'         : 10086433,  # v1.
+    'WZ-ext1-v2' : 11117763,
+    'WZ_vukasin' : 6739437,
+    'ZZ'         : 96412000,
     'Data'       : 1,  # Can be anything.
 }
 
