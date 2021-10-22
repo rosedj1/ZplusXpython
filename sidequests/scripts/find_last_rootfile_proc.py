@@ -20,7 +20,6 @@ def get_evtid_from_rootfilename(name):
     return ":".join(parts[-3::])
 
 all_rootfile_dct = open_json("../data/json/elisa_unique_evts_id_rootfile_3p1f.json")
-
 proc_rootfiles = glob("../rootfiles/*.root")
 
 proc_rootfiles_evtid_ls = [get_evtid_from_rootfilename(name) for name in proc_rootfiles]
@@ -30,18 +29,3 @@ for ct, evt_id in enumerate(all_rootfile_dct.keys()):
         print(f"Couldn't find {evt_id} in ../rootfiles/")
         print(f"Last left off at index: {ct}")
         break
-
-# In [2]: import sys
-#    ...: from glob import glob
-#    ...: from pprint import pprint
-#    ...: sys.path.append("/afs/cern.ch/work/d/drosenzw/HiggsMassMeasurement/")
-#    ...: sys.path.append("/afs/cern.ch/work/d/drosenzw/zplusx/")
-#    ...: from Utils_Python.Utils_Files import open_json
-
-# In [3]: dct = open_json("../data/json/elisa_unique_evts_id_rootfile_3p1f.json")
-
-# In [4]: missing_key = "317182:866:1209428434"
-
-# In [5]: for ct, k in enumerate(dct.keys()):
-#    ...:     if k == missing_key:
-#    ...:         print(ct)

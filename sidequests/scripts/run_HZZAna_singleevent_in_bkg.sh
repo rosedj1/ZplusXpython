@@ -25,13 +25,13 @@
 # Elisa's 2P2F has 2147 unique events.
 
 # Inclusive on both ends!
-for num in {135..630}; do
+for num in {407..630}; do
 # for num in {0..2146}; do
 # for num in {0..630}; do
     # echo $num
     if (( $num % 4 == 0 )) && [ $num -ne 0 ]; then
-        echo "...Sleeping for 180 sec..."
-        sleep 180
+        echo "...Sleeping for 240 sec..."
+        sleep 240
     fi
     echo "Running code using index: ${num}"
     echo $(python3 make_rootfiles_from_evtid_dct.py -i ${num}) > "../output/txt/index${num}_from_3p1f_dct.txt" &
