@@ -9,7 +9,6 @@
 #-----------------------------------------------------------------------------
 rootfile_dir="/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/rootfiles/"
 outdir="/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/rootfiles/haddedfiles"
-outfile_basename="elisa_unique_115events.root"
 
 files_to_hadd=$( find ${rootfile_dir}/elisa*.root -size +50k )
 
