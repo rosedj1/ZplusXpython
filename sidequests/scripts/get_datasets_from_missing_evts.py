@@ -1,6 +1,7 @@
 """
-PURPOSE: Make a json file which stores (Run:LumiSect:Event) with the
-         associated root files and data set.
+PURPOSE: Take a txt file of "event ID" (Run:LumiSect:Event) values and search
+         a list of data sets in which to find the corresponding event. Save
+         the LFN of the root file and the data set name to a json file.
 SYNTAX:  python3 <this_script>.py
 NOTE:
     - Before running script, do: `voms-proxy-init`
@@ -10,22 +11,22 @@ NOTE:
       TODO: Add a try/except block to catch the error.
 AUTHOR:  Jake Rosenzweig
 CREATED: 2021-10-18
-UPDATED: 2021-10-20
+UPDATED: 2021-10-27
 """
 import sys
 from pprint import pprint
-sys.path.append("/afs/cern.ch/work/d/drosenzw/HiggsMassMeasurement/")
-sys.path.append("/afs/cern.ch/work/d/drosenzw/zplusx/")
 from Utils_Python.Utils_Files import save_to_json, check_overwrite
 from Utils_Python.printing import print_header_message
-from ZplusXpython.sidequests.data.datasets import dataset_tup_2018
-from ZplusXpython.sidequests.classes.filemanager import DataSetFinder
+from sidequests.data.datasets import dataset_tup_2018
+from sidequests.classes.filemanager import DataSetFinder
 
-infile_txt_elisa_unique_3p1f = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/findmissingevents_comparetoelisa/jakes_new2018data/CRLLos_3P1F_listOfEvents_unique.txt"
-infile_txt_elisa_unique_2p2f = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/findmissingevents_comparetoelisa/jakes_new2018data/CRLLos_2P2F_listOfEvents_unique.txt"
+infile_txt_elisa_unique_3p1f       = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_3P1F_listOfEvents_unique.txt"
+infile_txt_elisa_unique_2p2f       = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_2P2F_listOfEvents_unique.txt"
+infile_txt_elisa_commonwithherself = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_2P2F_3P1F_listOfEvents_unique_commontobothCRs.txt"
 
-outfile_json_3p1f = "../json/TRASH/elisa_unique_evts_id_rootfile_3p1f_test.json"
-outfile_json_2p2f = "../json/TRASH/elisa_unique_evts_id_rootfile_2p2f_test.json"
+outfile_json_3p1f = "../data/json/elisa_unique_evts_id_rootfile_3p1f.json"
+outfile_json_2p2f = "../data/json/elisa_unique_evts_id_rootfile_2p2f.json"
+outfile_json_elisa_commonwithherself = "../data/json/elisa_unique_2p2f_3p1f_commontobothCRs_evts_id_rootfile.json"
 
 overwrite = 0
 
@@ -129,14 +130,18 @@ def write2json_evtid2rootfile_dct(infile_txt, outfile_json, dataset_tup, evt_sta
         If `-1` then process all events.
     """
     check_overwrite(outfile_json, overwrite=overwrite)
-    print(f"Extracting event list from:\n{infile_txt}")
-    print(f"Will write JSON file:\n{outfile_json}")
-    print(f"Using data sets:")
+    print(
+        f"Extracting event list from:\n{infile_txt}\n"
+        f"Will write JSON file:\n{outfile_json}\n"
+        f"Using data sets:"
+        )
     pprint(dataset_tup)
     evt_lsoftup = get_list_of_tuples(get_list_of_lines(infile_txt))
     dct = make_evtid2rootfile_dct(evt_lsoftup, dataset_tup, evt_start=evt_start, evt_stop=evt_stop)
     save_to_json(dct, outfile_json, sort_keys=False, overwrite=True)
 
 if __name__ == "__main__":
-    write2json_evtid2rootfile_dct(infile_txt=infile_txt_elisa_unique_3p1f, outfile_json=outfile_json_3p1f, dataset_tup=dataset_tup_2018, evt_start=evt_start, evt_stop=evt_stop, overwrite=overwrite)
-    write2json_evtid2rootfile_dct(infile_txt=infile_txt_elisa_unique_2p2f, outfile_json=outfile_json_2p2f, dataset_tup=dataset_tup_2018, evt_start=evt_start, evt_stop=evt_stop, overwrite=overwrite)
+    # write2json_evtid2rootfile_dct(infile_txt=infile_txt_elisa_unique_3p1f, outfile_json=outfile_json_3p1f, dataset_tup=dataset_tup_2018, evt_start=evt_start, evt_stop=evt_stop, overwrite=overwrite)
+    # write2json_evtid2rootfile_dct(infile_txt=infile_txt_elisa_unique_2p2f, outfile_json=outfile_json_2p2f, dataset_tup=dataset_tup_2018, evt_start=evt_start, evt_stop=evt_stop, overwrite=overwrite)
+    
+    write2json_evtid2rootfile_dct(infile_txt=infile_txt_elisa_commonwithherself, outfile_json=outfile_json_elisa_commonwithherself, dataset_tup=dataset_tup_2018, evt_start=evt_start, evt_stop=evt_stop, overwrite=overwrite)

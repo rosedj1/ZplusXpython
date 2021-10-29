@@ -5,12 +5,13 @@
 # NOTE:
 # AUTHOR:  Jake Rosenzweig
 # CREATED: 2021-10-21
-# UPDATED: 
+# UPDATED: 2021-10-27
 #-----------------------------------------------------------------------------
 rootfile_dir="/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/rootfiles/"
 outdir="/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/rootfiles/haddedfiles"
 
-files_to_hadd=$( find ${rootfile_dir}/elisa*.root -size +50k )
+globname="elisa_unique_2p2f_3p1f_commontobothCRs"
+files_to_hadd=$( find ${rootfile_dir}/${globname}*.root -size +50k )
 
 echo "Files to be hadded:"
 echo $files_to_hadd
@@ -19,4 +20,4 @@ arr=( $files_to_hadd )
 len=${#arr[@]}
 echo "Number of files: ${len}"
 
-hadd "${outdir}/elisa_unique_${len}events.root" ${files_to_hadd}
+hadd "${outdir}/${globname}_${len}events.root" ${files_to_hadd}

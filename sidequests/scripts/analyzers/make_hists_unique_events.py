@@ -97,24 +97,26 @@ def main():
 
     print("Looping over events.")
     n_4lep_evts = 0
-    for ct, evt in enumerate(t):
-        if ct == 10: break
+    for evt_num, evt in enumerate(t):
+        if evt_num == 10: break
         n_leps = len(list(evt.lep_pt))
         h_dct["n_leps_per_event"].Fill(n_leps)
 
+        if -1 in list(evt.lep_Hindex):
+            n_4lep_evts_with_bad_lep_Hindex
         if n_leps != 4:
             continue
         n_4lep_evts += 1
 
-        for lep_index in range(4):
-            index_in_vec = evt.lep_Hindex[lep_index]
-            print(f"lep_index: {lep_index}")
-            print(f"index_in_vec: {index_in_vec}")
-
-            h_dct[f"lep_tightId_{lep_index}"].Fill(evt.lep_tightId[index_in_vec])
-            h_dct[f"lep_id_{lep_index}"].Fill(evt.lep_id[index_in_vec])
-            h_dct[f"lep_RelIsoNoFSR_{lep_index}"].Fill(evt.lep_RelIsoNoFSR[index_in_vec])
-            h_dct[f"lep_pt_{lep_index}"].Fill(evt.lep_pt[index_in_vec])
+        if -1 in list(evt.lep_Hindex):
+            n_4lep_evts_with_bad_lep_Hindex += 1
+            continue
+        for ct, index_in_vec in enumerate(evt.lep_Hindex):
+            # NEED TO ACCOUNT FOR lep_Hindex being -1.
+            h_dct[f"lep_tightId_{ct}"].Fill(evt.lep_tightId[index_in_vec])
+            h_dct[f"lep_id_{ct}"].Fill(evt.lep_id[index_in_vec])
+            h_dct[f"lep_RelIsoNoFSR_{ct}"].Fill(evt.lep_RelIsoNoFSR[index_in_vec])
+            h_dct[f"lep_pt_{ct}"].Fill(evt.lep_pt[index_in_vec])
 
     print(f"Number of 4-lep events: {n_4lep_evts}")
     hist_val = h_dct["n_leps_per_event"].GetBinContent(5)  # 5th bin. Remember that 0 is underflow.

@@ -1,30 +1,33 @@
 """
-PURPOSE: Make root files from specific data events, using Run:LumiSect:Event.
+------------------------------------------------------------------------------
+PURPOSE: Prepares a template and uses the HZZ Analyzer on a single root file
+ Make a single root file from specific data events, using Run:LumiSect:Event.
 SYNTAX:  python3 <this_script>.py
-NOTE: Before running script, do:
-    ```
-    voms-proxy-init
-    cmsenv
-    ```
-AUTHOR: Jake Rosenzweig
+NOTE:    Before running script, do:
+            ```
+            voms-proxy-init
+            cmsenv
+            ```
+    - If you want to use this file on multiple root files at once, use:
+      sidequests/scripts/run_HZZAna_singleevent_in_bkg.sh
+AUTHOR:  Jake Rosenzweig
 CREATED: 2021-10-20
-UPDATED: 2021-10-21
+UPDATED: 2021-10-27
+------------------------------------------------------------------------------
 """
 import os
 import sys
 import argparse
 # import ROOT
-sys.path.append("/afs/cern.ch/work/d/drosenzw/HiggsMassMeasurement/")
-sys.path.append("/afs/cern.ch/work/d/drosenzw/zplusx/")
 from Utils_Python.Utils_Files import open_json, check_overwrite, replace_value
 from Utils_Python.Commands import shell_cmd
-from ZplusXpython.sidequests.classes.filemanager import TemplateManager
+from sidequests.classes.filemanager import TemplateManager
 
 overwrite = 1
-infile_json = "../data/json/elisa_unique_evts_id_rootfile_3p1f.json"
-output_rootfile_basename = "elisa_unique_event_3p1f"
+infile_json = "../data/json/elisa_unique_2p2f_3p1f_commontobothCRs_evts_id_rootfile.json"
+output_rootfile_basename = "elisa_unique_2p2f_3p1f_commontobothCRs"
 
-input_template = "/afs/cern.ch/work/d/drosenzw/zplusx/CMSSW_10_6_12/src/UFHZZAnalysisRun2/UFHZZ4LAna/python/templateData_102X_Legacy18_2l_cfg_template.py"
+input_template      = "/afs/cern.ch/work/d/drosenzw/zplusx/CMSSW_10_6_12/src/UFHZZAnalysisRun2/UFHZZ4LAna/python/templateData_102X_Legacy18_2l_cfg_template.py"
 output_template_dir = "/afs/cern.ch/work/d/drosenzw/zplusx/CMSSW_10_6_12/src/UFHZZAnalysisRun2/UFHZZ4LAna/python/template_copies/"
 output_rootfile_dir = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/rootfiles/"
 output_txt_dir      = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/output/txt/"
