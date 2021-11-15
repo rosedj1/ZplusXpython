@@ -10,14 +10,6 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TString.h"
-// #include <cstdlib>
-// #include "TH1F.h"
-// #include "TDirectory.h"
-// #include "TChain.h"
-// #include "TTreeReader.h"
-// #include "TTreeReaderValue.h"
-// #include "TTreeReaderArray.h"
-// #include <numeric>
 
 using namespace std;
 
@@ -25,14 +17,17 @@ void skim_useless_branches() {
   /**
    * 
    */
-  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/MuonEG.root";
-  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/MuonEG_skimmed_test01.root";
+  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon.root";
+  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon_skimmed.root";
   TString intree = "Ana/passedEvents";
+  unsigned int n_evts_to_keep = -1;  // Use -1 for "all".
+  bool verbose = true;
 
   TFile *tf = new TFile(infile, "READ");
   TTree *tree = (TTree*)tf->Get(intree);
   cout << "Successfully opened file:\n" << infile << endl;
   cout << "TTree has " << tree->GetEntries() << " entries." << endl;
+  // cout << "Saving " << n_evts_to_keep << "(" << n_evts_to_keep/tree->GetEntries() << ")" << " entries." << endl;
 
   vector<TString> branches{
     "Run",
@@ -232,13 +227,14 @@ void skim_useless_branches() {
   // Turn off all branches, then manually turn on the ones to keep.
   tree->SetBranchStatus("*",0);//1);
 
+  if (verbose) cout << "Saving branches:" << endl;
   for (auto & branch : branches) {
+    if (verbose) cout << "  " << branch << endl;
     tree->SetBranchStatus(branch, 1);
   }
 
   TFile *tf_out = new TFile(outfile, "RECREATE");
-  // TTree *newtree = new TTree(intree, intree);
-  TTree *newtree = tree->CloneTree(100);
+  TTree *newtree = tree->CloneTree(n_evts_to_keep);
 
   newtree->Write();
   cout << "New TTree saved to file:\n" << outfile << endl;
