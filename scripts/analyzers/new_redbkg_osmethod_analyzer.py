@@ -2,6 +2,7 @@
 # ============================================================================
 # Author: Jake Rosenzweig
 # Created: 2021-11-16
+# Updated: 2021-11-17
 # ============================================================================
 
 # TODO:
@@ -17,16 +18,17 @@
 from Particles import MyParticle#, MyMuon, MyElectron
 from pprint import pprint
 from ROOT import TFile, Math
+import numpy as np
 
 verbose = 1
 start_at_evt = 27
 break_at_evt = 28
-force_z1_leps_tightID = False
+force_z1_leps_tightID = True
 force_z1_leps_reliso = False
 
 # NOTE: All leptons in Filippo's root file already pass SIP3D, dxy, and dz cuts.
 # This is typical of root files produced with the HZZ4L Analyzer.
-infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/filippo/rootfiles/Data_2018_03Nov.root"
+infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/fullstats/filippo/rootfiles/Data_2018_03Nov.root"
 f_filippo_data2018 = TFile.Open(infile)
 tree = f_filippo_data2018.Get("passedEvents")
 print(f"Successfully opened:\n{infile}")
@@ -84,10 +86,16 @@ def pass_lepton_kinem_selection(lid, lpt, leta):
 
 #     return z1_cand_ls
 
-evt_info_d = {
-    "n_evts_lt4_leps" : 0,
-    "n_evts_ge4_passing_leps" : 0,
-}
+evt_info_tup = (
+    # These will be dict keys whose values start at 0 and then increment.
+    "n_evts_eq4_leps",
+    "n_evts_ne4_leps",
+    "n_evts_lt4_leps",
+    "n_evts_ge4_passing_leps",
+    "n_evts_passedFullSelection",
+    "n_evts_passedZXCRSelection",
+)
+evt_info_d = {s : 0 for s in evt_info_tup}
 
 n_tot = tree.GetEntries()
 for evt_num in range(start_at_evt, n_tot):
@@ -95,10 +103,24 @@ for evt_num in range(start_at_evt, n_tot):
         break
     tree.GetEntry(evt_num)
 
-    # Ensure at least 4 leptons in event.
+    # We are only interested events that are NOT SR, ZXCRSelection, etc.:
+    if tree.passedFullSelection:
+        evt_info_d["n_evts_passedFullSelection"] += 1
+        continue
+    if tree.passedZXCRSelection:
+        evt_info_d["n_evts_passedZXCRSelection"] += 1
+        continue
+
+    # # Ensure at least 4 leptons in event:
+    # n_tot_leps = len(tree.lepFSR_pt)
+    # if n_tot_leps < 4:
+    #     evt_info_d["n_evts_lt4_leps"] += 1
+    #     continue
+
+    # Ensure EXACTLY 4 leptons in event:
     n_tot_leps = len(tree.lepFSR_pt)
-    if n_tot_leps < 4:
-        evt_info_d["n_evts_lt4_leps"] += 1
+    if n_tot_leps != 4:
+        evt_info_d["n_evts_ne4_leps"] += 1
         continue
 
     z_cand_lep_ndcs = []
@@ -122,9 +144,6 @@ for evt_num in range(start_at_evt, n_tot):
                 print(f"Event {evt_num} lep1 failed kinem selections.")
             continue
 
-        if force_z1_leps_tightID:
-            if not pass_lepton_tightID(lid1, ltightId1):
-                continue
         # Compare lep1 to the next lepton over:
         start_ndx2 = ndx1 + 1
         for ndx2, (lpt2, leta2, lphi2, lmass2, lid2, ltightId2) in enumerate(
@@ -138,11 +157,8 @@ for evt_num in range(start_at_evt, n_tot):
                 ), start_ndx2
             ):
 
-            # Do an OSSF check:
-            if (lid1 + lid2) != 0:
-                if verbose:
-                    print(f"Event {evt_num} failed OSSF check.")
-                continue
+            if force_z1_leps_tightID:
+                if not ltightId1
 
             # Check kinematics and ID (electron/muon) of this lepton:
             if not pass_lepton_kinem_selection(lid2, lpt2, leta2):
@@ -150,20 +166,20 @@ for evt_num in range(start_at_evt, n_tot):
                     print(f"Event {evt_num} lep2 failed kinem selections.")
                 continue
 
-def pass_lepton_tightID(lid, ltightId):
-    """Return True if lepton passes tightID.
+# def pass_lepton_tightID(lid, ltightId):
+#     """Return True if lepton passes tightID.
 
-    Args:
-        lid (int): Lepton ID.
-        ltightId (bool): Tight ID.
-    """
-    if abs(lid) == 11:
-        return ltightId
-    elif abs(lid) == 13:
-        if ltightId < 
-        return True if 
-    else:
-        return False
+#     Args:
+#         lid (int): Lepton ID.
+#         ltightId (bool): Tight ID.
+#     """
+#     if abs(lid) == 11:
+#         return ltightId
+#     elif abs(lid) == 13:
+#         if ltightId < 
+#         return True if 
+#     else:
+#         return False
 
 def pass_lepton_RelIso(lid, ltightId):
     """Return True if lepton passes tightID.
@@ -180,10 +196,19 @@ def pass_lepton_RelIso(lid, ltightId):
     else:
         return False
 
-            if force_z1_leps_tightID:
-                if not pass_lepton_tightID(lid2, ltightId2):
-                    continue
             # We have 2 good (loose) leptons which MAY form a Z candidate.
+            loose_lep_arr = []
+            # Do an OSSF check:
+            if (lid1 + lid2) != 0:
+                if verbose:
+                    print(f"Event {evt_num} failed OSSF check.")
+                continue
+            
+            # Do we want tight Z1 leptons?
+            if force_z1_leps_tightID:
+                if (not ltightId1) or (not ltightId2):
+                    continue
+            
             lorvec_lep1 = Math.PtEtaPhiMVector(lpt1, leta1, lphi1, lmass1)
             lorvec_lep2 = Math.PtEtaPhiMVector(lpt2, leta2, lphi2, lmass2)
             z_cand = lorvec_lep1 + lorvec_lep2
