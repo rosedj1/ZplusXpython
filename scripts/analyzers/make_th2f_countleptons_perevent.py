@@ -1,10 +1,11 @@
 """TODO: Make sure script CAN run and runs as expected. Read through it once.
 # ============================================================================
 # Purpose: Make a PDF of TH2 distributions showing lepton counts:
-#     - number of tightID leptons vs. total number of leptons, and
-#     - number of tight leptons (tightID+RelIso)vs. total number of leptons
+#     - number of leps passing loose sel. + tightID vs. total number of leps
+#     - number of tight leps (loose+tightID+RelIso) vs. total number of leps
 #     It also gives TH2 plots normalized by column and by total integral.
 # Created: 2021-11-09
+# Updated: 2021-11-18
 # Author:  Jake Rosenzweig
 # ============================================================================
 """
@@ -20,27 +21,33 @@ infile_root = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samp
 outpdf_path = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/filippo/test/allth2_totalleps_vs_tightleps_formatp2g.pdf"
 infile_recover_th2fs = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/filippo/th2f_totalleps_vs_tightleps.root"
 # ============================================================================
-def make_two_filledTH2_hists(tree):
+def make_two_emptyTH2_hists():
     z_min = 0
     z_max = 5.5E6
     x_label = r"Number of leptons per event"
 
-    h2_ntightleps_vs_ntotleps = make_TH2F("h2_ntightleps_vs_ntotleps", title="Number of events with tight vs. total leptons", 
+    h2_ntightleps_vs_ntotleps = make_TH2F("h2_ntightleps_vs_ntotleps", title="",#"Number of events with loose+tightID leptons vs. total number of leptons", 
                 n_binsx=10, x_label=x_label,
                 x_units=None, x_min=2, x_max=12,
-                n_binsy=8, y_label=r"Number of #bf{tight} leptons per event",
+                n_binsy=8, y_label=r"Number of leptons (passing loose+tightID) per event",
                 y_units=None, y_min=0, y_max=8,
                 z_min=z_min, z_max=z_max, z_label_size=None,
                 n_contour=100)
                 
-    h2_ntightandIsoleps_vs_ntotleps = make_TH2F("h2_ntightandIsoleps_vs_ntotleps", title="Number of events with (tight & isolated) vs. total leptons", 
+    h2_ntightandIsoleps_vs_ntotleps = make_TH2F("h2_ntightandIsoleps_vs_ntotleps", title="",#"Number of events with (tight & isolated) vs. total leptons", 
                 n_binsx=10, x_label=x_label,
                 x_units=None, x_min=2, x_max=12,
-                n_binsy=8, y_label=r"Number of #bf{tight and isolated} leptons per event",
+                n_binsy=8, y_label=r"Number of tight leptons per event",
                 y_units=None, y_min=0, y_max=8,
                 z_min=z_min, z_max=z_max, z_label_size=None,
                 n_contour=100)
 
+    return (h2_ntightleps_vs_ntotleps, h2_ntightandIsoleps_vs_ntotleps)
+
+def make_two_filledTH2_hists(tree):
+    h2_ntightleps_vs_ntotleps, h2_ntightandIsoleps_vs_ntotleps = make_two_emptyTH2_hists()
+
+    # Event loop.
     n_tot_entries = tree.GetEntries()
     for ct, evt in enumerate(tree):
         if (ct % 500000) == 0:
