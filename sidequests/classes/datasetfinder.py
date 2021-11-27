@@ -1,29 +1,5 @@
+from sidequests.classes.rootfileevent import RootFileEvent
 from Utils_Python.Commands import shell_cmd
-from shutil import copy2
-
-class RootFileEvent:
-
-    def __init__(self):
-        self.run = None
-        self.lumisect = None
-        self.event = None
-        self.dataset = None
-        self.fullpath = None
-
-    def evt_id(self, as_type="str"):
-        """
-        Return Run, LumiSect, Event as either:
-            str. Has the form, "Run:LumiSect:Event"
-                Requires `as_type == "str"`.
-            tup of ints. Has the form, (Run, LumiSect, Event)
-                Requires `as_type == "tup"`.
-        """
-        if as_type in "str":
-            return f"{self.run}:{self.lumisect}:{self.event}"
-        elif as_type in "tup":
-            return (self.run, self.lumisect, self.event)
-        else:
-            return None
 
 class DataSetFinder:
 
@@ -93,13 +69,3 @@ class DataSetFinder:
                 rf.dataset = ds
                 return rf
         print(f"[WARNING] No rootfile was found corresponding to {rf.evt_id()}.")
-
-class TemplateManager:
-
-    def __init__(self, input_template):
-        self.input_template = input_template
-
-    def duplicate_template(self, output_template):
-        """Copy `self.input_template` to `output_template`."""
-        print(f"Making copy of {self.input_template}:\n{output_template}")
-        copy2(self.input_template, output_template)
