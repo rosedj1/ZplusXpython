@@ -1,6 +1,8 @@
 from collections import Counter
 from pprint import pprint
 
+from sidequests.evt_comparison_funcs import get_list_of_tuples, get_list_of_lines
+
 from Utils_Python.Utils_Files import check_overwrite
         
 class FileComparer:
@@ -17,11 +19,15 @@ class FileComparer:
         ----------
         control_reg : str
             Used for printing and writing files.
+            If you don't want a specific control region, use "".
         """
         self.file1 = txt_file1
         self.file2 = txt_file2
         self.cr = control_reg
         self.verbose = verbose
+        self.set_common_to_both  = None  # Replaced once files are compared.
+        self.set_unique_to_file1 = None  # Replaced once files are compared.
+        self.set_unique_to_file2 = None  # Replaced once files are compared.
 
         self.check_cr(txt_file1, txt_file2)
         if control_reg in "":
@@ -57,7 +63,7 @@ class FileComparer:
                 # There's some counting error here...
                 # I know there are 120 duplicates, but counter only finds 118.
                 counter = Counter(ls_of_tup)
-                print(f"Printing duplicates in file:\n{txt_file}")
+                print(f"Showing duplicates found in file:\n{txt_file}")
                 dup_key_ls = [k for k,v in counter.items() if v > 1]
                 # pprint(dup_key_ls)
                 # assert n_dups == len(dup_key_ls)

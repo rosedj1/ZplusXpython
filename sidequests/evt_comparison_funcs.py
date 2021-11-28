@@ -1,21 +1,31 @@
 from ROOT import TFile
 import numpy as np
+from funcs.printing import print_periodic_evtnum
 
-from cjlstflag import CjlstFlag
+from sidequests.classes.cjlstflag import CjlstFlag
 
-def write_tree_info_to_txt(infile, outtxt, keep_2P2F=True, keep_3P1F=True):
+def write_tree_info_to_txt(infile, outtxt,
+                           keep_2P2F=True, keep_3P1F=True, keep_all=False,
+                           path_to_tree="passedEvents", print_every=500000):
     """Write info from TFile `infile` from TTree 'passedEvents' to `outtxt`.
 
     Info which gets written:
     Run : LumiSect : Event
     """
     tfile = TFile.Open(infile)
-    tree = tfile.Get("passedEvents")
-
+    tree = tfile.Get(path_to_tree)
+    n_tot = tree.GetEntries()
     with open(outtxt, "w") as f:
         f.write("# Run : LumiSect : Event\n")
-        for evt in tree:
-            keep_evt = True if (keep_2P2F and evt.getis2P2F) or (keep_3P1F and evt.is3P1F) else False
+        for ct, evt in enumerate(tree):
+            print_periodic_evtnum(ct, n_tot, print_every=print_every)
+            keep_evt = False
+            if keep_all:
+                keep_evt = True
+            elif keep_2P2F and evt.getis2P2F:
+                keep_evt = True
+            elif keep_3P1F and evt.is3P1F:
+                keep_evt = True
             if keep_evt:
                 f.write(f"{evt.Run} : {evt.LumiSect} : {evt.Event}\n")
     print(f"TTree info written to:\n{outtxt}")
