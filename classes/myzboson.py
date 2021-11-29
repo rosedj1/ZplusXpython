@@ -1,3 +1,5 @@
+from constants.particleprops import ZMASS_PDG
+
 class MyZboson:
     
     def __init__(self, mylep1, mylep2):
@@ -52,7 +54,7 @@ class MyZboson:
         
     def get_distance_from_PDG_mass(self):
         """Return distance (float) this Z boson is from PDG Z mass value."""
-        return self.get_LorentzVector().M() - Zmass_pdg
+        return self.get_LorentzVector().M() - ZMASS_PDG
     
     def get_mylep_ls(self):
         """Return a list of mylep1 and mylep2."""
@@ -80,3 +82,52 @@ class MyZboson:
             # The set will remove any duplicates.
             return False
         return True
+
+def makes_valid_zcand(lep1, lep2):
+    """Return True if lep1 and lep2 will form a valid Z candidate.
+    
+    NOTE:
+    - This is NOT necessarily a valid Z1 or Z2 candidate.
+    
+    To form a valid Z candidate:
+    - Leptons DO NOT HAVE TO be tight (loose+tightID+RelIso)!
+    - Leptons must be OSSF.
+    - 12 < m(ll, including FSR) < 120 GeV.
+
+    Args:
+        lep1 (MyLepton): Combines with lep2 to make Z cand.
+        lep2 (MyLepton): Combines with lep1 to make Z cand.
+    """
+#     if (not lep1.is_tight) or (not lep2.is_tight):
+#         return False
+    # Check OSSF:
+    if (lep1.lid + lep2.lid) != 0:
+        return False
+    if (lep1.lid == 0) or (lep2.lid == 0):
+        return False
+    # Check invariant mass cut:
+    zcand = lep1.get_LorentzVector() + lep2.get_LorentzVector()
+    z_mass = zcand.M()
+    if (z_mass < 12) or (z_mass > 120):
+        return False
+    return True
+    
+def make_all_zcands(mylep_ls):
+    """Return list of valid Z candidates as MyZboson objects.
+    
+    To form a valid Z candidate:
+    - Leptons DO NOT HAVE TO be tight (loose+tightID+RelIso)!
+    - Leptons must be OSSF.
+    - 12 < m(ll, including FSR) < 120 GeV.
+    """
+    zcand_ls = []
+    # Make a lep-by-lep comparison to find eligible Z candidates.
+    for ndx_lep1, mylep1 in enumerate(mylep_ls[:-1]):
+        start_ndx_lep2 = ndx_lep1 + 1
+        for ndx_lep2, mylep2 in enumerate(mylep_ls[start_ndx_lep2:]):
+            if not makes_valid_zcand(mylep1, mylep2):
+                continue
+            # Found valid Z candidate.
+            zcand = MyZboson(mylep1, mylep2)
+            zcand_ls.extend((zcand,))
+    return zcand_ls

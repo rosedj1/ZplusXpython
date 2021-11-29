@@ -1,3 +1,9 @@
+from classes.mylepton import (check_leps_separated_in_DeltaR,
+                              check_leps_pass_leadsublead_pTcuts,
+                              leps_pass_lowmass_dilep_res,
+                              has_2p2f_leps,has_3p1f_leps)
+from classes.myzboson import MyZboson, make_all_zcands
+
 class ZZPair:
     """NOT the same thing as a 'ZZ Candidate' (which passes selections)."""
     
@@ -27,6 +33,7 @@ class ZZPair:
         self.z_fir = z_fir
         self.z_sec = z_sec
         self.kin_discrim = kin_discrim
+        self.verbose = verbose
         
     def get_m4l(self):
         """Return the m(4l) of this ZZPair."""
@@ -107,7 +114,7 @@ class ZZPair:
         """Return True if this ZZPair is better than alternate pair ZaZb."""
         fs = self.get_finalstate()
         if fs in ("4e", "4mu"):
-            if verbose:
+            if self.verbose:
                 print(f"{fs} final state found. Checking smart cut (ZaZb).")
             zazb = self.build_zazb_pair()
             # Is m(Za) closer to m(Z_PDG) than m(Z1) is?
@@ -120,7 +127,7 @@ class ZZPair:
             za_more_onshell_than_z1 = abs(pdg_dist_za) < abs(pdg_dist_z1)
             zb_is_lowmass_dilep_res = zazb.z_sec.mass < 12
             if za_more_onshell_than_z1:# and zb_is_lowmass_dilep_res:
-                if verbose:
+                if self.verbose:
                     print(
                         f"FAILED SMART CUT:\n"
                         f"  m(Za)={zazb.z_fir.mass:.4f} is closer to PDG "
@@ -128,11 +135,6 @@ class ZZPair:
                         f"  m(Zb)={zazb.z_sec.mass:.4f} "
                         f"  m(Z2)={self.z_sec.mass:.4f}\n"
                     )
-                # Count how frequently Za is built from tight leptons.
-                if zazb.z_fir.made_from_tight_leps:
-                    evt_info_d["n_za_hastightleps_whenfailsmartcut"] += 1
-                else:
-                    evt_info_d["n_za_haslooseleps_whenfailsmartcut"] += 1
                 return False
         return True
     
@@ -204,3 +206,86 @@ class ZZPair:
 #             self.found_best_z1 = True
 #         else:
 #             self.found_best_z1 = False
+
+def make_all_zz_pairs(zcand_ls):
+    """Return a list of all possible ZZPair objects.
+    
+    Notes:
+    - Skip pairing a Z with itself.
+    - This accounts for ALL possible ZZ candidates, even swapping Z1 <-> Z2.
+    - This function does not impose any selections on ZZ candidates.
+    """
+    zz_pair_ls = []
+    for ndx1, z1 in enumerate(zcand_ls):
+        z1.ndx_zcand_ls = ndx1
+        for ndx2, z2 in enumerate(zcand_ls):
+            if ndx1 == ndx2:
+                continue
+            z2.ndx_zcand_ls = ndx2
+            zz_cand = ZZPair(z1, z2, kin_discrim=None)  # No selections.
+            zz_pair_ls.extend((zz_cand,))
+    return zz_pair_ls
+
+def make_zz_pairs(zcand_ls):
+    """Return a list of ALL possible ZZCandidate objects.
+    
+    Notes:
+    - This function does not impose any selections on ZZ candidates.
+    """
+    zz_pair_ls = []
+    for ndx1, z1 in enumerate(zcand_ls[:-1]):
+        start_ndx2 = ndx1 + 1
+        for ndx2, z2 in enumerate(zcand_ls[start_ndx2:]):
+            zz_cand = ZZCandidate(z1, z2, kin_discrim=None)  # No selections.
+            zz_pair_ls.extend((zz_cand,))
+    return zz_pair_ls
+
+def get_all_ZZcands_passing_cjlst(zz_pair_ls):
+    """Return a (sub)set list of zz_pair_ls of the ZZs passing CJLST cuts.
+        
+    Selects the ZZPair objects which pass CJLST selections.
+    If no ZZ pairs pass selections, then return an empty list.
+    Implements CJLST ZZ selection.
+    
+    zz_pair_ls contains ZZPair objects.
+    
+    NOTE:
+    - Be sure that zz_pair_ls provides ALL combinations ZZ pairings.
+        E.g. If you have three Zs, then zz_pair_ls should have 6 ZZPair objs:
+        (Z1, Z2), (Z1, Z3),
+        (Z2, Z1), (Z2, Z3),
+        (Z3, Z1), (Z3, Z2)
+    """
+    return [zz for zz in zz_pair_ls if zz.passes_cjlst_sel()]
+
+def myleps_pass_cjlst_osmethod_selection(mylep_ls, verbose=False):
+    """Return True if myleps pass all Z1, Z2, and ZZ selection criteria.
+    
+    NOTE:
+    - Checks for a 2P2F or 3P1F configuration.
+    - `mylep_ls` should have exactly 4 leptons. 
+    """
+    # Need 2 tight + 2 loose leps (2P2F) or 3 tight + 1 loose leps (3P1F).
+    # This checks that leptons pass basic kinematic criteria (at least loose).
+    if verbose: print("Checking for 2P2F or 3P1F leptons.")
+    if (not has_2p2f_leps(mylep_ls)) and (not has_3p1f_leps(mylep_ls)):
+        if verbose: print("Leptons are not 2P2F or 3P1F.")
+        return False
+    
+    # Build all Z candidates.
+    if verbose: print("Making all Z candidates.")
+    zcand_ls = make_all_zcands(mylep_ls)
+    n_zcands = len(zcand_ls)
+    if n_zcands < 2:
+        if verbose: print(f"Found fewer than two Z cands (found {n_zcands}).")
+        return False
+    
+    # Build all ZZ candidates.
+    if verbose: print("Making all ZZ candidates.")
+    zz_pair_ls = make_all_zz_pairs(zcand_ls)  # Does not implement ZZ cuts.
+    all_passing_ZZcands_cjlst_ls = get_all_ZZcands_passing_cjlst(zz_pair_ls)
+    # For RedBkg, each 4-lep combo should provide ONLY 1 valid ZZ candidate.
+    if len(all_passing_ZZcands_cjlst_ls) != 1:
+        return False
+    # These 4 leptons form a valid ZZ candidate according to CJLST!
+    return True

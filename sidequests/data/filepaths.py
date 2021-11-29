@@ -6,7 +6,7 @@ main_dir = "/blue/avery/rosedj1/ZplusXpython/sidequests/findmissingevents_compar
 infile_jake_tree = "/blue/avery/rosedj1/ZplusXpython/data/ZLL_CR_FRapplied/new_data2018/cr_ZLL.root"
 # ^Contains all the passedZXCRSelection events as in:
 # /fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates.root
-infile_filippo = ""
+infile_filippo_data_2018 = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/fullstats/filippo/rootfiles/Data_2018_03Nov.root"
 
 #####################
 #--- CJLST files ---#
