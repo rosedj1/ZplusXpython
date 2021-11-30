@@ -23,7 +23,7 @@ from Utils_Python.Utils_Files import open_json, check_overwrite, replace_value
 from Utils_Python.Commands import shell_cmd
 from sidequests.classes.filemanager import TemplateManager
 
-overwrite = 1
+overwrite = 0
 infile_json = "../data/json/elisa_unique_2p2f_3p1f_commontobothCRs_evts_id_rootfile.json"
 output_rootfile_basename = "elisa_unique_2p2f_3p1f_commontobothCRs"
 
