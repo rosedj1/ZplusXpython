@@ -16,6 +16,14 @@ This repo contains scripts to:
 1. Use the UFHZZ4LAnalyzer to skim the MiniAOD files (Data or MC).
 1. Combine files (using `hadd`) of the same process (e.g., MuonEG runs A-D) with:
    - `hadders/haddfiles_on_slurm.ipynb` (submits `hadd` jobs to SLURM)
+   - **NOTE:** If you get an error like the one below
+   then get rid of unncessary branches using
+   `skimmers/skim_useless_branches.C` and then resume `hadd`ing:
+
+   ```bash
+   Error in <TBufferFile::WriteByteCount>: bytecount too large (more than 1073741822)
+   ```
+   
 1. Skim only the important branches with:
    - `skimmers/apply_redbkg_evt_selection_vxbs`.
    - Apply the skimmer to multiple samples with:
