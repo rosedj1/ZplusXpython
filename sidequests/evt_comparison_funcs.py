@@ -31,13 +31,20 @@ def write_tree_info_to_txt(infile, outtxt,
     print(f"TTree info written to:\n{outtxt}")
 
 def get_list_of_lines(evt_ls_txt):
+    """Return a list of the lines from `evt_ls_txt` with comments removed.
+    
+    The lines are checked to start with a digit to avoid comments (#).
+    Trailing newlines ('\\n') and whitespaces on both ends are stripped.
     """
-    Return a list of the lines from `evt_ls_txt`.
-    The lines must start with a digit.
-    Trailing newlines ('\\n') are stripped.
-    """
+    ls_lines = []
     with open(evt_ls_txt, "r") as f:
-        return [line.rstrip('\n') for line in f.readlines() if line[0].isdigit()]
+        for line in f.readlines():
+            clean_line = line.rstrip('\n').rstrip().lstrip()
+            if not clean_line[0].isdigit():
+                continue
+            ls_lines.extend([clean_line])
+    return ls_lines
+        # return [line.rstrip('\n').rstrip() for line in f.readlines() if line[0].isdigit()]
 
 def get_list_of_tuples(evt_ls):
     """
@@ -48,12 +55,27 @@ def get_list_of_tuples(evt_ls):
         (Run2, LumiSect2, Event2),
         ...
     ]
+
+    NOTE: Elements of tuples are int.
     """
     new_evt_ls = []
     for line in evt_ls:
+        # Grab the first three entries: Run, Lumi, Event.
         tup = tuple([int(num) for num in line.split(":")[:3]])
-        new_evt_ls.append(tup)
+        new_evt_ls.extend([tup])
     return new_evt_ls
+
+def get_runlumievent_ls_tup(txt):
+    """Return a list of tuples of (Run, Lumi, Event) from a txt.
+
+    Args:
+        txt (str): Path to txt file that contains Run, Lumi Event like:
+                   'Run : Lumi : Event'
+                   NOTE: Will strip newlines and whitespace from the ends.
+
+    NOTE: Tuple elements are int.
+    """
+    return get_list_of_tuples(get_list_of_lines(txt))
 
 def print_evt_info_bbf(tree):
     print(f"tree.passedFullSelection: {tree.passedFullSelection}")
