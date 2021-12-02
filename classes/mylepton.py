@@ -178,7 +178,7 @@ def check_leps_separated_in_DeltaR(mylep_ls, min_sep=0.02):
     """Return True if all leps are DeltaR separated by at least `min_sep`."""
     for ndx1, mylep1 in enumerate(mylep_ls[:-1]):
         start_ndx2 = ndx1 + 1
-        for ndx2, mylep2 in enumerate(mylep_ls[start_ndx2:]):
+        for mylep2 in mylep_ls[start_ndx2:]:
             dR = mylep1.calc_DeltaR(mylep2)
             if dR < min_sep:
                 return False

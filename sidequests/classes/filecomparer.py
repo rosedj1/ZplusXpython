@@ -2,7 +2,8 @@ import os
 from collections import Counter
 from pprint import pprint
 
-from sidequests.evt_comparison_funcs import get_runlumievent_ls_tup
+from sidequests.funcs.evt_comparison import (
+    get_runlumievent_ls_tup, get_list_of_tuples)
 
 from Utils_Python.Utils_Files import check_overwrite
 
@@ -245,29 +246,29 @@ class FileRunLumiEvent:
         """Return `key_tup` as a str: 'Run : Lumi : Event'."""
         return f"{key_tup[0]} : {key_tup[1]} : {key_tup[2]}"
     
-    def analyze_evtids(self, other, analysis_type, print_evts=False):
+    def analyze_evtids(self, other, event_type, print_evts=False):
         """Return list of 3-tuple evtIds common to both FileRunLumiEvents.
         
         Args:
             other (FileRunLumiEvent): Dude whose events will be compared.
-            analysis_type (str): Choose between 'common' or 'unique'.
+            event_type (str): Choose between 'common' or 'unique'.
             print_evts (bool, optional): Default is False.
         """
         this_set = set(self.get_ls_evtids_nodups())
         other_set = set(other.get_ls_evtids_nodups())
-        choice = analysis_type.lower()
+        choice = event_type.lower()
         if "common" in choice:
             set_evt_combine = this_set & other_set
         elif "unique" in choice:
             set_evt_combine = this_set - other_set
         else:
-            raise ValueError(f"analysis_type={analysis_type} not understood")
+            raise ValueError(f"event_type={event_type} not understood")
         n_evts = len(set_evt_combine)
         if self.txt is None:
             basename = "...the original list you used."
         else:
             basename = os.path.basename(self.txt)
-        print(f"Found {n_evts} {analysis_type} events in:\n{basename}")
+        print(f"Found {n_evts} {event_type} events in:\n{basename}")
         if print_evts:
             print(set_evt_combine)
         return list(set_evt_combine)

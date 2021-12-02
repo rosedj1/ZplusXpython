@@ -6,12 +6,16 @@ main_dir = "/blue/avery/rosedj1/ZplusXpython/sidequests/findmissingevents_compar
 infile_jake_tree = "/blue/avery/rosedj1/ZplusXpython/data/ZLL_CR_FRapplied/new_data2018/cr_ZLL.root"
 # ^Contains all the passedZXCRSelection events as in:
 # /fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates.root
-infile_filippo_data_2018 = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/fullstats/filippo/rootfiles/Data_2018_03Nov.root"
+filippo_file = "store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/fullstats/filippo/rootfiles/Data_2018_03Nov.root"
+# infile_filippo_data_2018_fromlxp = f"root://gator.rc.ufl.edu//{filippo_file}"    # Doesn't work.
+# infile_filippo_data_2018_fromlxp = f"root://cmsxrootd.fnal.gov//{filippo_file}"  # Doesn't work.
+infile_filippo_data_2018_fromlxp = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/data_from_HPG/Data_2018_03Nov.root"
+infile_filippo_data_2018_fromhpg = f"/cmsuf/data/{filippo_file}"
 
 #####################
 #--- CJLST files ---#
 #####################
-dir_cjlst = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/data/"
+dir_cjlst = "../../sidequests/data/"
 infile_elisa       = os.path.join(dir_cjlst, "CRLLos_listOfEvents.txt")
 infile_elisa_2p2f  = os.path.join(dir_cjlst, "CRLLos_2P2F_listOfEvents.txt")
 infile_elisa_3p1f  = os.path.join(dir_cjlst, "CRLLos_3P1F_listOfEvents.txt")
