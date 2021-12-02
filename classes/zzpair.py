@@ -13,7 +13,8 @@ class ZZPair:
         z_sec,
         kin_discrim=None,
         verbose=False,
-        explain_skipevent=False):
+        explain_skipevent=False,
+        smartcut_ZapassesZ1sel=False):
         """
         NOTE:
         - The literature is confusing with its notation.
@@ -30,6 +31,13 @@ class ZZPair:
             z_sec (MyZboson):
             kin_discrim (float): Kinematic Discriminant for background.
             ### ^Not yet implemented. Need to discuss this with Filippo.
+            smartcut_ZapassesZ1sel (bool, optional):
+                In the smart cut, the literature essentially says that if a Za
+                looks like a more on-shell Z boson than the Z1 AND if the Zb is a
+                low mass di-lep resonance, then veto the whole ZZ candidate.
+                However, literature doesn't check for Za passing Z1 selections!
+                Set this to True if you require Za to pass Z1 selections.
+                Default is False.
         """
         self.z_fir = z_fir
         self.z_sec = z_sec
@@ -37,6 +45,7 @@ class ZZPair:
         self.verbose = verbose
         self.explain_skipevent = explain_skipevent
         self.ndx_in_zzpair_ls = None  # Will be assigned when forming ZZPairs.
+        self.smartcut_ZapassesZ1sel = smartcut_ZapassesZ1sel
 
     def get_m4l(self):
         """Return the m(4l) of this ZZPair."""
@@ -159,8 +168,26 @@ class ZZPair:
             pdg_dist_za = zazb.z_fir.get_distance_from_PDG_mass()
             pdg_dist_z1 = self.z_fir.get_distance_from_PDG_mass()
             za_more_onshell_than_z1 = (abs(pdg_dist_za) < abs(pdg_dist_z1))
+            
+            # Low mass di-lep cut should never trigger since all Z
+            # candidates have already been checked for 12 < mZ < 120 GeV.
             zb_is_lowmass_dilep_res = (zazb.z_sec.mass < 12)
             if za_more_onshell_than_z1 and zb_is_lowmass_dilep_res:
+                # ABOUT TO FAIL SMART CUT! Za looks like a good Z1.
+                if self.smartcut_ZapassesZ1sel:
+                    # Is Za a valid Z1 candidate?
+                    if not zazb.z_fir.passes_z1_kinematic_selec():
+                        # RAISE ALL HELL.
+                        print(
+                            f"CJLST goofed, y'all!\n"
+                            f"ZaZb DID look better than Z1Z2, except Za "
+                            f"is not a valid Z1 candidate!"
+                        )
+                        print("ZaZb info:")
+                        zazb.print_info()
+                        print("Z1Z2 info:")
+                        self.print_info()
+                        raise RuntimeError
                 if self.explain_skipevent:
                     print(
                         f"FAILED SMART CUT:\n"
@@ -221,7 +248,7 @@ class ZZPair:
         self.z_sec.print_info()
 # End of ZZPair.
     
-def make_all_zz_pairs(zcand_ls, explain_skipevent=False):
+def make_all_zz_pairs(zcand_ls, explain_skipevent=False, smartcut_ZapassesZ1sel=False):
     """Return a list of all possible ZZPair objects.
     
     Notes:
@@ -229,6 +256,15 @@ def make_all_zz_pairs(zcand_ls, explain_skipevent=False):
     - Skip pairing two Z's if they share common leptons.
     - This accounts for ALL possible ZZ candidates, even swapping Z1 <-> Z2.
     - This function does not impose any selections on ZZ candidates.
+
+    Args:
+        smartcut_ZapassesZ1sel (bool, optional):
+            In the smart cut, the literature essentially says that if a Za
+            looks like a more on-shell Z boson than the Z1 AND if the Zb is a
+            low mass di-lep resonance, then veto the whole ZZ candidate.
+            However, literature doesn't check for Za passing Z1 selections!
+            Set this to True if you require Za to pass Z1 selections.
+            Default is False.
     """
     zz_pair_ndx = 0
     zz_pair_ls = []
@@ -292,6 +328,7 @@ def get_all_ZZcands_passing_cjlst(zz_pair_ls):
 
 def myleps_pass_cjlst_osmethod_selection(
     mylep_ls, verbose=False, explain_skipevent=False,
+    smartcut_ZapassesZ1sel=False,
     run=None, lumi=None, event=None, entry=None):
     """Return True if myleps form at least 1 valid ZZ candidate.
     
@@ -301,6 +338,13 @@ def myleps_pass_cjlst_osmethod_selection(
     - `mylep_ls` should have exactly 4 leptons. 
 
     Args:
+        smartcut_ZapassesZ1sel (bool, optional):
+            In the smart cut, the literature essentially says that if a Za
+            looks like a more on-shell Z boson than the Z1 AND if the Zb is a
+            low mass di-lep resonance, then veto the whole ZZ candidate.
+            However, literature doesn't check for Za passing Z1 selections!
+            Set this to True if you require Za to pass Z1 selections.
+            Default is False.
         run (int): The run number, used for debugging.
         lumi (int): The lumi number, used for debugging.
         event (int): The event number, used for debugging.
@@ -331,7 +375,8 @@ def myleps_pass_cjlst_osmethod_selection(
     # Build all ZZ candidates.
     if verbose: print("Making all ZZ candidates.")
     zz_pair_ls = make_all_zz_pairs(zcand_ls,
-                     explain_skipevent=explain_skipevent)  # Does not implement ZZ cuts.
+                     explain_skipevent=explain_skipevent,
+                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel)  # Does not implement ZZ cuts.
     if verbose: print(f"Made {len(zz_pair_ls)} ZZ pairs (not candidates!)")
     all_passing_ZZcands_cjlst_ls = get_all_ZZcands_passing_cjlst(zz_pair_ls)
     n_zzcands = len(all_passing_ZZcands_cjlst_ls)

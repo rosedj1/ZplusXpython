@@ -3,9 +3,9 @@ from ROOT import TFile, TCanvas, gStyle
 from Utils_ROOT.ROOT_classes import make_pave
 
 # infile = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/rootfiles/h2_cjlstevtsel_ge4leps_2p2f_3p1f.root"
-infile = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/rootfiles/h2_cjlstevtsel_2p2f_3p1f_widebins.root"
+infile = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/rootfiles/h2_cjlstevtsel_2p2f_3p1f_widebins_includepassfullsel.root"
 # outpdf = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/plots/h2_cjlstevtsel_ge4leps_2p2f_3p1f.pdf"
-outpdf = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/plots/h2_cjlstevtsel_ge4leps_2p2f_3p1f_widebins.pdf"
+outpdf = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/plots/cjlstevtsel_2p2f_3p1f_widebins_includepassfullsel.pdf"
 
 show_ntot_2p2f_3p1f = True
 show_selections = False
@@ -55,40 +55,40 @@ def draw_th2(h2, as_percent=False, z_max=10000, selec="",
         pave.Draw("same")
     return pave
 
-def get_ntot_2p2f_evts(h2):
+def get_ntot_2p2f_evts(h2, verbose=False):
     """Return the sum of entries of columns from bin 1->last.
     
     This corresponds to the total number of 2P2F events in this h2.
     """
     n_tot = 0
     last_bin = h2.GetNbinsX()
-    print(f"Last bin x: {last_bin}")
+    if verbose: print(f"Last bin x: {last_bin}")
     # Bin 0 = underflow. Bin 1 is number of events with 0 2P2F/3P1F combos.
     # So start at bin 2.
     for bin_x in range(2, h2.GetNbinsX()+1):
         proj_y = h2.ProjectionY(f"proj_y_{bin_x}", bin_x, bin_x)
         this_entries = proj_y.GetEntries()
-        print(f"col={bin_x} has {this_entries} events")
+        if verbose: print(f"col={bin_x} has {this_entries} events")
         n_tot += this_entries
         del proj_y
-    print(f"n_tot={n_tot}")
+    if verbose: print(f"n_tot={n_tot}")
     return n_tot
 
-def get_ntot_3p1f_evts(h2):
+def get_ntot_3p1f_evts(h2, verbose=False):
     """Return the sum of entries of rows from bin 1->last.
     
     This corresponds to the total number of 3P1F events in this h2.
     """
     n_tot = 0
     last_bin = h2.GetNbinsY()
-    print(f"Last bin y: {last_bin}")
+    if verbose: print(f"Last bin y: {last_bin}")
     for bin_y in range(2, last_bin + 1):
         proj_x = h2.ProjectionX(f"proj_y_{bin_y}", bin_y, bin_y)
         this_entries = proj_x.GetEntries()
-        print(f"row={bin_y} has {this_entries} events")
+        if verbose: print(f"row={bin_y} has {this_entries} events")
         n_tot += this_entries
         del proj_x
-    print(f"n_tot={n_tot}")
+    if verbose: print(f"n_tot={n_tot}")
     return n_tot
 
 if __name__ == '__main__':

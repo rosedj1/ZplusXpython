@@ -160,6 +160,7 @@ def analyze_single_evt(tree, run, lumi, event, fw="bbf", which="all",
                 continue
             if tree.Event != event:
                 continue
+            print(f"Event {run}:{lumi}:{event} found. Index: {evt_num}")
             print_evt_info_bbf(tree)
             store_evt = True
 

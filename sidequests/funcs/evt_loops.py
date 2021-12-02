@@ -114,23 +114,37 @@ def find_all_pairs_leps_loose(mylep_ls):
 
 def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None,
                                       start_at_evt=0, break_at_evt=-1, fill_hists=True,
-                                      explain_skipevent=False, verbose=False, print_every=50000):
+                                      explain_skipevent=False, verbose=False, print_every=50000,
+                                      smartcut_ZapassesZ1sel=False):
     """Apply CJLST's RedBkg event selection to all events in tree.
     
     NOTE:
-      - Asks for AT LEAST 4 leptons per event.
-      - When an event has >4 leptons, then multiple combinations of 2P2F/3P1F
-        are possible.
+        - Asks for AT LEAST 4 leptons per event.
+        - When an event has >4 leptons, then multiple combinations
+        of 2P2F/3P1F are possible.
+        - Does NOT select the BEST ZZ candidate per event.
+        If there are >1 ZZ candidates that pass ZZ selections,
+        then it takes all possible valid 4-lepton combinations
+        and analyzes each individually.
 
     New reducible background analyzer to bypass nZXCRFailedLeptons.
     # ============================================================================
     # Author: Jake Rosenzweig
     # Created: 2021-11-16
-    # Updated: 2021-12-01
+    # Updated: 2021-12-02
     # ============================================================================
+
+    Args:
+        smartcut_ZapassesZ1sel (bool, optional):
+            In the smart cut, the literature essentially says that if a Za
+            looks like a more on-shell Z boson than the Z1 AND if the Zb is a
+            low mass di-lep resonance, then veto the whole ZZ candidate.
+            However, literature doesn't check for Za passing Z1 selections!
+            Set this to True if you require Za to pass Z1 selections.
+            Default is False.
     """
     evt_info_tup = (
-        # These will be dict keys whose values start at 0 and then increment.
+        # These will be dict evt_ids whose values start at 0 and then increment.
         "n_evts_eq4_leps",
         "n_evts_ne4_leps",
         "n_evts_lt4_leps",
@@ -172,10 +186,10 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
 
         # EVENTUALLY REMOVE THIS AND MAKE SURE RESULTS ARE THE SAME.
         # Don't want signal region events:
-        if tree.passedFullSelection:
-            if verbose: print_skipevent_msg("SR", evt_num, run, lumi, event)
-            evt_info_d["n_evts_passedFullSelection"] += 1
-            continue
+        # if tree.passedFullSelection:
+        #     if verbose: print_skipevent_msg("SR", evt_num, run, lumi, event)
+        #     evt_info_d["n_evts_passedFullSelection"] += 1
+        #     continue
 
         # Check the number of leptons in this event.
         n_tot_leps = len(tree.lepFSR_pt)
@@ -227,6 +241,7 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
         for fourlep_tup in fourlep_combos:
             if not myleps_pass_cjlst_osmethod_selection(
                     fourlep_tup, verbose=verbose, explain_skipevent=explain_skipevent,
+                    smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
                     run=run, lumi=lumi, event=event, entry=evt_num):
                 continue
             # Good RedBkg event!
@@ -237,6 +252,12 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
             else:
                 raise ValueError("Something is wrong with event selection.")
         # End loop over all possible four-lepton combinations.
+        evt_id = f"{run} : {lumi} : {event}"
+        if verbose:
+            print(
+                f"Event passed CJLST OS Method Selections:\n"
+                f"{evt_id} (entry {evt_num})"
+                )
         
         has_good_2p2f_combos = (n_tot_good_2p2f_combos_this_event > 0)
         has_good_3p1f_combos = (n_tot_good_3p1f_combos_this_event > 0)
@@ -256,8 +277,7 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
                     n_tot_good_3p1f_combos_this_event,
                     1)
             
-                key = f"{run} : {lumi} : {event}"
-                evt_info_2p2f_3p1f_d[key] = {
+                evt_info_2p2f_3p1f_d[evt_id] = {
                     "num_combos_2p2f" : n_tot_good_2p2f_combos_this_event,
                     "num_combos_3p1f" : n_tot_good_3p1f_combos_this_event,
                 }
@@ -276,7 +296,7 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
 
     if outfile_json is not None:
         save_to_json(evt_info_2p2f_3p1f_d, outfile_json, overwrite=True,
-                    sort_keys=False)
+                    sort_evt_ids=False)
 
 def evt_loop_evtselcjlst_eq4leps(tree, start_at_evt, break_at_evt, print_every=500000, verbose=False):
     """Apply CJLST's RedBkg event selection to all events in for loop.
