@@ -2,7 +2,7 @@ from ROOT import TFile
 
 from Utils_Python.printing import (print_periodic_evtnum,
     print_skipevent_msg, pretty_print_dict)
-from Utils_Python.Utils_Files import save_to_json
+from Utils_Python.Utils_Files import save_to_json, check_overwrite
 from classes.zzpair import myleps_pass_cjlst_osmethod_selection
 from classes.mylepton import (make_filled_mylep_ls,
     get_n_tight_myleps, get_n_loose_myleps, has_2p2f_leps, has_3p1f_leps)
@@ -112,6 +112,36 @@ def find_all_pairs_leps_loose(mylep_ls):
             pair_ls_loose.append(lep_tup)
     return pair_ls_loose
 
+def make_evt_info_d():
+    """Return a dict of counters for info in event loop.
+    
+    key (str): String of information about event loop.
+    val (int): Starts at 0. Gets incremented when necessary in event loop.
+    """
+    tup = (
+        # These will be dict keys whose values start at 0 and then increment.
+        "n_evts_eq4_leps",
+        "n_evts_ne4_leps",
+        "n_evts_lt4_leps",
+        "n_evts_ge4_leps",
+        "n_unique_redbkg_evts",
+        "n_good_2p2f_evts",
+        "n_good_3p1f_evts",
+        "n_evts_passedFullSelection",
+        "n_evts_passedZXCRSelection",
+        "n_evts_lt2tightleps",
+        "n_evts_lt1looselep",
+        "n_evts_lt2_zcand",
+        "n_evts_ne2_zcand",
+        "n_evts_fail_zzcand",
+        "n_evts_lt4tightpluslooseleps",
+        "n_evts_no4lep_combos",
+        "n_combos_4tightleps",
+        "n_evts_not2or3tightleps",
+        "n_tot_good_2p2f_combos"
+    )
+    return {s : 0 for s in tup}
+
 def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None,
                                       start_at_evt=0, break_at_evt=-1, fill_hists=True,
                                       explain_skipevent=False, verbose=False, print_every=50000,
@@ -143,26 +173,7 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
             Set this to True if you require Za to pass Z1 selections.
             Default is False.
     """
-    evt_info_tup = (
-        # These will be dict evt_ids whose values start at 0 and then increment.
-        "n_evts_eq4_leps",
-        "n_evts_ne4_leps",
-        "n_evts_lt4_leps",
-        "n_evts_ge4_leps",
-        "n_unique_redbkg_evts",
-        "n_good_2p2f_evts",
-        "n_good_3p1f_evts",
-        "n_evts_passedFullSelection",
-        "n_evts_passedZXCRSelection",
-        "n_evts_lt2tightleps",
-        "n_evts_lt1looselep",
-        "n_evts_lt2_zcand",
-        "n_evts_ne2_zcand",
-        "n_evts_fail_zzcand",
-        "n_evts_lt4tightpluslooseleps",
-        "n_evts_no4lep_combos",
-    )
-    evt_info_d = {s : 0 for s in evt_info_tup}
+    evt_info_d = make_evt_info_d()
     evt_info_2p2f_3p1f_d = {}
 
     if outfile_root is not None:
@@ -235,6 +246,10 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
                 print_skipevent_msg(msg, evt_num, run, lumi, event)
             continue
 
+        print(f"WHAT THE HELL ARE YOU?")
+        print(f"len(fourlep_combos) = {len(fourlep_combos)}")
+        _ = [lep.print_info() for lep in fourlep_combos[0]]
+
         # Check which four-lep combos pass ZZ selections.
         n_tot_good_2p2f_combos_this_event = 0
         n_tot_good_3p1f_combos_this_event = 0
@@ -244,6 +259,13 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
                     run=run, lumi=lumi, event=event, entry=evt_num):
                 continue
+            # Make sure it's not a SR event:
+            if get_n_tight_myleps(fourlep_tup) == 4:
+                evt_info_d["n_combos_4tightleps"] += 1
+                if explain_skipevent:
+                    print("Skipping 4-lep combo: 4 tight leptons.")
+                continue
+
             # Good RedBkg event!
             if has_2p2f_leps(fourlep_tup):
                 n_tot_good_2p2f_combos_this_event += 1
@@ -296,43 +318,194 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
 
     if outfile_json is not None:
         save_to_json(evt_info_2p2f_3p1f_d, outfile_json, overwrite=True,
-                    sort_evt_ids=False)
+                    sort_keys=False)
 
-def evt_loop_evtselcjlst_eq4leps(tree, start_at_evt, break_at_evt, print_every=500000, verbose=False):
-    """Apply CJLST's RedBkg event selection to all events in for loop.
-    
+def evt_loop_evtsel_2p2plusf3p1plusf_subevents(tree, outfile_root=None, outfile_json=None,
+                                      start_at_evt=0, break_at_evt=-1, fill_hists=True,
+                                      explain_skipevent=False, verbose=False, print_every=50000,
+                                      smartcut_ZapassesZ1sel=False, overwrite=False):
+    """Apply RedBkg "subevent" event selection to all events in tree.
+
     NOTE:
-    - Asks for exactly 4 leptons per event.
+    A "subevent" is a 4-lepton combination (so a "quartet" of leptons).
+
+    Select events with:
+        - Exactly 3 leptons passing tight selection and at least 1 failing.
+        - Exactly 2 leptons passing tight selection and at least 2 failing.
+        - When an event has >4 leptons, then multiple combinations
+        of 2P2F/3P1F are possible.
+            Suppose you have an event with 5 leptons, 3 of which pass tight
+            selection and 2 fail tight selection.
+            Then we have two different ways to make a 3P1F combo
+            (two 3P1F subevents).
+        - Does NOT select the BEST ZZ candidate per event.
+        If there are >1 ZZ candidates that pass ZZ selections,
+        then it takes all possible valid 4-lepton combinations ("quartets")
+        and analyzes each individually.
+    
+    Args:
+        smartcut_ZapassesZ1sel (bool, optional):
+            In the smart cut, the literature essentially says that if a Za
+            looks like a more on-shell Z boson than the Z1 AND if the Zb is a
+            low mass di-lep resonance, then veto the whole ZZ candidate.
+            However, literature doesn't check for Za passing Z1 selections!
+            Set this to True if you require Za to pass Z1 selections.
+            Default is False.
     """
+    evt_info_d = make_evt_info_d()
+    evt_info_2p2f_3p1f_d = {}
+
+    if outfile_root is not None:
+        check_overwrite(outfile_root, overwrite=overwrite)
+        new_file = TFile.Open(outfile_root, "recreate")
+    if outfile_json is not None:
+        check_overwrite(outfile_json, overwrite=overwrite)
+        
+    # new_tree = 
     n_tot = tree.GetEntries()
-    if verbose: print(f"Total number of events: {n_tot}")
+    if verbose:
+        print(f"Total number of events: {n_tot}")
+    print("Looking for AT LEAST 4 leptons per event.")
     for evt_num in range(start_at_evt, n_tot):
+
         if evt_num == break_at_evt:
             break
+
         print_periodic_evtnum(evt_num, n_tot, print_every=print_every)
 
         tree.GetEntry(evt_num)
-
-        # Don't want signal region events:
-        if tree.passedFullSelection:
-            print_skipevent_msg("SR", evt_num, verbose)
-            continue
+        run = tree.Run
+        lumi = tree.LumiSect
+        event = tree.Event
 
         # Check the number of leptons in this event.
         n_tot_leps = len(tree.lepFSR_pt)
-        h1_nleps_perevent.Fill(n_tot_leps, 1)
 
-        # Ensure EXACTLY 4 leptons in event:
-        if n_tot_leps != 4:
-            print_skipevent_msg("n_leps != 4", evt_num, verbose)
+        # Ensure at least 4 leptons in event:
+        if n_tot_leps < 4:
+            if verbose: print_skipevent_msg("n_leps < 4", evt_num, run, lumi, event)
+            evt_info_d["n_evts_lt4_leps"] += 1
             continue
-
-        # Initialize leptons.
+            
+        # Initialize ALL leptons (there can be more than 4 leptons).
         mylep_ls = make_filled_mylep_ls(tree)
-        if not myleps_pass_cjlst_osmethod_selection(mylep_ls, verbose=verbose):
-            continue
-        # NOW we have a good RedBkg event!
         n_tight_leps = get_n_tight_myleps(mylep_ls)
         n_loose_leps = get_n_loose_myleps(mylep_ls)
-        if verbose: print(f"FOUND GOOD EVENT {evt_num}!")
-    print("Done.")
+
+        # Require exactly 2 or 3 leptons passing tight selection.
+        if (n_tight_leps != 2) or (n_tight_leps != 3):
+            evt_info_d["n_evts_not2or3tightleps"] += 1
+            if explain_skipevent:
+                msg = (
+                    f"Doesn't contain 2 or 3 tight leps "
+                    f"(contains {n_tight_leps} tight leps)."
+                    )
+                print_skipevent_msg(msg, evt_num, run, lumi, event)
+            continue
+
+        # We are guaranteed to have at least 4-lep events with exactly 2 or 3
+        # tight leptons, the rest of which must be loose.
+        # Make all lepton quartet (i.e. make all subevents).
+        err_msg = "Should not get here. Correct the logic!"
+        fourlep_combos = []
+        evt_is_3p1plusf = False
+        evt_is_2p2plusf = False
+        if n_tight_leps == 3:
+            assert n_loose_leps >= 1, err_msg
+            evt_is_3p1plusf = True
+            fourlep_combos.extend(find_combos_3tight1loose(mylep_ls))
+        elif n_tight_leps == 2:
+            assert n_loose_leps >= 2, err_msg
+            evt_is_2p2plusf = True
+            fourlep_combos.extend(find_combos_2tight2loose(mylep_ls))
+        else:
+            raise ValueError(err_msg)
+     
+        # Check if any four-lep combos have 2P2F or 3P1F leptons.
+        # NOTE: This does not mean they pass selection yet!
+        if len(fourlep_combos) == 0:
+            raise ValueError("SHOULD NEVER TRIGGER. DELETE EVENTUALLY.")
+            evt_info_d["n_evts_no4lep_combos"] += 1
+            if explain_skipevent:
+                msg = (
+                    f"Found 0 four-lep combos of type 2P2F or 3P1F."
+                    f"  n_tight_leps={n_tight_leps}, "
+                    f"  n_loose_leps={n_loose_leps}"
+                )
+                print_skipevent_msg(msg, evt_num, run, lumi, event)
+            continue
+
+        # The event has EITHER 2 tight leps OR 3 tight leps.
+        # Now analyze each subevent (lepton quartet).
+        n_tot_good_2p2f_combos_this_event = 0
+        n_tot_good_3p1f_combos_this_event = 0
+        for fourlep_tup in fourlep_combos:
+            # Check which four-lep combos pass ZZ selections.
+            if not myleps_pass_cjlst_osmethod_selection(
+                    fourlep_tup, verbose=verbose, explain_skipevent=explain_skipevent,
+                    smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
+                    run=run, lumi=lumi, event=event, entry=evt_num):
+                continue
+
+            if has_2p2f_leps(fourlep_tup):
+                n_tot_good_2p2f_combos_this_event += 1
+                evt_info_d["n_tot_good_2p2f_combos"] += 1
+            elif has_3p1f_leps(fourlep_tup):
+                n_tot_good_3p1f_combos_this_event += 1
+                evt_info_d["n_tot_good_3p1f_combos"] += 1
+            else:
+                raise ValueError("SHOULD NEVER TRIGGER. DELETE EVENTUALLY.")
+            # Good RedBkg event!
+            # new_tree.Fill()
+
+        # Recall that we should have either only 3P1F or only 2P2F subevents.
+        if evt_is_3p1plusf:
+            assert n_tot_good_2p2f_combos_this_event == 0
+        if evt_is_2p2plusf:
+            assert n_tot_good_3p1f_combos_this_event == 0
+        # End loop over all possible four-lepton combinations.
+
+        evt_id = f"{run} : {lumi} : {event}"
+        if verbose:
+            print(
+                f"Event passed CJLST OS Method Selections:\n"
+                f"{evt_id} (entry {evt_num})"
+                )
+        
+        has_good_2p2f_combos = (n_tot_good_2p2f_combos_this_event > 0)
+        has_good_3p1f_combos = (n_tot_good_3p1f_combos_this_event > 0)
+
+        evt_info_d["n_unique_redbkg_evts"] += 1
+        if has_good_2p2f_combos:
+            evt_info_d["n_good_2p2f_evts"] += 1
+        if has_good_3p1f_combos:
+            evt_info_d["n_good_3p1f_evts"] += 1
+        
+        if fill_hists:
+            if has_good_2p2f_combos or has_good_3p1f_combos:
+                h1_n2p2f_combos.Fill(n_tot_good_2p2f_combos_this_event, 1)
+                h1_n3p1f_combos.Fill(n_tot_good_3p1f_combos_this_event, 1)
+                h2_n3p1fcombos_n2p2fcombos.Fill(
+                    n_tot_good_2p2f_combos_this_event,
+                    n_tot_good_3p1f_combos_this_event,
+                    1)
+            
+                evt_info_2p2f_3p1f_d[evt_id] = {
+                    "num_combos_2p2f" : n_tot_good_2p2f_combos_this_event,
+                    "num_combos_3p1f" : n_tot_good_3p1f_combos_this_event,
+                }
+    print("End loop over events.")
+    # TODO: Make new TTree with new branches.
+
+    pretty_print_dict(evt_info_d)
+    # new_tree.Write()
+    if outfile_root is not None:
+        h1_n2p2f_combos.Write()
+        h1_n3p1f_combos.Write()
+        h2_n3p1fcombos_n2p2fcombos.Write()
+        new_file.Close()
+        print(f"Hists stored in root file:\n{outfile_root}")
+
+    if outfile_json is not None:
+        save_to_json(evt_info_2p2f_3p1f_d, outfile_json, overwrite=overwrite,
+                    sort_keys=False)

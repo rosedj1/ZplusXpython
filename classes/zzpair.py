@@ -334,7 +334,6 @@ def myleps_pass_cjlst_osmethod_selection(
     
     NOTE:
     - Checks that they pass all Z1, Z2, and ZZ selection criteria.
-    - Checks for a 2P2F or 3P1F configuration.
     - `mylep_ls` should have exactly 4 leptons. 
 
     Args:
@@ -377,14 +376,14 @@ def myleps_pass_cjlst_osmethod_selection(
     zz_pair_ls = make_all_zz_pairs(zcand_ls,
                      explain_skipevent=explain_skipevent,
                      smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel)  # Does not implement ZZ cuts.
-    if verbose: print(f"Made {len(zz_pair_ls)} ZZ pairs (not candidates!)")
+    if verbose: print(f"Made {len(zz_pair_ls)} ZZ pairs (pair != candidate)")
     all_passing_ZZcands_cjlst_ls = get_all_ZZcands_passing_cjlst(zz_pair_ls)
     n_zzcands = len(all_passing_ZZcands_cjlst_ls)
-    # For RedBkg, each 4-lep combo should provide ONLY 1 valid ZZ candidate.
     if n_zzcands == 0:
         if verbose or explain_skipevent:
-            print(f"No ZZ candidates formed!")
+            print(f"No ZZ candidates formed! ({n_zzcands} candidates)")
         return False
+    # Should each 4-lep combo provide ONLY 1 valid ZZ candidate?
     if n_zzcands > 1:
         print(
             f"[WARNING] Found more than one ZZ candidate (found {n_zzcands}) "

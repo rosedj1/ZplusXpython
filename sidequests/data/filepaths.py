@@ -20,7 +20,8 @@ infile_elisa       = os.path.join(dir_cjlst, "CRLLos_listOfEvents.txt")
 infile_elisa_2p2f  = os.path.join(dir_cjlst, "CRLLos_2P2F_listOfEvents.txt")
 infile_elisa_3p1f  = os.path.join(dir_cjlst, "CRLLos_3P1F_listOfEvents.txt")
 infile_cjlst_sr    = os.path.join(dir_cjlst, "2018_CJLST_finalSelectedEvents_SR.txt")
-infile_matteo_data2018 = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200430_LegacyRun2/Data_2018/AllData/ZZ4lAnalysis.root"
+infile_matteo_data2018_fromlxp = "/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200430_LegacyRun2/Data_2018/AllData/ZZ4lAnalysis.root"
+infile_matteo_data2018_fromhpg = f"root://eoscms.cern.ch/{infile_matteo_data2018_fromlxp}"
 
 # elisa_3p1f_unique_evtid_dct_json = "/blue/avery/rosedj1/ZplusXpython/sidequests/findmissingevents_comparetoelisa/elisa_3p1f_unique_evtID_CR_dct.json"
 elisa_3p1f_unique_evtid_dct_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/data/json/elisa_3p1f_unique_evtID_CR_dct.json"

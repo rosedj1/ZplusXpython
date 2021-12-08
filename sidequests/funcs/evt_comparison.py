@@ -103,20 +103,9 @@ def print_evt_info_bbf(evt):
                 # Branch doesn't exist.
                 pass
 
-    # print(f"tree.passedFullSelection: {tree.passedFullSelection}")
-    # print(f"tree.passedZXCRSelection: {tree.passedZXCRSelection}")
-    # print(f"tree.nZXCRFailedLeptons: {tree.nZXCRFailedLeptons}")
-    # print(f"tree.lep_Hindex: {list(tree.lep_Hindex)}")
-    # print(f"tree.lepFSR_pt: {list(tree.lepFSR_pt)}")
-    # print(f"tree.lep_RelIso: {list(tree.lep_RelIso)}")
-    # print(f"tree.lep_id: {list(tree.lep_id)}")
-    # print(f"tree.lep_tightId: {list(tree.lep_tightId)}")
-    # print("#--- PRINT MORE Z AND H INFO HERE. ---#")
-
 def print_evt_info_cjlst(tree):
     print(f"tree.LepPt: {list(tree.LepPt)}")
     print(f"tree.LepLepId: {list(tree.LepLepId)}")
-    print(f"tree.LepisID (tight lep): {list(np.array(tree.LepisID, dtype=bool))}")
     print(f"tree.LepisID (tight lep): {list(np.array(tree.LepisID, dtype=bool))}")
     print(f"tree.CRflag: {tree.CRflag} -> {CjlstFlag(tree.CRflag).name}")
     print(f"tree.Z1Mass: {tree.Z1Mass}")
@@ -180,7 +169,6 @@ def analyze_single_evt(tree, run, lumi, event, fw="bbf", which="all",
 
         if "first" in which:
             break
-    print("Done.")
     return ls_evt_indices
 
 def get_control_region(evt):
