@@ -107,7 +107,7 @@ def setHistProperties(hist, lineWidth, lineStyle, lineColor, fillStyle, fillColo
     # return
     return 0
 
-def get_expected_n_evts(xs, lumi, name, event):
+def get_expected_n_evts(xs, lumi, isMCzz, event):
     """
     Return the expected number of events based on cross section, integrated
     luminosity, and the physics process.
@@ -123,20 +123,19 @@ def get_expected_n_evts(xs, lumi, name, event):
     event : TTree event obj
     """
     n_exp = xs * lumi
-    if "ZZ" in name:
+    if isMCzz:
         n_exp *= (event.k_qqZZ_qcd_M * event.k_qqZZ_ewk)
     return n_exp
 
-def get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_dataset_tot, wgt_from_ntuple=False):
+def get_evt_weight(xs_dct, Nickname, lumi, event, n_dataset_tot, wgt_from_ntuple=False):
     """
-    Return the corrected weight of event for MC based on data.
+    Return the event weight of Data (1) or MC based on L_int collected.
 
-    Generally:
+    To weight MC events:
     new_weight = old_weight * (xs * L_int / N_events_from_MC)
 
     Parameters
     ----------
-    isData : bool
     xs_dct : dict
         key (str) => nickname of physics process
         val (float) => cross section
@@ -149,21 +148,60 @@ def get_evt_weight(isData, xs_dct, Nickname, lumi, event, n_dataset_tot, wgt_fro
         The total number of events in the MC data set which you processed.
         Do: `crab report -d <dir>`.
     wgt_from_ntuple : bool
-        If True, return event.eventWeight from NTuple.
+        If True, return eventWeight from NTuple.
 
     Elisa uses:
     n_events = _lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
+
+    NOTE:
+    Jake's old 2018 Data, LUMI_INT = 57750.
+    Filippo's 2018 Data, LUMI_INT = 59830
+        (from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PdmVRun2LegacyAnalysis).
     """
+    isData = 1 if Nickname in "Data" else 0
+    isMCzz = 1 if Nickname in "ZZ" else 0
     if isData:
         return 1
     else:
         # Sample is Monte Carlo.
         xs = xs_dct[Nickname]
-        n_exp = get_expected_n_evts(xs, lumi, Nickname, event)
+        n_exp = get_expected_n_evts(xs, lumi, isMCzz, event)
         if wgt_from_ntuple:
             return event.eventWeight
-        new_weight = event.eventWeight * (n_exp / n_dataset_tot)  # newweight/oldweight = n_exp/n_obs = (L_int * xs * eff) / n_obs
+        # newweight/oldweight = n_exp/n_obs = (L_int * xs * eff) / n_obs
+        new_weight = event.eventWeight * (n_exp / n_dataset_tot)
         return new_weight
+
+def check_which_Z2_leps_failed(zz_pair):
+    """Return code telling which leptons from Z2 failed tight selection.
+
+    Args:
+        zz_pair (ZZPair): Contains quartet of MyLepton objects.
+    
+    NOTE:
+        - zz_pair.z_sec should be the MyZboson which is assigned as Z2.
+    
+    Returns
+    -------
+    0, if neither lep from Z2 failed.
+    2, if first lep from Z2 failed.
+    3, if second lep from Z2 failed.
+    5, if both leps from Z2 failed.
+    """
+    # See if leps 3 and 4 failed.
+    lep3_failed = zz_pair.z_sec.mylep1.is_loose
+    lep4_failed = zz_pair.z_sec.mylep2.is_loose
+
+    # lep3_failed = not(lep3.ltightId and ((abs(lep3.lid)==11) or (abs(idL[2])==13 and lep_iso[2]<0.35)))
+    # lep4_failed = not(lep_tight[3] and ((abs(idL[3])==11) or (abs(idL[3])==13 and lep_iso[3]<0.35)))
+    if lep3_failed and (not lep4_failed):
+        return 2
+    elif (not lep3_failed) and lep4_failed:
+        return 3
+    elif lep3_failed and lep4_failed:
+        return 5
+    else:
+        return 0
 
 def make_hist_name(kinem, control_reg, fs):
     """
@@ -267,6 +305,23 @@ def reconstruct_Zcand_leptons(event):
     lep_2.SetPtEtaPhiM(event.lep_pt[ndx1], event.lep_eta[ndx1], event.lep_phi[ndx1], event.lep_mass[ndx1])
     return (lep_1, lep_2)
 
+def get_fakerate(mylep, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE):
+    """Return the value of the fake rate based on `mylep` kinematics."""
+    lep_id = mylep.lid
+    lep_eta = mylep.leta
+    if ((math.fabs(lep_id) == 11) and (math.fabs(lep_eta) < 1.497)):
+        return h1D_FRel_EB.GetBinContent(h1D_FRel_EB.FindBin(lep_pt))
+
+    if ((math.fabs(lep_id) == 11) and (math.fabs(lep_eta) > 1.497)):
+        return h1D_FRel_EE.GetBinContent(h1D_FRel_EE.FindBin(lep_pt))
+
+    if ((math.fabs(lep_id) == 13) and (math.fabs(lep_eta) < 1.2)):
+        return h1D_FRmu_EB.GetBinContent(h1D_FRmu_EB.FindBin(lep_pt))
+
+    if ((math.fabs(lep_id) == 13) and (math.fabs(lep_eta) > 1.2)):
+        return h1D_FRmu_EE.GetBinContent(h1D_FRmu_EE.FindBin(lep_pt))
+
+    return 0
 def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi=59700, kinem_ls=['']):
     """Analyze each event in sample `Nickname` and create histograms.
 
@@ -549,7 +604,7 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
         # Use the L_int and xs to determine n_expected and event weights.
         # n_dataset_tot = floa[Nickname])
         n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[Nickname])
-        weight = get_evt_weight(isData, xs_dct_jake, Nickname, lumi, event, n_dataset_tot, wgt_from_ntuple=wgt_from_ntuple)
+        weight = get_evt_weight(xs_dct_jake, Nickname, lumi, event, n_dataset_tot, wgt_from_ntuple=wgt_from_ntuple)
 
         #######################################
         #--- CR: Z+L for fake rate studies ---#

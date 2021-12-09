@@ -22,6 +22,9 @@ class MyLepton:
         self.lmass_NoFSR = lmass_NoFSR
         self.ndx_lepvec = ndx_lepvec  # Index of lepton in vectors like lep_pt.
         
+        # NOTE: Here, "tight" and "loose" are exclusive!
+        # Compare this to previous literature which says that if a lepton is
+        # tight, then it also satisfies loose selections! Not the case here.
         if self.passes_tightlep_selection():
             self.is_tight = True
             self.is_loose = False

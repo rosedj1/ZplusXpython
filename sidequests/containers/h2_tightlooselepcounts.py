@@ -42,8 +42,8 @@ h1_n3p1f_combos = make_TH1F(
 h2_n3p1fcombos_n2p2fcombos = make_TH2F(
     "h2_n3p1fcombos_n2p2fcombos",
     title="",
-    n_binsx=11, x_label=r"Number of 2P2F Combinations per Event",
-    x_units=None, x_min=0, x_max=11,
+    n_binsx=12, x_label=r"Number of 2P2F Combinations per Event",
+    x_units=None, x_min=0, x_max=12,
     n_binsy=6, y_label=r"Number of 3P1F Combinations per Event",
     y_units=None, y_min=0, y_max=6,
     z_min=0, z_max=10000, z_label_size=None,

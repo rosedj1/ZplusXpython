@@ -326,6 +326,66 @@ def get_all_ZZcands_passing_cjlst(zz_pair_ls):
     """
     return [zz for zz in zz_pair_ls if zz.passes_cjlst_sel()]
 
+def get_ZZcands_from_myleps_OSmethod(
+    mylep_ls, verbose=False, explain_skipevent=False,
+    smartcut_ZapassesZ1sel=False,
+    run=None, lumi=None, event=None, entry=None):
+    """Return list of all valid ZZ candidates from `mylep_ls`.
+    
+    NOTE:
+    - Checks that they pass all Z1, Z2, and ZZ selection criteria.
+    - `mylep_ls` should have exactly 4 leptons. 
+
+    Args:
+        smartcut_ZapassesZ1sel (bool, optional):
+            In the smart cut, the literature essentially says that if a Za
+            looks like a more on-shell Z boson than the Z1 AND if the Zb is a
+            low mass di-lep resonance, then veto the whole ZZ candidate.
+            However, literature doesn't check for Za passing Z1 selections!
+            Set this to True if you require Za to pass Z1 selections.
+            Default is False.
+        run (int): The run number, used for debugging.
+        lumi (int): The lumi number, used for debugging.
+        event (int): The event number, used for debugging.
+        entry (int): The row of tree containing event, used for debugging.
+    """
+    assert len(mylep_ls) == 4, "`mylep_ls` must have only 4 leptons."
+    empty_ls = []
+    # Need 2 tight + 2 loose leps (2P2F) or 3 tight + 1 loose leps (3P1F).
+    # This checks that leptons pass basic kinematic criteria (at least loose).
+    if verbose: print("Checking for 2P2F or 3P1F leptons.")
+    if (not has_2p2f_leps(mylep_ls)) and (not has_3p1f_leps(mylep_ls)):
+        if verbose or explain_skipevent:
+            print("Leptons are not 2P2F or 3P1F.")
+        return empty_ls
+    
+    # Build all general Z candidates:
+    # 12 < mll < 120 GeV.
+    # OSSF leptons.
+    # Leptons at least loose.
+    if verbose: print("Making all Z candidates.")
+    zcand_ls = make_all_zcands(mylep_ls, explain_skipevent=explain_skipevent)
+    n_zcands = len(zcand_ls)
+    if verbose: print(f"Number of Z candidates: {n_zcands}")
+    if n_zcands < 2:
+        if verbose or explain_skipevent:
+            print(f"Found fewer than two Z candidates ({n_zcands}).")
+        return empty_ls
+    
+    # Build all ZZ candidates.
+    if verbose: print("Making all ZZ candidates.")
+    zz_pair_ls = make_all_zz_pairs(zcand_ls,
+                     explain_skipevent=explain_skipevent,
+                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel)  # Does not implement ZZ cuts.
+    if verbose: print(f"Made {len(zz_pair_ls)} ZZ pairs (pair != candidate)")
+    ls_all_passing_zz = get_all_ZZcands_passing_cjlst(zz_pair_ls)
+    if len(ls_all_passing_zz) > 1:
+        print("MULTIPLE passing ZZ candidates found in this subevent!")
+        for zz in ls_all_passing_zz:
+            zz.print_info()
+        raise ValueError("Jake, choose a best ZZ among this quartet.")
+    return ls_all_passing_zz
+
 def myleps_pass_cjlst_osmethod_selection(
     mylep_ls, verbose=False, explain_skipevent=False,
     smartcut_ZapassesZ1sel=False,
@@ -349,36 +409,13 @@ def myleps_pass_cjlst_osmethod_selection(
         event (int): The event number, used for debugging.
         entry (int): The row of tree containing event, used for debugging.
     """
-    assert len(mylep_ls) == 4, "`mylep_ls` must have only 4 leptons."
-    # Need 2 tight + 2 loose leps (2P2F) or 3 tight + 1 loose leps (3P1F).
-    # This checks that leptons pass basic kinematic criteria (at least loose).
-    if verbose: print("Checking for 2P2F or 3P1F leptons.")
-    if (not has_2p2f_leps(mylep_ls)) and (not has_3p1f_leps(mylep_ls)):
-        if verbose or explain_skipevent:
-            print("Leptons are not 2P2F or 3P1F.")
-        return False
-    
-    # Build all general Z candidates:
-    # 12 < mll < 120 GeV.
-    # OSSF leptons.
-    # Leptons at least loose.
-    if verbose: print("Making all Z candidates.")
-    zcand_ls = make_all_zcands(mylep_ls, explain_skipevent=explain_skipevent)
-    n_zcands = len(zcand_ls)
-    if verbose: print(f"Number of Z candidates: {n_zcands}")
-    if n_zcands < 2:
-        if verbose or explain_skipevent:
-            print(f"Found fewer than two Z candidates ({n_zcands}).")
-        return False
-    
-    # Build all ZZ candidates.
-    if verbose: print("Making all ZZ candidates.")
-    zz_pair_ls = make_all_zz_pairs(zcand_ls,
-                     explain_skipevent=explain_skipevent,
-                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel)  # Does not implement ZZ cuts.
-    if verbose: print(f"Made {len(zz_pair_ls)} ZZ pairs (pair != candidate)")
-    all_passing_ZZcands_cjlst_ls = get_all_ZZcands_passing_cjlst(zz_pair_ls)
-    n_zzcands = len(all_passing_ZZcands_cjlst_ls)
+    all_passing_zzcands = get_all_ZZcands_passing_cjlst_from_mylep_ls(
+        mylep_ls=mylep_ls, verbose=verbose,
+        explain_skipevent=explain_skipevent,
+        smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
+        run=run, lumi=lumi, event=event, entry=entry
+        )
+    n_zzcands = len(all_passing_zzcands)
     if n_zzcands == 0:
         if verbose or explain_skipevent:
             print(f"No ZZ candidates formed! ({n_zzcands} candidates)")
@@ -389,6 +426,13 @@ def myleps_pass_cjlst_osmethod_selection(
             f"[WARNING] Found more than one ZZ candidate (found {n_zzcands}) "
             f"in event {run} : {lumi} : {event} (entry {entry})"
             )
+        # for zzcand in all_passing_ZZcands_cjlst_ls:
+        #     zzcand.print_info()
         # return False
-    # These 4 leptons form exactly one valid ZZ candidate according to CJLST!
+    # According to CJLST, these 4 leptons should form exactly one valid
+    # ZZ candidate! Must decide which ZZ is the best.
+    # If the two ZZs have the same leptons, choose the cand whose m(Z1) is
+    # closer to the m(Z_PDG) --- WARNING though! Should check that winning Z1
+    # still passes Z1 selections!!!
+    # If two ZZs do NOT have same leptons, then choose the ZZ with higher Kd.
     return True

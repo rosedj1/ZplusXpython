@@ -2,7 +2,7 @@
 # ============================================================================
 # Created: 2021-12-02
 # Creator: Jake Rosenzweig
-# Comment: 
+# Comment: Useful for doing event synchronization.
 # ============================================================================
 """
 import sys
@@ -20,18 +20,22 @@ from Utils_Python.Utils_Files import (
 from Utils_Python.printing import print_header_message
 
 verbose = 1
-explain_skipevent = 1
-overwrite = 1
-print_n_common_evts = 0
+explain_skipevent = 0
+overwrite = 0
+print_n_common_evts = 1
 smartcut_ZapassesZ1sel = 0
 
 use_analyzer_cjlst = 0
 use_analyzer_bbf = 0
-use_analyzer_jake = 1
+use_analyzer_jake = 0
 
 save_bbf_pkl = 0
-open_bbf_pkl = 0
+open_bbf_pkl = 1
+# Premade dict of event IDs from Filippo's 2018 Data.
 pathpkl_bbf_evtid_set = "../pkls/bbf_evtid_set_data2018.pkl"
+
+# infile_json = "../../sidequests/json/cjlstevtsel_2p2f_3p1f_widebins_includepassfullsel.json"
+infile_json = "../../sidequests/json/cjlstOSmethodevtsel_2p2plusf_3p1plusf.json"
 
 outlog_cjlst = "../logs/test/elisa_unique_3p1f_analyzercjlst.log"
 outlog_bbf   = "../logs/test/elisa_unique_3p1f_analyzerbbf.log"
@@ -54,7 +58,7 @@ if __name__ == '__main__':
         if use_analyzer_bbf or use_analyzer_jake:
             assert evt_start_bbfandjake is not None
     # Get 3P1F events from Filippo's 2018 Data rootfile.
-    d_jakeusingcjlstevtsel_2p2f_3p1f = open_json("../../sidequests/json/cjlstevtsel_2p2f_3p1f_widebins_includepassfullsel.json")
+    d_jakeusingcjlstevtsel_2p2f_3p1f = open_json(infile_json)
     ls_3p1f_evtid_filippo = [evtid for evtid, d_small in d_jakeusingcjlstevtsel_2p2f_3p1f.items() if d_small["num_combos_3p1f"] > 0]
     ls_2p2f_evtid_filippo = [evtid for evtid, d_small in d_jakeusingcjlstevtsel_2p2f_3p1f.items() if d_small["num_combos_2p2f"] > 0]
 
@@ -66,11 +70,15 @@ if __name__ == '__main__':
 
     #--- Grab all Elisa's unique 3P1F events. ---#
     elisa_evts_3p1f_unique = frle_elisa_3p1f.analyze_evtids(frle_filippo_3p1f, event_type="unique")
+    elisa_evts_2p2f_unique = frle_elisa_2p2f.analyze_evtids(frle_filippo_2p2f, event_type="unique")
+    with open("", "w") as f:
+
     #--- Count number of common events. ---#
     if print_n_common_evts:
         evts_3p1f_common = frle_elisa_3p1f.analyze_evtids(frle_filippo_3p1f, event_type="common")
         evts_2p2f_common = frle_elisa_2p2f.analyze_evtids(frle_filippo_2p2f, event_type="common")
 
+    sys.exit()
     f_cjlst = TFile.Open(infile_matteo_data2018_fromhpg, "read")
     tree_cjlst = f_cjlst.Get("CRZLLTree/candTree")
     print("Opened CJLST file.")
