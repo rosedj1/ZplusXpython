@@ -27,22 +27,19 @@ New branches added:
 """
 import os
 from ROOT import TFile
-from array import array
-import numpy as np
 import argparse
 # Local modules.
 from sidequests.funcs.evt_loops import (
-    evt_loop_evtselcjlst_atleast4leps,
-    evt_loop_evtsel_2p2plusf3p1plusf_subevents)
+    evt_loop_evtsel_2p2plusf3p1plusf_subevents
+    )
 from sidequests.data.filepaths import infile_filippo_data_2018_fromhpg
 from Utils_Python.Utils_Files import check_overwrite
-from vukasin_version_of_code.estimateZX import getFR
-from vukasin_version_of_code.analyzeZX import setNEvents
 
 explain_skipevent = 0
-start_at_evt = 0
-break_at_evt = -1  # Use -1 to run over all events.
-print_every = 250000
+start_at_evt = 5636
+break_at_evt = 5638  # Use -1 to run over all events.
+print_every = 2500
+fill_hists = 1
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 
 # infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZLL_CR/Data_2018_NoDuplicates.root"
@@ -50,8 +47,9 @@ smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
 
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
-outfile_base_root = "sidequests/rootfiles/h2_cjlstOSmethodevtsel_2p2plusf_3p1plusf.root"
-outfile_base_json = "sidequests/json/cjlstOSmethodevtsel_2p2plusf_3p1plusf.json"
+outfile_base_root = "tests/h2_cjlstOSmethodevtsel_2p2plusf_3p1plusf_ONLYFIRSTZZCAND.root"
+outfile_base_json = "tests/cjlstOSmethodevtsel_2p2plusf_3p1plusf_ONLYFIRSTZZCAND.json"
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # parser.add_argument('-i', '--infile',          type=str, dest="infile", help="input root file")
@@ -67,6 +65,7 @@ if __name__ == '__main__':
     # outfile_root = args.outfile
     # name = args.name
     overwrite = args.overwrite
+    verbose = args.verbose
 
     outfile_json = os.path.join(outdir, outfile_base_json)
     outfile_root = os.path.join(outdir, outfile_base_root)
@@ -77,20 +76,18 @@ if __name__ == '__main__':
             os.path.dirname(outfile_root), exist_ok=True
             )
 
-    check_overwrite(
-        outfile_json, outfile_root,
-        overwrite=overwrite
-        )
-
     f_filippo_data2018 = TFile.Open(infile_filippo_data_2018_fromhpg)
     tree = f_filippo_data2018.Get("passedEvents")
     print(f"Successfully opened:\n{infile_filippo_data_2018_fromhpg}")
 
-
-
-    evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=outfile_root, outfile_json=outfile_json,
-                                    name="Data",
-                                     start_at_evt=start_at_evt, break_at_evt=break_at_evt,
-                                     fill_hists=True, explain_skipevent=explain_skipevent, verbose=verbose,
-                                     print_every=print_every, smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel)
+    evt_loop_evtsel_2p2plusf3p1plusf_subevents(
+        tree,
+        infile_FR_wz_removed=infile_FR_wz_removed,
+        outfile_root=outfile_root, outfile_json=outfile_json,
+        name="Data",
+        start_at_evt=start_at_evt, break_at_evt=break_at_evt,
+        fill_hists=fill_hists, explain_skipevent=explain_skipevent, verbose=verbose,
+        print_every=print_every, smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
+        overwrite=overwrite
+        )
 

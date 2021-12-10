@@ -383,7 +383,7 @@ def get_ZZcands_from_myleps_OSmethod(
         print("MULTIPLE passing ZZ candidates found in this subevent!")
         for zz in ls_all_passing_zz:
             zz.print_info()
-        raise ValueError("Jake, choose a best ZZ among this quartet.")
+        # raise ValueError("Jake, choose a best ZZ among this quartet.")
     return ls_all_passing_zz
 
 def myleps_pass_cjlst_osmethod_selection(
@@ -409,7 +409,7 @@ def myleps_pass_cjlst_osmethod_selection(
         event (int): The event number, used for debugging.
         entry (int): The row of tree containing event, used for debugging.
     """
-    all_passing_zzcands = get_all_ZZcands_passing_cjlst_from_mylep_ls(
+    all_passing_zzcands = get_ZZcands_from_myleps_OSmethod(
         mylep_ls=mylep_ls, verbose=verbose,
         explain_skipevent=explain_skipevent,
         smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,

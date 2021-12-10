@@ -305,23 +305,47 @@ def reconstruct_Zcand_leptons(event):
     lep_2.SetPtEtaPhiM(event.lep_pt[ndx1], event.lep_eta[ndx1], event.lep_phi[ndx1], event.lep_mass[ndx1])
     return (lep_1, lep_2)
 
-def get_fakerate(mylep, h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE):
+def get_fakerate(
+    mylep,
+    h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
+    eta_bound_elec=1.497, eta_bound_muon=1.2,
+    ):
     """Return the value of the fake rate based on `mylep` kinematics."""
     lep_id = mylep.lid
+    lep_pt = mylep.lpt
     lep_eta = mylep.leta
-    if ((math.fabs(lep_id) == 11) and (math.fabs(lep_eta) < 1.497)):
-        return h1D_FRel_EB.GetBinContent(h1D_FRel_EB.FindBin(lep_pt))
+    # Electrons.
+    if abs(lep_id) == 11:
+        if abs(lep_eta) < eta_bound_elec:
+            return h1D_FRel_EB.GetBinContent(h1D_FRel_EB.FindBin(lep_pt))
+        else:
+            return h1D_FRel_EE.GetBinContent(h1D_FRel_EE.FindBin(lep_pt))
+    # Muons.
+    elif abs(lep_id) == 13:
+        if abs(lep_eta) < eta_bound_muon:
+            return h1D_FRmu_EB.GetBinContent(h1D_FRmu_EB.FindBin(lep_pt))
+        else:
+            return h1D_FRmu_EE.GetBinContent(h1D_FRmu_EE.FindBin(lep_pt))
+    else:
+        return 0
+    
+def retrieve_FR_hists(infile):
+    """Return a 4-tuple of fake rate TH1's."""
+    # Get fake rate hists.
+    f = rt.TFile(infile, "read")
+    print("Retrieving fake rates...")
+    h_FRe_bar = f.Get("Data_FRel_EB")
+    h_FRe_end = f.Get("Data_FRel_EE")
+    h_FRmu_bar = f.Get("Data_FRmu_EB")
+    h_FRmu_end = f.Get("Data_FRmu_EE")
+    # Let hists survive after their TFile is closed.
+    h_FRe_bar.SetDirectory(0)
+    h_FRe_end.SetDirectory(0)
+    h_FRmu_bar.SetDirectory(0)
+    h_FRmu_end.SetDirectory(0)
+    f.Close()
+    return (h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end)
 
-    if ((math.fabs(lep_id) == 11) and (math.fabs(lep_eta) > 1.497)):
-        return h1D_FRel_EE.GetBinContent(h1D_FRel_EE.FindBin(lep_pt))
-
-    if ((math.fabs(lep_id) == 13) and (math.fabs(lep_eta) < 1.2)):
-        return h1D_FRmu_EB.GetBinContent(h1D_FRmu_EB.FindBin(lep_pt))
-
-    if ((math.fabs(lep_id) == 13) and (math.fabs(lep_eta) > 1.2)):
-        return h1D_FRmu_EE.GetBinContent(h1D_FRmu_EE.FindBin(lep_pt))
-
-    return 0
 def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi=59700, kinem_ls=['']):
     """Analyze each event in sample `Nickname` and create histograms.
 
