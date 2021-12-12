@@ -353,7 +353,11 @@ def get_ZZcands_from_myleps_OSmethod(
     empty_ls = []
     # Need 2 tight + 2 loose leps (2P2F) or 3 tight + 1 loose leps (3P1F).
     # This checks that leptons pass basic kinematic criteria (at least loose).
-    if verbose: print("Checking for 2P2F or 3P1F leptons.")
+    if verbose:
+        print(
+            f"Event {run}:{lumi}:{event} (entry = {entry})\n"
+            f"  Checking for 2P2F or 3P1F leptons."
+            )
     if (not has_2p2f_leps(mylep_ls)) and (not has_3p1f_leps(mylep_ls)):
         if verbose or explain_skipevent:
             print("Leptons are not 2P2F or 3P1F.")
@@ -363,13 +367,13 @@ def get_ZZcands_from_myleps_OSmethod(
     # 12 < mll < 120 GeV.
     # OSSF leptons.
     # Leptons at least loose.
-    if verbose: print("Making all Z candidates.")
+    if verbose: print("  Making all Z candidates.")
     zcand_ls = make_all_zcands(mylep_ls, explain_skipevent=explain_skipevent)
     n_zcands = len(zcand_ls)
-    if verbose: print(f"Number of Z candidates: {n_zcands}")
+    if verbose: print(f"  Number of Z candidates: {n_zcands}")
     if n_zcands < 2:
         if verbose or explain_skipevent:
-            print(f"Found fewer than two Z candidates ({n_zcands}).")
+            print(f"  Found fewer than two Z candidates ({n_zcands}).")
         return empty_ls
     
     # Build all ZZ candidates.
@@ -377,12 +381,16 @@ def get_ZZcands_from_myleps_OSmethod(
     zz_pair_ls = make_all_zz_pairs(zcand_ls,
                      explain_skipevent=explain_skipevent,
                      smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel)  # Does not implement ZZ cuts.
-    if verbose: print(f"Made {len(zz_pair_ls)} ZZ pairs (pair != candidate)")
     ls_all_passing_zz = get_all_ZZcands_passing_cjlst(zz_pair_ls)
+    if verbose:
+        print(
+            f"Made {len(zz_pair_ls)} ZZ pairs (pair != candidate).\n"
+            f"Made {len(ls_all_passing_zz)} ZZ cands."
+            )
     if len(ls_all_passing_zz) > 1:
         print("MULTIPLE passing ZZ candidates found in this subevent!")
-        for zz in ls_all_passing_zz:
-            zz.print_info()
+        # for zz in ls_all_passing_zz:
+        #     zz.print_info()
         # raise ValueError("Jake, choose a best ZZ among this quartet.")
     return ls_all_passing_zz
 
@@ -418,7 +426,7 @@ def myleps_pass_cjlst_osmethod_selection(
     n_zzcands = len(all_passing_zzcands)
     if n_zzcands == 0:
         if verbose or explain_skipevent:
-            print(f"No ZZ candidates formed! ({n_zzcands} candidates)")
+            print(f"  No ZZ candidates formed! ({n_zzcands} candidates)")
         return False
     # Should each 4-lep combo provide ONLY 1 valid ZZ candidate?
     if n_zzcands > 1:

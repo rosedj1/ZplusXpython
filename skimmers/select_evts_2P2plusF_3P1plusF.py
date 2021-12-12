@@ -36,10 +36,10 @@ from sidequests.data.filepaths import infile_filippo_data_2018_fromhpg
 from Utils_Python.Utils_Files import check_overwrite
 
 explain_skipevent = 0
-start_at_evt = 5636
-break_at_evt = 5638  # Use -1 to run over all events.
-print_every = 2500
-fill_hists = 1
+start_at_evt = 0
+break_at_evt = -1  # Use -1 to run over all events.
+print_every = 250000
+fill_hists = 0
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 
 # infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZLL_CR/Data_2018_NoDuplicates.root"

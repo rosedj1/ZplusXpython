@@ -39,6 +39,19 @@ h1_n3p1f_combos = make_TH1F(
     units=None
     )
 
+h1_m4l_2p2f = make_TH1F(
+    internal_name="h1_m4l_2p2f",
+    title="",
+    n_bins=40,
+    xlabel=r"m_{4l}",
+    x_min=70,
+    x_max=870,
+    ylabel="Number of Events",
+    y_min=None,
+    y_max=None,
+    units=None
+    )
+
 h2_n3p1fcombos_n2p2fcombos = make_TH2F(
     "h2_n3p1fcombos_n2p2fcombos",
     title="",

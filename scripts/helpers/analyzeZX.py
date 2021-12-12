@@ -309,23 +309,67 @@ def get_fakerate(
     mylep,
     h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
     eta_bound_elec=1.497, eta_bound_muon=1.2,
-    ):
+    verbose=False):
     """Return the value of the fake rate based on `mylep` kinematics."""
     lep_id = mylep.lid
     lep_pt = mylep.lpt
     lep_eta = mylep.leta
+    if verbose:
+        print("Retrieving fake rates.")
+        # Prep info message.
+        info = (
+            f"  PART in REG region:\n"
+            f"    pt={lep_pt:.6f}, eta={lep_eta:.6f} SIGN BOUND gives"
+            f" fakerate=FR"
+        )
     # Electrons.
     if abs(lep_id) == 11:
         if abs(lep_eta) < eta_bound_elec:
-            return h1D_FRel_EB.GetBinContent(h1D_FRel_EB.FindBin(lep_pt))
+            fr = h1D_FRel_EB.GetBinContent(h1D_FRel_EB.FindBin(lep_pt))
+            if verbose:
+                print(
+                    info.replace("PART", "electron")
+                        .replace("REG", "barrel")
+                        .replace("SIGN", "<")
+                        .replace("BOUND", f"{eta_bound_elec}")
+                        .replace("FR", f"{fr:.6f}")
+                    )
+            return fr
         else:
-            return h1D_FRel_EE.GetBinContent(h1D_FRel_EE.FindBin(lep_pt))
+            fr = h1D_FRel_EE.GetBinContent(h1D_FRel_EE.FindBin(lep_pt))
+            if verbose:
+                print(
+                    info.replace("PART", "electron")
+                        .replace("REG", "endcap")
+                        .replace("SIGN", ">")
+                        .replace("BOUND", f"{eta_bound_elec}")
+                        .replace("FR", f"{fr:.6f}")
+                    )
+            return fr
     # Muons.
     elif abs(lep_id) == 13:
         if abs(lep_eta) < eta_bound_muon:
-            return h1D_FRmu_EB.GetBinContent(h1D_FRmu_EB.FindBin(lep_pt))
+            fr = h1D_FRmu_EB.GetBinContent(h1D_FRmu_EB.FindBin(lep_pt))
+            if verbose:
+                print(
+                    info.replace("PART", "muon")
+                        .replace("REG", "barrel")
+                        .replace("SIGN", "<")
+                        .replace("BOUND", f"{eta_bound_muon}")
+                        .replace("FR", f"{fr:.6f}")
+                    )
+            return fr
         else:
-            return h1D_FRmu_EE.GetBinContent(h1D_FRmu_EE.FindBin(lep_pt))
+            fr = h1D_FRmu_EE.GetBinContent(h1D_FRmu_EE.FindBin(lep_pt))
+            if verbose:
+                print(
+                    info.replace("PART", "muon")
+                        .replace("REG", "endcap")
+                        .replace("SIGN", ">")
+                        .replace("BOUND", f"{eta_bound_muon}")
+                        .replace("FR", f"{fr:.6f}")
+                    )
+            return fr
     else:
         return 0
     

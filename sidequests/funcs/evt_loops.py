@@ -138,28 +138,29 @@ def make_evt_info_d():
     """
     tup = (
         # These will be dict keys whose values start at 0 and then increment.
-        "n_evts_eq4_leps",
-        "n_evts_ne4_leps",
+        # "n_evts_eq4_leps",
+        # "n_evts_ne4_leps",
         "n_evts_lt4_leps",
-        "n_evts_ge4_leps",
+        "n_evts_not2or3tightleps",
+        "n_evts_nosubevtspassingsel",
+        "n_evts_fail_zzcand",
+        # "n_evts_ge4_leps",
+        # "n_evts_passedFullSelection",
+        # "n_evts_passedZXCRSelection",
+        # "n_evts_lt2tightleps",
+        # "n_evts_lt1looselep",
+        # "n_evts_lt2_zcand",
+        # "n_evts_ne2_zcand",
+        # "n_evts_lt4tightpluslooseleps",
+        # "n_evts_no4lep_combos",
+        # "n_combos_4tightleps",
         "n_good_redbkg_evts",
         "n_good_2p2f_evts",
         "n_good_3p1f_evts",
-        "n_evts_passedFullSelection",
-        "n_evts_passedZXCRSelection",
-        "n_evts_lt2tightleps",
-        "n_evts_lt1looselep",
-        "n_evts_lt2_zcand",
-        "n_evts_ne2_zcand",
-        "n_evts_fail_zzcand",
-        "n_evts_lt4tightpluslooseleps",
-        "n_evts_no4lep_combos",
-        "n_combos_4tightleps",
-        "n_evts_not2or3tightleps",
-        "n_tot_good_2p2f_combos",
-        "n_evts_nosubevtspassingsel",
         "n_tot_good_2p2f_combos",
         "n_tot_good_3p1f_combos",
+        "n_evts_mass4lREFIT_le0",
+        "n_evts_mass4lREFIT_vtx_BS_le0"
     )
     return {s : 0 for s in tup}
 
@@ -553,7 +554,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 assert subevt_passes_sel_3p1f
                 fr2 = get_fakerate(
                     mylep1_fromz2,
-                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end
+                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
+                    verbose=verbose
                     )
                 fr3 = 0
                 new_weight = (fr2 / (1-fr2)) * evt_weight_calcd
@@ -563,7 +565,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 fr2 = 0
                 fr3 = get_fakerate(
                     mylep2_fromz2,
-                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end
+                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
+                    verbose=verbose
                     )
                 new_weight = (fr3 / (1-fr3)) * evt_weight_calcd
             #=== 2P2F subevent. ===#
@@ -572,12 +575,14 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 assert subevt_passes_sel_2p2f
                 # is3P1F_zz = 0
                 fr2 = get_fakerate(
-                    mylep2_fromz2,
-                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end
+                    mylep1_fromz2,
+                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
+                    verbose=verbose
                     )
                 fr3 = get_fakerate(
                     mylep2_fromz2,
-                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end
+                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
+                    verbose=verbose
                     )
                 new_weight = (fr2 / (1-fr2)) * (fr3 / (1-fr3)) * evt_weight_calcd
 
@@ -636,8 +641,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         evt_id = f"{run} : {lumi} : {event}"
         if verbose:
             print(
-                f"Event passed CJLST OS Method Selections:\n"
-                f"Event type {evt_type_msg}, {evt_id}, (entry {evt_num})"
+                f"** Event passed CJLST OS Method Selections: **\n"
+                f"     Event type {evt_type_msg}, {evt_id}, (entry {evt_num})"
                 )
         
         if fill_hists:
@@ -652,6 +657,11 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 "num_combos_2p2f" : n_subevts_2p2f,
                 "num_combos_3p1f" : n_subevts_3p1f,
             }
+
+        if tree.mass4lREFIT <= 0:
+            evt_info_d["n_evts_mass4lREFIT_le0"] += 1
+        if tree.mass4lREFIT_vtx_BS <= 0:
+            evt_info_d["n_evts_mass4lREFIT_vtx_BS_le0"] += 1
     print("End loop over events.")
 
     print("Event info:")
