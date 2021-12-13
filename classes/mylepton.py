@@ -244,27 +244,3 @@ def has_atleastone_3p1f_comb(mylep_ls):
     if get_n_loose_myleps(mylep_ls) < 1:
         return False
     return True
-
-# def has_xtightleps_ylooseleps(
-#     mylep_ls, x, y, exactly_x=False, exactly_y=False,
-#     atleast_x=True, atleast_y=True):
-#     """Return True if exactly/atleast x tight leps and y loose leps.
-
-#     Args:
-#         mylep_ls (list): [description]
-#         x ([type]): [description]
-#         y ([type]): [description]
-#         exactly_x (bool, optional): [description]. Defaults to False.
-#         exactly_y (bool, optional): [description]. Defaults to False.
-#         atleast_x (bool, optional): [description]. Defaults to True.
-#         atleast_y (bool, optional): [description]. Defaults to True.
-#     """
-#     assert not (exactly_x and atleast_x), "Specify either exactly or atleast."
-#     assert not (exactly_y and atleast_y), "Specify either exactly or atleast."
-#     if exactly_x:
-
-#     if get_n_tight_myleps(mylep_ls) != 3:
-#         return False
-#     if get_n_loose_myleps(mylep_ls) != 1:
-#         return False
-#     return True

@@ -127,7 +127,7 @@ def get_expected_n_evts(xs, lumi, isMCzz, event):
         n_exp *= (event.k_qqZZ_qcd_M * event.k_qqZZ_ewk)
     return n_exp
 
-def get_evt_weight(xs_dct, Nickname, lumi, event, n_dataset_tot, wgt_from_ntuple=False):
+def get_evt_weight(xs_dct, Nickname, lumi, event, n_dataset_tot, orig_evt_weight):
     """
     Return the event weight of Data (1) or MC based on L_int collected.
 
@@ -147,8 +147,9 @@ def get_evt_weight(xs_dct, Nickname, lumi, event, n_dataset_tot, wgt_from_ntuple
     n_dataset_tot : int
         The total number of events in the MC data set which you processed.
         Do: `crab report -d <dir>`.
-    wgt_from_ntuple : bool
-        If True, return eventWeight from NTuple.
+    orig_evt_weight : float
+        The original event weight.
+        For a BBF NTuple, typically: tree.eventWeight.
 
     Elisa uses:
     n_events = _lumi * 1000 * xsec * _k_factor * overallEventWeight * L1prefiringWeight) / gen_sum_weights;
@@ -166,10 +167,8 @@ def get_evt_weight(xs_dct, Nickname, lumi, event, n_dataset_tot, wgt_from_ntuple
         # Sample is Monte Carlo.
         xs = xs_dct[Nickname]
         n_exp = get_expected_n_evts(xs, lumi, isMCzz, event)
-        if wgt_from_ntuple:
-            return event.eventWeight
         # newweight/oldweight = n_exp/n_obs = (L_int * xs * eff) / n_obs
-        new_weight = event.eventWeight * (n_exp / n_dataset_tot)
+        new_weight = orig_evt_weight * (n_exp / n_dataset_tot)
         return new_weight
 
 def check_which_Z2_leps_failed(zz_pair):

@@ -171,7 +171,7 @@ class ZZPair:
             
             # Low mass di-lep cut should never trigger since all Z
             # candidates have already been checked for 12 < mZ < 120 GeV.
-            zb_is_lowmass_dilep_res = (zazb.z_sec.mass < 12)
+            zb_is_lowmass_dilep_res = (zazb.z_sec.get_mass() < 12)
             if za_more_onshell_than_z1 and zb_is_lowmass_dilep_res:
                 # ABOUT TO FAIL SMART CUT! Za looks like a good Z1.
                 if self.smartcut_ZapassesZ1sel:
@@ -191,10 +191,10 @@ class ZZPair:
                 if self.explain_skipevent:
                     print(
                         f"FAILED SMART CUT:\n"
-                        f"  m(Za)={zazb.z_fir.mass:.4f} is closer to PDG "
-                        f"value than m(Z1)={self.z_fir.mass:.4f}\n"
-                        f"  m(Zb)={zazb.z_sec.mass:.4f} "
-                        f"  m(Z2)={self.z_sec.mass:.4f}\n"
+                        f"  m(Za)={zazb.z_fir.get_mass():.4f} is closer to PDG "
+                        f"value than m(Z1)={self.z_fir.get_mass():.4f}\n"
+                        f"  m(Zb)={zazb.z_sec.get_mass():.4f} "
+                        f"  m(Z2)={self.z_sec.get_mass():.4f}\n"
                     )
                     self.print_info()
                 return False
@@ -246,7 +246,26 @@ class ZZPair:
         )
         self.z_fir.print_info()
         self.z_sec.print_info()
-# End of ZZPair.
+
+    def has_same_4leps(self, other_zz):
+        """Return True if other_zz contains same 4 lep indices as `self`.
+        
+        The beauty of using sets is that the order of indices doesn't matter.
+        """
+        my_lep_idxs = set(
+                        self.z_fir.get_mylep_indices() +
+                        self.z_sec.get_mylep_indices()
+                        )
+        other_lep_idxs = set(
+                            other_zz.z_fir.get_mylep_indices() +
+                            other_zz.z_sec.get_mylep_indices()
+                            )
+        err_msg = "ZZ has overlapping leptons!"
+        assert len(my_lep_idxs) == 4, err_msg
+        assert len(other_lep_idxs) == 4, err_msg
+        n_overlap_leps = (my_lep_idxs & other_lep_idxs)
+        return True if len(n_overlap_leps) == 4 else False
+    # End of ZZPair.
     
 def make_all_zz_pairs(zcand_ls, explain_skipevent=False, smartcut_ZapassesZ1sel=False):
     """Return a list of all possible ZZPair objects.
@@ -308,6 +327,44 @@ def make_zz_pairs(zcand_ls):
             zz_pair_ls.extend((zz_cand,))
     return zz_pair_ls
 
+def select_better_zzcand(zzcand1, zzcand2, verbose=False):
+    """Return better ZZPair (candidate) out of two.
+    
+    If the two ZZs share same leptons, choose the cand whose m(Z1) is
+    closer to the m(Z_PDG). --- WARNING though! Should check that winning Z1
+    still passes Z1 selections!!! CJLST and BBF do not do this.
+    
+    If two ZZs do NOT have same leptons, then choose the ZZ with higher Kd
+    (this would only be possible when considering DIFFERENT lep quartets).
+    """
+    if zzcand1.has_same_4leps(zzcand2):
+        print(
+            f"  ZZ cands share same 4 leptons.\n"
+            f"  Selecting the ZZ with m(Z1) closer to PDG value."
+            )
+        err_msg = (
+            f"  Z1 from best ZZ doesn't pass tight selections!\n"
+            f"  This could imply bad logic in literature smart cut!!!"
+            )
+        if zzcand1.z_fir.has_closer_mass_to_ZPDG(zzcand2.z_fir):
+            assert zzcand1.z_fir.passes_z1_kinematic_selec(), err_msg
+            print("  ZZ#1 selected as better cand, since Z1 was closer to PDG.")
+            if verbose:
+                zzcand1.print_info()
+            return zzcand1
+        else:
+            # Second ZZ cand is the better cand.
+            assert zzcand2.z_fir.passes_z1_kinematic_selec(), err_msg
+            print("  ZZ#2 selected as better cand, since Z1 was closer to PDG.")
+            if verbose:
+                zzcand2.print_info()
+            return zzcand2
+    else:
+        raise ValueError(
+                f"  ZZ cands have different leptons.\n"
+                f"  Choose cand with higher Kd. HOW???"
+                )
+
 def get_all_ZZcands_passing_cjlst(zz_pair_ls):
     """Return a (sub)set list of zz_pair_ls of the ZZs passing CJLST cuts.
         
@@ -334,7 +391,8 @@ def get_ZZcands_from_myleps_OSmethod(
     
     NOTE:
     - Checks that they pass all Z1, Z2, and ZZ selection criteria.
-    - `mylep_ls` should have exactly 4 leptons. 
+    - `mylep_ls` should have exactly 4 leptons (lepton quartet).
+    - Should just return ONE ZZ candidate (but inside a list).
 
     Args:
         smartcut_ZapassesZ1sel (bool, optional):
@@ -380,19 +438,32 @@ def get_ZZcands_from_myleps_OSmethod(
     if verbose: print("Making all ZZ candidates.")
     zz_pair_ls = make_all_zz_pairs(zcand_ls,
                      explain_skipevent=explain_skipevent,
-                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel)  # Does not implement ZZ cuts.
+                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel)
+    # Implement ZZ cuts.
     ls_all_passing_zz = get_all_ZZcands_passing_cjlst(zz_pair_ls)
+    n_zzpairs = len(zz_pair_ls)
+    n_zzcands = len(ls_all_passing_zz)
     if verbose:
         print(
-            f"Made {len(zz_pair_ls)} ZZ pairs (pair != candidate).\n"
-            f"Made {len(ls_all_passing_zz)} ZZ cands."
+            f"Made {n_zzpairs} ZZ pairs (pair != candidate).\n"
+            f"Made {n_zzcands} ZZ cands."
             )
-    if len(ls_all_passing_zz) > 1:
-        print("MULTIPLE passing ZZ candidates found in this subevent!")
-        # for zz in ls_all_passing_zz:
-        #     zz.print_info()
-        # raise ValueError("Jake, choose a best ZZ among this quartet.")
-    return ls_all_passing_zz
+    # Each lepton quartet can provide up to TWO ZZ cands: Z1Z2 and ZaZb.
+    # Must decide which ZZ is the best.
+    if n_zzcands <= 1:
+        # Return either empty list or the only ZZ cand made.
+        return ls_all_passing_zz
+    assert n_zzcands < 3, (
+        f"  Houston, we have a problem ({n_zzcands} ZZ cands)."
+        )
+    # Only two ZZ cands.
+    print(
+        f"  Found {n_zzcands} ZZ candidates in event "
+        f"{run} : {lumi} : {event} (entry {entry})."
+        )
+    zzcand1, zzcand2 = ls_all_passing_zz
+    better_zz_cand = select_better_zzcand(zzcand1, zzcand2, verbose=verbose)
+    return [better_zz_cand]
 
 def myleps_pass_cjlst_osmethod_selection(
     mylep_ls, verbose=False, explain_skipevent=False,
@@ -428,19 +499,4 @@ def myleps_pass_cjlst_osmethod_selection(
         if verbose or explain_skipevent:
             print(f"  No ZZ candidates formed! ({n_zzcands} candidates)")
         return False
-    # Should each 4-lep combo provide ONLY 1 valid ZZ candidate?
-    if n_zzcands > 1:
-        print(
-            f"[WARNING] Found more than one ZZ candidate (found {n_zzcands}) "
-            f"in event {run} : {lumi} : {event} (entry {entry})"
-            )
-        # for zzcand in all_passing_ZZcands_cjlst_ls:
-        #     zzcand.print_info()
-        # return False
-    # According to CJLST, these 4 leptons should form exactly one valid
-    # ZZ candidate! Must decide which ZZ is the best.
-    # If the two ZZs have the same leptons, choose the cand whose m(Z1) is
-    # closer to the m(Z_PDG) --- WARNING though! Should check that winning Z1
-    # still passes Z1 selections!!!
-    # If two ZZs do NOT have same leptons, then choose the ZZ with higher Kd.
     return True

@@ -2,7 +2,7 @@
 ==============================================================================
 Author: Jake Rosenzweig
 Created: 2021-11-30
-Updated: 2021-12-09
+Updated: 2021-12-13
 Notes: This code makes a json file which stores the Run:Lumi:Event of all
   events which pass 3T1L or 2T2L event selection. It also creates a TH2
   of per-event 3T1L 4-lep combos vs. per-event 2T2L 4-lep combos and stores
@@ -32,14 +32,24 @@ import argparse
 from sidequests.funcs.evt_loops import (
     evt_loop_evtsel_2p2plusf3p1plusf_subevents
     )
-from sidequests.data.filepaths import infile_filippo_data_2018_fromhpg
+from sidequests.data.filepaths import (
+    infile_filippo_data_2018_fromhpg,
+    mc_2018_zz_hpg
+    )
 from Utils_Python.Utils_Files import check_overwrite
 
+# Files to analyze.
+d_nicknames_files = {
+    "Data" : infile_filippo_data_2018_fromhpg,
+    "ZZ" : mc_2018_zz_hpg,
+}
+
+year = 2018
 explain_skipevent = 0
 start_at_evt = 0
 break_at_evt = -1  # Use -1 to run over all events.
 print_every = 250000
-fill_hists = 0
+fill_hists = 1
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 
 # infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZLL_CR/Data_2018_NoDuplicates.root"
@@ -47,8 +57,8 @@ smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
 
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
-outfile_base_root = "tests/h2_cjlstOSmethodevtsel_2p2plusf_3p1plusf_ONLYFIRSTZZCAND.root"
-outfile_base_json = "tests/cjlstOSmethodevtsel_2p2plusf_3p1plusf_ONLYFIRSTZZCAND.json"
+outfile_base_root = "rootfiles/h2_cjlstOSmethodevtsel_2p2plusf_3p1plusf.root"
+outfile_base_json = "json/cjlstOSmethodevtsel_2p2plusf_3p1plusf.json"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -67,27 +77,31 @@ if __name__ == '__main__':
     overwrite = args.overwrite
     verbose = args.verbose
 
-    outfile_json = os.path.join(outdir, outfile_base_json)
-    outfile_root = os.path.join(outdir, outfile_base_root)
-    
-    # If the given root file path is an absolute path, make sure dir exists.
-    if "/" in outfile_root:
-        os.makedirs(
-            os.path.dirname(outfile_root), exist_ok=True
+    for name, inpath in d_nicknames_files.items():
+
+        new_end = f"{year}_{name}"
+        new_base_json = outfile_base_json.replace("json", f"_{new_end}.json")
+        new_base_root = outfile_base_root.replace("root", f"_{new_end}.root")
+        outfile_json = os.path.join(outdir, new_base_json)
+        outfile_root = os.path.join(outdir, new_base_root)
+        
+        # If the given root file path is an absolute path, make sure dir exists.
+        if "/" in outfile_root:
+            os.makedirs(
+                os.path.dirname(outfile_root), exist_ok=True
+                )
+
+        infile = TFile.Open(inpath, "read")
+        tree = infile.Get("passedEvents")
+        print(f"Successfully opened:\n{inpath}")
+
+        evt_loop_evtsel_2p2plusf3p1plusf_subevents(
+            tree,
+            infile_FR_wz_removed=infile_FR_wz_removed,
+            outfile_root=outfile_root, outfile_json=outfile_json,
+            name=name,
+            start_at_evt=start_at_evt, break_at_evt=break_at_evt,
+            fill_hists=fill_hists, explain_skipevent=explain_skipevent, verbose=verbose,
+            print_every=print_every, smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
+            overwrite=overwrite
             )
-
-    f_filippo_data2018 = TFile.Open(infile_filippo_data_2018_fromhpg)
-    tree = f_filippo_data2018.Get("passedEvents")
-    print(f"Successfully opened:\n{infile_filippo_data_2018_fromhpg}")
-
-    evt_loop_evtsel_2p2plusf3p1plusf_subevents(
-        tree,
-        infile_FR_wz_removed=infile_FR_wz_removed,
-        outfile_root=outfile_root, outfile_json=outfile_json,
-        name="Data",
-        start_at_evt=start_at_evt, break_at_evt=break_at_evt,
-        fill_hists=fill_hists, explain_skipevent=explain_skipevent, verbose=verbose,
-        print_every=print_every, smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
-        overwrite=overwrite
-        )
-

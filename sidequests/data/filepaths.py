@@ -12,6 +12,8 @@ filippo_file = "store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/fullstats/f
 infile_filippo_data_2018_fromlxp = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/data_from_HPG/Data_2018_03Nov.root"
 infile_filippo_data_2018_fromhpg = f"/cmsuf/data/{filippo_file}"
 
+mc_2018_zz_hpg = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/skimmedbranches/ZZTo4L_TuneCP5_13TeV_powheg_pythia8_2018.root"
+
 #####################
 #--- CJLST files ---#
 #####################

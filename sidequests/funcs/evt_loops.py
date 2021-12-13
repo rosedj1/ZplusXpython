@@ -2,6 +2,7 @@ from ROOT import TFile
 import numpy as np
 from array import array
 # Local imports.
+from Utils_Python.Utils_Physics import perc_diff
 from Utils_Python.printing import (
     print_periodic_evtnum,
     print_skipevent_msg, pretty_print_dict
@@ -25,8 +26,6 @@ from scripts.helpers.analyzeZX import (
 from constants.analysis_params import (
     xs_dct_jake, n_sumgenweights_dataset_dct_jake
     )
-
-
 # from scipy.special import binom
 
 def find_combos_2tight2loose(mylep_ls):
@@ -159,8 +158,8 @@ def make_evt_info_d():
         "n_good_3p1f_evts",
         "n_tot_good_2p2f_combos",
         "n_tot_good_3p1f_combos",
-        "n_evts_mass4lREFIT_le0",
-        "n_evts_mass4lREFIT_vtx_BS_le0"
+        "n_quartets_skip_mass4l_le0",
+        "n_quartets_skip_lep_Hindex_mismatch"
     )
     return {s : 0 for s in tup}
 
@@ -325,12 +324,9 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
                     "num_combos_2p2f" : n_tot_good_2p2f_combos_this_event,
                     "num_combos_3p1f" : n_tot_good_3p1f_combos_this_event,
                 }
-        # new_tree.Fill()
     print("End loop over events.")
-    # TODO: Make new TTree with new branches.
 
     pretty_print_dict(evt_info_d)
-    # new_tree.Write()
     if outfile_root is not None:
         h1_n2p2f_combos.Write()
         h1_n3p1f_combos.Write()
@@ -395,12 +391,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     if outfile_root is not None:
         check_overwrite(outfile_root, overwrite=overwrite)
         new_file = TFile.Open(outfile_root, "recreate")
-        print(
-            f"Turning off branch: eventWeight\n"
-            f"Will create new eventWeight branch with updated FR weights."
-            )
-        tree.SetBranchStatus("eventWeight", 0)
-        print("Cloning TTree...")
+        print("Cloning TTree.")
         new_tree = tree.CloneTree(0)  # Clone 0 events.
 
         # Make pointers to store new values. 
@@ -409,8 +400,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         ptr_isMCzz = np.array([0], dtype=int)
         ptr_fr2 = array('f', [0.])
         ptr_fr3 = array('f', [0.])
-        # ptr_weightwithFRratios = array('f', [0.])
-        ptr_eventWeight = array('f', [0.])
+        ptr_eventWeightFR = array('f', [0.])
+        # ptr_eventWeight = array('f', [0.])
 
         # Make new corresponding branches in the TTree.
         new_tree.Branch("is2P2F", ptr_is2P2F, "is2P2F/I")
@@ -418,8 +409,11 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         new_tree.Branch("isMCzz", ptr_isMCzz, "isMCzz/I")
         new_tree.Branch("fr2", ptr_fr2, "fr2/F")
         new_tree.Branch("fr3", ptr_fr3, "fr3/F")
-        # new_tree.Branch("weightwithFRratios", ptr_weightwithFRratios, "weightwithFRratios/F")
-        new_tree.Branch("eventWeight", ptr_eventWeight, "eventWeight/F")
+        new_tree.Branch("eventWeightFR", ptr_eventWeightFR, "eventWeightFR/F")
+        # new_tree.Branch("eventWeight", ptr_eventWeight, "eventWeight/F")
+
+        # new_tree.SetBranchAddress("eventWeight", ptr_eventWeight)
+
 
     n_tot = tree.GetEntries()
     print(
@@ -528,26 +522,25 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             # then the SAME EVENT will be stored multiple times in the TTree.
             # The difference for each entry (subevent) will be the weight.
 
+            n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[name])
+            evt_weight_calcd = get_evt_weight(
+                xs_dct=xs_dct_jake, Nickname=name, lumi=int_lumi, event=tree,
+                n_dataset_tot=n_dataset_tot, orig_evt_weight=tree.eventWeight
+                )
+            
             # NOTE: Here is a wonky part.
             # We already know this event passes RedBkg selections.
             # To do that we had to make the mylep_ls, Zcands, and ZZcands,
             # and returned a bool (whether subevent passed or not).
             # Now make all those objects again and return them lol.
             ls_zzcand = get_ZZcands_from_myleps_OSmethod(fourlep_tup)
-            n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[name])
-            evt_weight_calcd = get_evt_weight(
-                xs_dct=xs_dct_jake, Nickname=name, lumi=int_lumi, event=tree,
-                n_dataset_tot=n_dataset_tot, wgt_from_ntuple=False
-                )
-            
+            # Get the better ZZ cand from a single lepton quartet.
+            zzcand = ls_zzcand[0]
             # See which leptons from Z2 failed.
-            # FIXME: For now just working with 1 ZZ candidate.
-            # FIXME: Need to fix to accommodate 2 or more ZZ candidates.
-            zzcand1 = ls_zzcand[0]
-            n_fail_code = check_which_Z2_leps_failed(zzcand1)
+            n_fail_code = check_which_Z2_leps_failed(zzcand)
 
-            mylep1_fromz2 = zzcand1.z_sec.mylep1
-            mylep2_fromz2 = zzcand1.z_sec.mylep2
+            mylep1_fromz2 = zzcand.z_sec.mylep1
+            mylep2_fromz2 = zzcand.z_sec.mylep2
             #=== 3P1F subevent. ===#
             if n_fail_code == 2:
                 # First lep from Z2 failed.
@@ -573,7 +566,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             elif n_fail_code == 5:
                 # Both leps failed.
                 assert subevt_passes_sel_2p2f
-                # is3P1F_zz = 0
                 fr2 = get_fakerate(
                     mylep1_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
@@ -601,20 +593,36 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                     f"===========================\n"
                     f"fr2={fr2:.6f}, fr3={fr3:.6f}\n"
                     # f"eventWeight(from NTuple) = {tree.eventWeight:.6f}\n"
+                    f"        tree.eventWeight = {tree.eventWeight:.6f}\n"
                     f"        evt_weight_calcd = {evt_weight_calcd:.6f}\n"
                     f"              new_weight = {new_weight:.6f}"
                 )
-                zzcand1.print_info()
+                zzcand.print_info()
+            # TESTING:
+            # Make sure mass4l vars in TTree come from same leps
+            # as the leps that built the ZZ candidate I selected.
+            lep_Hindex_ls = list(tree.lep_Hindex)
+
+            myleps_ls_ptorder = zzcand.z_fir.get_mylep_idcs_pTorder() + \
+                                zzcand.z_sec.get_mylep_idcs_pTorder()
+
+            if tree.mass4l <= 0:
+                evt_info_d["n_quartets_skip_mass4l_le0"] += 1
+                continue
+
+            if lep_Hindex_ls != myleps_ls_ptorder:
+                evt_info_d["n_quartets_skip_lep_Hindex_mismatch"] += 1
+                continue
+
             # Save this subevent in TTree. Fill branches.
             ptr_is2P2F[0] = subevt_passes_sel_2p2f
             ptr_is3P1F[0] = subevt_passes_sel_3p1f
             ptr_isMCzz[0] = isMCzz
             ptr_fr2[0] = fr2
             ptr_fr3[0] = fr3
-            # ptr_is3P1F_zz[0] = is3P1F_zz
-            # ptr_weightwithFRratios[0] = new_weight
-            ptr_eventWeight[0] = new_weight
+            ptr_eventWeightFR[0] = new_weight
             new_tree.Fill()
+            # ptr_eventWeight[0] = new_weight
         # End loop over subevents.
 
         #=== Some sanity checks. ===#
@@ -645,6 +653,11 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 f"     Event type {evt_type_msg}, {evt_id}, (entry {evt_num})"
                 )
         
+        evt_info_2p2f_3p1f_d[evt_id] = {
+            "num_combos_2p2f" : n_subevts_2p2f,
+            "num_combos_3p1f" : n_subevts_3p1f,
+            }
+
         if fill_hists:
             h1_n2p2f_combos.Fill(n_subevts_2p2f, 1)
             h1_n3p1f_combos.Fill(n_subevts_3p1f, 1)
@@ -652,16 +665,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 n_subevts_2p2f,
                 n_subevts_3p1f,
                 1)
-        
-            evt_info_2p2f_3p1f_d[evt_id] = {
-                "num_combos_2p2f" : n_subevts_2p2f,
-                "num_combos_3p1f" : n_subevts_3p1f,
-            }
-
-        if tree.mass4lREFIT <= 0:
-            evt_info_d["n_evts_mass4lREFIT_le0"] += 1
-        if tree.mass4lREFIT_vtx_BS <= 0:
-            evt_info_d["n_evts_mass4lREFIT_vtx_BS_le0"] += 1
     print("End loop over events.")
 
     print("Event info:")
