@@ -333,6 +333,14 @@ def select_better_zzcand(zzcand1, zzcand2, verbose=False):
     If the two ZZs share same leptons, choose the cand whose m(Z1) is
     closer to the m(Z_PDG). --- WARNING though! Should check that winning Z1
     still passes Z1 selections!!! CJLST and BBF do not do this.
+    UPDATE:
+        After running over millions of events,
+        The second ZZ candidate is sometimes selected over the first.
+        Even after checking that the Z1 from this second ZZ passes
+        Z1 candidate selections gives no errors.
+        Conclusion:
+            Perhaps there's something inherent in the smart cut that ensures
+            the Z1 will pass tight selections.
     
     If two ZZs do NOT have same leptons, then choose the ZZ with higher Kd
     (this would only be possible when considering DIFFERENT lep quartets).
@@ -456,7 +464,7 @@ def get_ZZcands_from_myleps_OSmethod(
     assert n_zzcands < 3, (
         f"  Houston, we have a problem ({n_zzcands} ZZ cands)."
         )
-    # Only two ZZ cands.
+    # Found two ZZ cands.
     print(
         f"  Found {n_zzcands} ZZ candidates in event "
         f"{run} : {lumi} : {event} (entry {entry})."

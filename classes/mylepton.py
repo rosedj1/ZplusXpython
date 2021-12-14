@@ -5,7 +5,7 @@ class MyLepton:
     def __init__(self,
                  lpt, leta, lphi, lmass,
                  lid, ltightId, lRelIsoNoFSR,
-                 lpt_NoFSR=None, leta_NoFSR=None, lphi_NoFSR=None, lmass_NoFSR=None,
+                 lpt_NoFSR, leta_NoFSR, lphi_NoFSR, lmass_NoFSR,
                  ndx_lepvec=None):
         """When built, this MyLepton will determine if it's tight or loose."""
         self.lpt = lpt
@@ -20,33 +20,34 @@ class MyLepton:
         self.leta_NoFSR = leta_NoFSR
         self.lphi_NoFSR = lphi_NoFSR
         self.lmass_NoFSR = lmass_NoFSR
+
         self.ndx_lepvec = ndx_lepvec  # Index of lepton in vectors like lep_pt.
         
         # NOTE: Here, "tight" and "loose" are exclusive!
         # Compare this to previous literature which says that if a lepton is
         # tight, then it also satisfies loose selections! Not the case here.
+        self.is_loose = False
+        self.is_tight = False
         if self.passes_tightlep_selection():
             self.is_tight = True
-            self.is_loose = False
+            # self.is_loose remains False.
         elif self.passes_looselep_selection():
-            self.is_tight = False
             self.is_loose = True
-        else:
-            self.is_tight = False
-            self.is_loose = False
         
     def passes_looselep_selection(self):
         """Return True if MyLepton passes loose lepton selection.
 
         Selections:
-        - pT > 7(5) GeV for electrons(muons)
-        - abs(eta) < 2.5(2.4) for electrons(muons)
-        - (The selections below are included in a previous skim step.)
+        - pT_NoFSR > 7(5) GeV for electrons(muons)
+        - abs(eta_NoFSR) < 2.5(2.4) for electrons(muons)
+        The selections below are included in a previous skim step:
         - dxy < 0.5 cm
         - dz < 1 cm
         - SIP_3D < 4
         """
-        return pass_lepton_kinem_selection(self.lid, self.lpt, self.leta)
+        return pass_lepton_kinem_selection(
+            self.lid, self.lpt_NoFSR, self.leta_NoFSR
+            )
 
     def passes_tightlep_selection(self):
         """Return True if MyLepton passes tight lepton selection.
@@ -67,14 +68,18 @@ class MyLepton:
     def get_LorentzVector(self, include_FSR=True):
         """Return a Lorentz vector version of this lepton."""
         if include_FSR:
-            return Math.PtEtaPhiMVector(self.lpt,
-                                        self.leta,
-                                        self.lphi,
-                                        self.lmass)
-        return Math.PtEtaPhiMVector(self.lpt_NoFSR,
-                                        self.leta_NoFSR,
-                                        self.lphi_NoFSR,
-                                        self.lmass_NoFSR)
+            return Math.PtEtaPhiMVector(
+                    self.lpt,
+                    self.leta,
+                    self.lphi,
+                    self.lmass
+                    )
+        return Math.PtEtaPhiMVector(
+            self.lpt_NoFSR,
+            self.leta_NoFSR,
+            self.lphi_NoFSR,
+            self.lmass_NoFSR
+            )
     
     def print_info(self):
         """Print info about this MyLepton."""
@@ -100,8 +105,8 @@ class MyLepton:
 
     def calc_DeltaR(self, mylep2):
         """Return the DeltaR value between this MyLepton and mylep2."""
-        deta = self.leta - mylep2.leta
-        dphi = calc_dphi(self.lphi, mylep2.lphi)
+        deta = self.leta_NoFSR - mylep2.leta_NoFSR
+        dphi = calc_dphi(self.lphi_NoFSR, mylep2.lphi_NoFSR)
         return calc_dR(deta, dphi)
 
 def make_filled_mylep_ls(tree):
@@ -129,32 +134,33 @@ def make_filled_mylep_ls(tree):
         mylep_ls.extend((mylep,))
     return mylep_ls
 
-def pass_lepton_kinem_selection(lid, lpt, leta):
+def pass_lepton_kinem_selection(lid, lpt_NoFSR, leta_NoFSR):
     """Return True if muon or electron and passes kinematic selections.
 
-    Note:
-        Also checks if lepton is either a muon or electron. 
+    NOTE:
+        - Need to use lepton kinematics BEFORE FSR reconstruction!
+        - Also checks if lepton is either a muon or electron. 
     Args:
         lid (int): Lepton ID (11 for e-, -13 for mu+)
-        lpt (float): Lepton pT (GeV).
-        leta (float): Lepton pseudorapidity.
+        lpt_NoFSR (float): Lepton pT before FSR (GeV).
+        leta_NoFSR (float): Lepton pseudorapidity before FSR.
 
     Returns:
         bool: True if these kinematics pass selections.
     """
     if abs(lid) == 11:
         # Electron selections.
-        if lpt < 7:
+        if lpt_NoFSR < 7:
             return False
-        if abs(leta) > 2.5:
+        if abs(leta_NoFSR) > 2.5:
             return False
         # Passed.
         return True
     elif abs(lid) == 13:
         # Muon selections.
-        if lpt < 5:
+        if lpt_NoFSR < 5:
             return False
-        if abs(leta) > 2.4:
+        if abs(leta_NoFSR) > 2.4:
             return False
         # Passed
         return True
@@ -169,8 +175,8 @@ def check_leps_pass_leadsublead_pTcuts(mylep_ls):
     - At least 2 leptons have pT > 10 GeV.
     - At least 1 lepton has pT > 20 GeV.
     """
-    n_leps_pTgt10 = sum(lep.lpt > 10 for lep in mylep_ls)
-    n_leps_pTgt20 = sum(lep.lpt > 20 for lep in mylep_ls)
+    n_leps_pTgt10 = sum(lep.lpt_NoFSR > 10 for lep in mylep_ls)
+    n_leps_pTgt20 = sum(lep.lpt_NoFSR > 20 for lep in mylep_ls)
     if n_leps_pTgt10 < 2:
         return False
     if n_leps_pTgt20 < 1:

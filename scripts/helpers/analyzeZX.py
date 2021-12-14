@@ -191,8 +191,6 @@ def check_which_Z2_leps_failed(zz_pair):
     lep3_failed = zz_pair.z_sec.mylep1.is_loose
     lep4_failed = zz_pair.z_sec.mylep2.is_loose
 
-    # lep3_failed = not(lep3.ltightId and ((abs(lep3.lid)==11) or (abs(idL[2])==13 and lep_iso[2]<0.35)))
-    # lep4_failed = not(lep_tight[3] and ((abs(idL[3])==11) or (abs(idL[3])==13 and lep_iso[3]<0.35)))
     if lep3_failed and (not lep4_failed):
         return 2
     elif (not lep3_failed) and lep4_failed:

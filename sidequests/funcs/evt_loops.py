@@ -16,9 +16,17 @@ from classes.mylepton import (
     make_filled_mylep_ls,
     get_n_tight_myleps, get_n_loose_myleps, has_2p2f_leps, has_3p1f_leps
     )
-from sidequests.containers.h2_tightlooselepcounts import (
-    h1_n2p2f_combos, h1_n3p1f_combos, h2_n3p1fcombos_n2p2fcombos
+from sidequests.containers.hists_th1 import (
+    h1_data_2p2f_m4l,
+    h1_data_3p1f_m4l,
+    h1_data_n2p2f_combos,
+    h1_data_n3p1f_combos,
+    h1_zz_2p2f_m4l,
+    h1_zz_3p1f_m4l,
+    h1_zz_n2p2f_combos,
+    h1_zz_n3p1f_combos,
     )
+from sidequests.containers.hists_th2 import h2_n3p1fcombos_n2p2fcombos
 from scripts.helpers.analyzeZX import (
     get_evt_weight, check_which_Z2_leps_failed,
     get_fakerate, retrieve_FR_hists
@@ -378,8 +386,33 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             Set this to True if you require Za to pass Z1 selections.
             Default is False.
     """
-    evt_info_d = make_evt_info_d()
-    evt_info_2p2f_3p1f_d = {}
+    if fill_hists:
+        # Prepare histograms
+        d_hists = {
+            "Data" : {
+                "2p2f" : {
+                    "mass4l" : h1_data_2p2f_m4l,
+                    "combos" : h1_data_n2p2f_combos,
+                },
+                "3p1f" : {
+                    "mass4l" : h1_data_3p1f_m4l,
+                    "combos" : h1_data_n3p1f_combos,
+                }
+            },
+            "ZZ" : {
+                "2p2f" : {
+                    "mass4l" : h1_zz_2p2f_m4l,
+                    "combos" : h1_zz_n2p2f_combos,
+                },
+                "3p1f" : {
+                    "mass4l" : h1_zz_3p1f_m4l,
+                    "combos" : h1_zz_n3p1f_combos,
+                }
+            },
+        }
+    
+    evt_info_d = make_evt_info_d()  # Info for printing.
+    evt_info_2p2f_3p1f_d = {}  # Info for json file.
 
     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end = retrieve_FR_hists(
                                                     infile_FR_wz_removed
@@ -467,43 +500,48 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         # Make all lepton quartets (i.e. make all subevents).
         evt_is_2p2plusf = False
         evt_is_3p1plusf = False
-        err_msg = "Should not get here. Correct the logic!"
-        if n_tight_leps == 3:
-            assert n_loose_leps >= 1, err_msg
-            evt_is_3p1plusf = True
-            fourlep_combos = find_combos_3tight1loose(mylep_ls)
-        elif n_tight_leps == 2:
-            assert n_loose_leps >= 2, err_msg
+        err_msg = (
+            f"  Should not get here. Correct the logic!\n"
+            f"    n_loose_leps={n_loose_leps}, n_tight_leps={n_tight_leps}\n"
+            f"    entry {evt_num}"
+            )
+        if n_tight_leps == 2:
+            if n_loose_leps < 2:
+                print(err_msg)
+                for lep in mylep_ls:
+                    lep.print_info()
+                raise RuntimeError
             evt_is_2p2plusf = True
             fourlep_combos = find_combos_2tight2loose(mylep_ls)
+        elif n_tight_leps == 3:
+            if n_loose_leps < 1:
+                print(err_msg)
+                for lep in mylep_ls:
+                    lep.print_info()
+                raise RuntimeError
+            evt_is_3p1plusf = True
+            fourlep_combos = find_combos_3tight1loose(mylep_ls)
         else:
             raise ValueError(err_msg)
      
-        # Check if any quartets have 2P2F or 3P1F leptons.
-        # NOTE: This does not mean they pass selection yet!
-        if len(fourlep_combos) == 0:
-            raise ValueError("SHOULD NEVER TRIGGER. DELETE EVENTUALLY.")
-            evt_info_d["n_evts_no4lep_combos"] += 1
-            if explain_skipevent:
-                msg = (
-                    f"Found 0 four-lep combos of type 2P2F or 3P1F."
-                    f"  n_tight_leps={n_tight_leps}, "
-                    f"  n_loose_leps={n_loose_leps}"
-                )
-                print_skipevent_msg(msg, evt_num, run, lumi, event)
-            continue
-
         # The event has EITHER 2 tight leps OR 3 tight leps, and loose leps.
-        # Now analyze each subevent (lepton quartet).
+        # Now analyze each lepton quartet (subevent).
         n_subevts_2p2f = 0
         n_subevts_3p1f = 0
         for fourlep_tup in fourlep_combos:
             # Check which four-lep combos pass ZZ selections.
-            if not myleps_pass_cjlst_osmethod_selection(
-                    fourlep_tup, verbose=verbose, explain_skipevent=explain_skipevent,
+            # Get the better ZZ cand from a single lepton quartet.
+            ls_zzcand = get_ZZcands_from_myleps_OSmethod(
+                    fourlep_tup,
+                    verbose=verbose, explain_skipevent=explain_skipevent,
                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
-                    run=run, lumi=lumi, event=event, entry=evt_num):
+                    run=run, lumi=lumi, event=event, entry=evt_num
+                    )
+            if len(ls_zzcand) == 0:
+                # No good ZZ candidate found.
                 continue
+            # For now, the get_ZZcands_from_myleps_OSmethod function grabs a single ZZ cand.
+            zzcand = ls_zzcand[0]
 
             subevt_passes_sel_2p2f = evt_is_2p2plusf
             subevt_passes_sel_3p1f = evt_is_3p1plusf
@@ -528,14 +566,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 n_dataset_tot=n_dataset_tot, orig_evt_weight=tree.eventWeight
                 )
             
-            # NOTE: Here is a wonky part.
-            # We already know this event passes RedBkg selections.
-            # To do that we had to make the mylep_ls, Zcands, and ZZcands,
-            # and returned a bool (whether subevent passed or not).
-            # Now make all those objects again and return them lol.
-            ls_zzcand = get_ZZcands_from_myleps_OSmethod(fourlep_tup)
-            # Get the better ZZ cand from a single lepton quartet.
-            zzcand = ls_zzcand[0]
             # See which leptons from Z2 failed.
             n_fail_code = check_which_Z2_leps_failed(zzcand)
 
@@ -545,6 +575,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             if n_fail_code == 2:
                 # First lep from Z2 failed.
                 assert subevt_passes_sel_3p1f
+                assert mylep1_fromz2.is_loose
                 fr2 = get_fakerate(
                     mylep1_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
@@ -555,6 +586,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             elif n_fail_code == 3:
                 # Second lep from Z2 failed.
                 assert subevt_passes_sel_3p1f
+                assert mylep2_fromz2.is_loose
                 fr2 = 0
                 fr3 = get_fakerate(
                     mylep2_fromz2,
@@ -598,18 +630,17 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                     f"              new_weight = {new_weight:.6f}"
                 )
                 zzcand.print_info()
-            # TESTING:
-            # Make sure mass4l vars in TTree come from same leps
-            # as the leps that built the ZZ candidate I selected.
-            lep_Hindex_ls = list(tree.lep_Hindex)
-
-            myleps_ls_ptorder = zzcand.z_fir.get_mylep_idcs_pTorder() + \
-                                zzcand.z_sec.get_mylep_idcs_pTorder()
 
             if tree.mass4l <= 0:
                 evt_info_d["n_quartets_skip_mass4l_le0"] += 1
                 continue
 
+            # TESTING:
+            # Make sure mass4l vars in TTree come from same leps
+            # as the leps that built the ZZ candidate I selected.
+            lep_Hindex_ls = list(tree.lep_Hindex)
+            myleps_ls_ptorder = zzcand.z_fir.get_mylep_idcs_pTorder() + \
+                                zzcand.z_sec.get_mylep_idcs_pTorder()
             if lep_Hindex_ls != myleps_ls_ptorder:
                 evt_info_d["n_quartets_skip_lep_Hindex_mismatch"] += 1
                 continue
@@ -636,14 +667,19 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
 
         # Recall that we should have either ONLY 3P1F or ONLY 2P2F subevents.
         evt_info_d["n_good_redbkg_evts"] += 1
-        if evt_is_3p1plusf:
-            evt_type_msg = "3P1+F"
-            evt_info_d["n_good_3p1f_evts"] += 1
-            assert n_subevts_2p2f == 0
         if evt_is_2p2plusf:
             evt_type_msg = "2P2+F"
+            cr = "2p2f"
+            n_combos = n_subevts_2p2f
             evt_info_d["n_good_2p2f_evts"] += 1
             assert n_subevts_3p1f == 0
+
+        if evt_is_3p1plusf:
+            evt_type_msg = "3P1+F"
+            cr = "3p1f"
+            n_combos = n_subevts_3p1f
+            evt_info_d["n_good_3p1f_evts"] += 1
+            assert n_subevts_2p2f == 0
         #===========================#
 
         evt_id = f"{run} : {lumi} : {event}"
@@ -659,12 +695,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             }
 
         if fill_hists:
-            h1_n2p2f_combos.Fill(n_subevts_2p2f, 1)
-            h1_n3p1f_combos.Fill(n_subevts_3p1f, 1)
-            h2_n3p1fcombos_n2p2fcombos.Fill(
-                n_subevts_2p2f,
-                n_subevts_3p1f,
-                1)
+            d_hists[name][cr]["mass4l"].Fill(tree.mass4l, new_weight)
+            d_hists[name][cr]["combos"].Fill(n_combos, 1)
+            h2_n3p1fcombos_n2p2fcombos.Fill(n_subevts_2p2f, n_subevts_3p1f, 1)
     print("End loop over events.")
 
     print("Event info:")
@@ -674,12 +707,17 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         print(f"Writing tree to root file:\n{outfile_root}")
         new_tree.Write()
 
-        h1_n2p2f_combos.Write()
-        h1_n3p1f_combos.Write()
-        h2_n3p1fcombos_n2p2fcombos.Write()
+        if fill_hists:
+            print(f"Writing hists to root file:\n{outfile_root}")
+            for d_name in d_hists.values():
+                for d_cr in d_name.values():
+                    for h in d_cr.values():
+                        h.Write()
+            h2_n3p1fcombos_n2p2fcombos.Write()
+
         new_file.Close()
-        print(f"Writing hists to root file:\n{outfile_root}")
 
     if outfile_json is not None:
         save_to_json(evt_info_2p2f_3p1f_d, outfile_json, overwrite=overwrite,
                     sort_keys=False)
+    
