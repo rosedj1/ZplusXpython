@@ -21,11 +21,11 @@ class MyZboson:
         mass = self.get_mass()
         if (mass < 40):
             if self.explain_skipevent:
-                print(f"Failed Z1 cut: mass ({mass:.6f}) < 40 GeV. ")
+                print(f"  Failed Z1 cut: mass ({mass:.6f}) < 40 GeV.")
             return False
         if not self.made_from_tight_leps:
             if self.explain_skipevent:
-                print(f"Failed Z1 cut: not built from tight leptons.")
+                print(f"  Failed Z1 cut: not built from tight leptons.")
             return False
         return True
     
@@ -148,7 +148,7 @@ def makes_valid_zcand(lep1, lep2):
 def make_all_zcands(mylep_ls, explain_skipevent=False):
     """Return list of valid Z candidates as MyZboson objects.
     
-    This function does apply cuts to each Z!
+    This function DOES apply cuts to each Z!
 
     To form a valid Z candidate:
     - Leptons DO NOT HAVE TO be tight (loose+tightID+RelIso)!

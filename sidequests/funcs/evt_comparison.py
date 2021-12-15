@@ -78,16 +78,20 @@ def get_runlumievent_ls_tup(txt):
     return get_list_of_tuples(get_list_of_lines(txt))
 
 def print_evt_info_bbf(evt):
-    """A super goofy way to print branch info for `evt` in TTree."""
+    """A goofy way to print branch info for `evt` in TTree."""
     d_branch = {
         "passedFullSelection" : "",
         "passedZXCRSelection" : "",
         "nZXCRFailedLeptons" : "",
         "lep_Hindex" : "list",
+        "lep_RedBkgindex" : "list",
+        "lep_id" : "list",
+        "lep_pt" : "list",
         "lepFSR_pt" : "list",
         "lep_RelIso" : "list",
-        "lep_id" : "list",
         "lep_tightId" : "list",
+        "is2P2F" : "",
+        "is3P1F" : "",
     }
     for branch, express_as in d_branch.items():
         if express_as == "":
@@ -104,14 +108,15 @@ def print_evt_info_bbf(evt):
                 pass
 
 def print_evt_info_cjlst(tree):
-    print(f"tree.LepPt: {list(tree.LepPt)}")
-    print(f"tree.LepLepId: {list(tree.LepLepId)}")
-    print(f"tree.LepisID (tight lep): {list(np.array(tree.LepisID, dtype=bool))}")
-    print(f"tree.CRflag: {tree.CRflag} -> {CjlstFlag(tree.CRflag).name}")
-    print(f"tree.Z1Mass: {tree.Z1Mass}")
-    print(f"tree.Z2Mass: {tree.Z2Mass}")
-    print(f"tree.ZZMass: {tree.ZZMass}")
-    print()
+    print(
+        f"tree.LepPt: {list(tree.LepPt)}\n"
+        f"tree.LepLepId: {list(tree.LepLepId)}\n"
+        f"tree.LepisID (tight lep): {list(np.array(tree.LepisID, dtype=bool))}\n"
+        f"tree.CRflag: {tree.CRflag} -> {CjlstFlag(tree.CRflag).name}\n"
+        f"tree.Z1Mass: {tree.Z1Mass}\n"
+        f"tree.Z2Mass: {tree.Z2Mass}\n"
+        f"tree.ZZMass: {tree.ZZMass}"
+        )
 
 def analyze_single_evt(tree, run, lumi, event, fw="bbf", which="all",
                        evt_start=0, evt_end=-1, print_every=10000):

@@ -70,7 +70,12 @@ def find_combos_2tight2loose(mylep_ls):
     return fourlep_combos_2tight2loose
 
 def find_combos_3tight1loose(mylep_ls):
-    """Return a list of all possible 4-tuples of 3tight1loose MyLeptons."""
+    """Return a list of all possible 4-tuples of 3tight1loose MyLeptons.
+    
+    Args:
+        mylep_ls (list): Contains MyLepton objects.
+    """
+    assert len(mylep_ls) >= 4
     myleps_combos_3tight1loose = []
     # Make all possible triplets of tight leptons:
     triple_tight_leps = find_all_triplets_leps_tight(mylep_ls)
@@ -353,7 +358,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     name="", int_lumi=59830,
     start_at_evt=0, break_at_evt=-1, fill_hists=True,
     explain_skipevent=False, verbose=False, print_every=50000,
-    smartcut_ZapassesZ1sel=False, overwrite=False):
+    smartcut_ZapassesZ1sel=False, overwrite=False,
+    keep_only_mass4lgt0=False):
     """Apply RedBkg "subevent" event selection to all events in tree.
 
     NOTE:
@@ -384,6 +390,10 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             low mass di-lep resonance, then veto the whole ZZ candidate.
             However, literature doesn't check for Za passing Z1 selections!
             Set this to True if you require Za to pass Z1 selections.
+            Default is False.
+        keep_only_mass4lgt0 (bool, optional):
+            If True, then skip events whose tree.mass4l <= 0.
+            This is useful when you need to pull values from the BBF NTuple.
             Default is False.
     """
     if fill_hists:
@@ -434,6 +444,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         ptr_fr2 = array('f', [0.])
         ptr_fr3 = array('f', [0.])
         ptr_eventWeightFR = array('f', [0.])
+        ptr_lep_RedBkgindex = array('i', [0, 0, 0, 0])
         # ptr_eventWeight = array('f', [0.])
 
         # Make new corresponding branches in the TTree.
@@ -443,6 +454,12 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         new_tree.Branch("fr2", ptr_fr2, "fr2/F")
         new_tree.Branch("fr3", ptr_fr3, "fr3/F")
         new_tree.Branch("eventWeightFR", ptr_eventWeightFR, "eventWeightFR/F")
+        # Record the indices of the leptons in passing quartet.
+        new_tree.Branch(
+            "lep_RedBkgindex",
+            ptr_lep_RedBkgindex,
+            "lep_RedBkgindex[4]/I"
+            )
         # new_tree.Branch("eventWeight", ptr_eventWeight, "eventWeight/F")
 
         # new_tree.SetBranchAddress("eventWeight", ptr_eventWeight)
@@ -468,6 +485,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         run = tree.Run
         lumi = tree.LumiSect
         event = tree.Event
+        evt_id = f"{run} : {lumi} : {event}"
 
         # Check the number of leptons in this event.
         n_tot_leps = len(tree.lepFSR_pt)
@@ -540,13 +558,15 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             if len(ls_zzcand) == 0:
                 # No good ZZ candidate found.
                 continue
-            # For now, the get_ZZcands_from_myleps_OSmethod function grabs a single ZZ cand.
+            # Good 2P2F or 3P1F subevent!
+            # For now, the function above only picks out a single ZZ cand.
             zzcand = ls_zzcand[0]
-
             subevt_passes_sel_2p2f = evt_is_2p2plusf
             subevt_passes_sel_3p1f = evt_is_3p1plusf
+            # if zzcand.z_sec.mylep1.is_loose and evt_is_3p1plusf:
+            #     msg = f"  Found 3P1F quartet where Z2 lep1 is loose: {evt_id}"
+            #     raise RuntimeError(msg)
 
-            # Good 2P2F or 3P1F subevent!
             if subevt_passes_sel_2p2f:
                 n_subevts_2p2f += 1
                 evt_info_d["n_tot_good_2p2f_combos"] += 1
@@ -569,11 +589,17 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             # See which leptons from Z2 failed.
             n_fail_code = check_which_Z2_leps_failed(zzcand)
 
+            mylep1_fromz1 = zzcand.z_fir.mylep1
+            mylep2_fromz1 = zzcand.z_fir.mylep2
             mylep1_fromz2 = zzcand.z_sec.mylep1
             mylep2_fromz2 = zzcand.z_sec.mylep2
             #=== 3P1F subevent. ===#
             if n_fail_code == 2:
                 # First lep from Z2 failed.
+                # NOTE: Turns out this will never trigger!
+                # This is due to the way that I build the 3P1F quartets.
+                # I always place the 1 failing lepton as the 4th lepton.
+                # Therefore, fr3 will always be != 0.
                 assert subevt_passes_sel_3p1f
                 assert mylep1_fromz2.is_loose
                 fr2 = get_fakerate(
@@ -631,19 +657,20 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 )
                 zzcand.print_info()
 
-            if tree.mass4l <= 0:
-                evt_info_d["n_quartets_skip_mass4l_le0"] += 1
-                continue
+            if keep_only_mass4lgt0:
+                if tree.mass4l <= 0:
+                    evt_info_d["n_quartets_skip_mass4l_le0"] += 1
+                    continue
 
-            # TESTING:
-            # Make sure mass4l vars in TTree come from same leps
-            # as the leps that built the ZZ candidate I selected.
-            lep_Hindex_ls = list(tree.lep_Hindex)
-            myleps_ls_ptorder = zzcand.z_fir.get_mylep_idcs_pTorder() + \
-                                zzcand.z_sec.get_mylep_idcs_pTorder()
-            if lep_Hindex_ls != myleps_ls_ptorder:
-                evt_info_d["n_quartets_skip_lep_Hindex_mismatch"] += 1
-                continue
+                # TESTING:
+                # Make sure mass4l vars in TTree come from same leps
+                # as the leps that built the ZZ candidate I selected.
+                lep_Hindex_ls = list(tree.lep_Hindex)
+                myleps_ls_ptorder = zzcand.z_fir.get_mylep_idcs_pTorder() + \
+                                    zzcand.z_sec.get_mylep_idcs_pTorder()
+                if lep_Hindex_ls != myleps_ls_ptorder:
+                    evt_info_d["n_quartets_skip_lep_Hindex_mismatch"] += 1
+                    continue
 
             # Save this subevent in TTree. Fill branches.
             ptr_is2P2F[0] = subevt_passes_sel_2p2f
@@ -652,6 +679,10 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             ptr_fr2[0] = fr2
             ptr_fr3[0] = fr3
             ptr_eventWeightFR[0] = new_weight
+            ptr_lep_RedBkgindex[0] = mylep1_fromz1.ndx_lepvec
+            ptr_lep_RedBkgindex[1] = mylep2_fromz1.ndx_lepvec
+            ptr_lep_RedBkgindex[2] = mylep1_fromz2.ndx_lepvec
+            ptr_lep_RedBkgindex[3] = mylep2_fromz2.ndx_lepvec
             new_tree.Fill()
             # ptr_eventWeight[0] = new_weight
         # End loop over subevents.
@@ -682,7 +713,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             assert n_subevts_2p2f == 0
         #===========================#
 
-        evt_id = f"{run} : {lumi} : {event}"
         if verbose:
             print(
                 f"** Event passed CJLST OS Method Selections: **\n"

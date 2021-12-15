@@ -3,6 +3,7 @@ from classes.mylepton import (check_leps_separated_in_DeltaR,
                               leps_pass_lowmass_dilep_res,
                               has_2p2f_leps,has_3p1f_leps)
 from classes.myzboson import MyZboson, make_all_zcands
+from Utils_Python.printing import print_header_message
 
 class ZZPair:
     """NOT the same thing as a 'ZZ Candidate' (which passes selections)."""
@@ -101,11 +102,12 @@ class ZZPair:
         # Check if Z2 also comes from tight leptons.
         # If so, make sure m(Z1) is closer to PDG mass.
         if self.z_sec.made_from_tight_leps:
-            z_dist_fir = self.z_fir.get_distance_from_PDG_mass()
-            z_dist_sec = self.z_sec.get_distance_from_PDG_mass()
-            if abs(z_dist_sec) < abs(z_dist_fir):
+            if self.z_sec.has_closer_mass_to_ZPDG(self.z_fir):
                 if self.explain_skipevent:
-                    print(f"Invalid ZZ cand. m(Z2) closer to PDG than m(Z1) is.")
+                    print(
+                        f"  Invalid ZZ cand: "
+                        f"m(Z2) closer to PDG than m(Z1) is."
+                        )
                     self.print_info()
                 return False
         
@@ -113,24 +115,22 @@ class ZZPair:
         mylep_ls = self.get_mylep_ls()
         if not check_leps_separated_in_DeltaR(mylep_ls, min_sep=0.02):
             if self.explain_skipevent:
-                print(f"Invalid ZZ cand. Leptons not separated in dR.")
+                print(f"  Invalid ZZ cand: Leptons not separated in dR.")
                 self.print_info()
             return False
         if not check_leps_pass_leadsublead_pTcuts(mylep_ls):
             if self.explain_skipevent:
-                print(
-                    f"Invalid ZZ cand. Leptons don't pass lead/sublead cuts."
-                    )
+                print(f"  Invalid ZZ cand: Leptons fail lead/sublead cuts.")
                 self.print_info()
             return False
         if not leps_pass_lowmass_dilep_res(mylep_ls, min_mass=4):
             if self.explain_skipevent:
-                print(f"Invalid ZZ cand. Low-mass dilep resonance found.")
+                print(f"  Invalid ZZ cand: Low-mass dilep resonance found.")
                 self.print_info()
             return False
         if not self.passes_smart_cut():
             if self.explain_skipevent:
-                print(f"Invalid ZZ cand. Failed smart cut.")
+                print(f"  Invalid ZZ cand: Failed smart cut.")
                 self.print_info()
             return False
         return True
@@ -271,10 +271,12 @@ def make_all_zz_pairs(zcand_ls, explain_skipevent=False, smartcut_ZapassesZ1sel=
     """Return a list of all possible ZZPair objects.
     
     Notes:
+    - This accounts for ALL possible ZZ pairs:
+        So if you had Z cands (Zx, Zy) then it would form:
+            (Zx, Zy) AND (Zy, Zx).
     - Skip pairing a Z with itself.
     - Skip pairing two Z's if they share common leptons.
-    - This accounts for ALL possible ZZ candidates, even swapping Z1 <-> Z2.
-    - This function does not impose any selections on ZZ candidates.
+    - This function does not impose "literature" selections on ZZ pairs.
 
     Args:
         smartcut_ZapassesZ1sel (bool, optional):
@@ -295,9 +297,9 @@ def make_all_zz_pairs(zcand_ls, explain_skipevent=False, smartcut_ZapassesZ1sel=
             if z1.has_overlapping_leps(z2):
                 if explain_skipevent:
                     print(
-                        f"Z's contain overlapping leptons:\n"
-                        f"z #{z1.ndx_zcand_ls}: {z1.get_mylep_indices()}\n"
-                        f"z #{z2.ndx_zcand_ls}: {z2.get_mylep_indices()}"
+                        f"  Z's contain overlapping leptons:\n"
+                        f"  z #{z1.ndx_zcand_ls}: {z1.get_mylep_indices()}, "
+                        f"  z #{z2.ndx_zcand_ls}: {z2.get_mylep_indices()}"
                         )
                 # Skip if they share common leptons.
                 continue
@@ -358,13 +360,19 @@ def select_better_zzcand(zzcand1, zzcand2, verbose=False):
             assert zzcand1.z_fir.passes_z1_kinematic_selec(), err_msg
             print("  ZZ#1 selected as better cand, since Z1 was closer to PDG.")
             if verbose:
+                print_header_info("ZZ#1 info:")
                 zzcand1.print_info()
+                print_header_info("ZZ#2 info:")
+                zzcand2.print_info()
             return zzcand1
         else:
             # Second ZZ cand is the better cand.
             assert zzcand2.z_fir.passes_z1_kinematic_selec(), err_msg
             print("  ZZ#2 selected as better cand, since Z1 was closer to PDG.")
             if verbose:
+                print_header_info("ZZ#1 info:")
+                zzcand1.print_info()
+                print_header_info("ZZ#2 info:")
                 zzcand2.print_info()
             return zzcand2
     else:
@@ -374,9 +382,8 @@ def select_better_zzcand(zzcand1, zzcand2, verbose=False):
                 )
 
 def get_all_ZZcands_passing_cjlst(zz_pair_ls):
-    """Return a (sub)set list of zz_pair_ls of the ZZs passing CJLST cuts.
+    """Return a list subset of zz_pair_ls of the ZZs passing CJLST cuts.
         
-    Selects the ZZPair objects which pass CJLST selections.
     If no ZZ pairs pass selections, then return an empty list.
     Implements CJLST ZZ selection.
     
@@ -398,7 +405,7 @@ def get_ZZcands_from_myleps_OSmethod(
     """Return list of all valid ZZ candidates from `mylep_ls`.
     
     NOTE:
-    - Checks that they pass all Z1, Z2, and ZZ selection criteria.
+    - Imposes Z1, Z2, and ZZ selection criteria.
     - `mylep_ls` should have exactly 4 leptons (lepton quartet).
     - Should just return ONE ZZ candidate (but inside a list).
 

@@ -11,6 +11,8 @@ Notes: This code makes a json file which stores the Run:Lumi:Event of all
   
 ===============================================
 
+TODO: Update this whole docstring.
+
 NOTE:
     Uses updated event selection which bypasses passedZXCRSelection.
 
@@ -48,6 +50,8 @@ d_nicknames_files = {
 int_lumi = 59830
 year = 2018
 explain_skipevent = 0
+keep_only_mass4lgt0 = 0
+
 start_at_evt = 0
 break_at_evt = -1  # Use -1 to run over all events.
 print_every = 500000
@@ -62,8 +66,8 @@ infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/bes
 
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
 # These base names will have name of data type appended ("Data", "ZZ").
-outfile_base_root = "rootfiles/test/cjlstOSmethodevtsel_2p2plusf_3p1plusf_mass4lgt0_fixfr3.root"
-outfile_base_json = "json/test/cjlstOSmethodevtsel_2p2plusf_3p1plusf_mass4lgt0_fixfr3_counter.json"
+outfile_base_root = "rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf.root"
+outfile_base_json = "json/cjlstOSmethodevtsel_2p2plusf_3p1plusf_counter.json"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -87,7 +91,7 @@ if __name__ == '__main__':
         all_names = '_'.join(d_nicknames_files.keys())
         new_filename = outfile_base_root.replace(
                         ".root",
-                        f"_{all_names}.root"
+                        f"_{year}_{all_names}.root"
                         )
         outfile_hadd = os.path.join(outdir, new_filename)
         check_overwrite(outfile_hadd, overwrite=overwrite)
@@ -124,7 +128,7 @@ if __name__ == '__main__':
             explain_skipevent=explain_skipevent,
             verbose=verbose, print_every=print_every,
             smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
-            overwrite=overwrite
+            overwrite=overwrite, keep_only_mass4lgt0=keep_only_mass4lgt0
             )
         
         ls_all_outfiles.append(outfile_root)
