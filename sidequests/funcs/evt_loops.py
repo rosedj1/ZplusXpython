@@ -2,7 +2,7 @@ from ROOT import TFile
 import numpy as np
 from array import array
 # Local imports.
-from Utils_Python.Utils_Physics import perc_diff
+from Utils_Python.Utils_Physics import perc_diff, calc_mass4l_from_idcs
 from Utils_Python.printing import (
     print_periodic_evtnum,
     print_skipevent_msg, pretty_print_dict
@@ -35,6 +35,10 @@ from constants.analysis_params import (
     xs_dct_jake, n_sumgenweights_dataset_dct_jake
     )
 # from scipy.special import binom
+# DELETE BELOW:
+from sidequests.funcs.evt_comparison import print_evt_info_bbf
+# DELETE ABOVE:
+
 
 def find_combos_2tight2loose(mylep_ls):
     """Return a list of all possible 4-tuples of 2tight2loose MyLeptons.
@@ -445,7 +449,14 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         ptr_fr3 = array('f', [0.])
         ptr_eventWeightFR = array('f', [0.])
         ptr_lep_RedBkgindex = array('i', [0, 0, 0, 0])
+        ptr_mass4l = array('f', [0.])
+        ptr_mass4l_vtxFSR_BS = array('f', [0.])
         # ptr_eventWeight = array('f', [0.])
+
+        # Modify existing values of branches.
+        new_tree.SetBranchAddress("mass4l", ptr_mass4l)
+        new_tree.SetBranchAddress("mass4l_vtxFSR_BS", ptr_mass4l_vtxFSR_BS)
+        # new_tree.SetBranchAddress("eventWeight", ptr_eventWeight)
 
         # Make new corresponding branches in the TTree.
         new_tree.Branch("is2P2F", ptr_is2P2F, "is2P2F/I")
@@ -461,9 +472,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             "lep_RedBkgindex[4]/I"
             )
         # new_tree.Branch("eventWeight", ptr_eventWeight, "eventWeight/F")
-
-        # new_tree.SetBranchAddress("eventWeight", ptr_eventWeight)
-
 
     n_tot = tree.GetEntries()
     print(
@@ -673,17 +681,31 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                     continue
 
             # Save this subevent in TTree. Fill branches.
+            lep_idcs = [
+                mylep1_fromz1.ndx_lepvec,
+                mylep2_fromz1.ndx_lepvec,
+                mylep1_fromz2.ndx_lepvec,
+                mylep2_fromz2.ndx_lepvec,
+                ]
             ptr_is2P2F[0] = subevt_passes_sel_2p2f
             ptr_is3P1F[0] = subevt_passes_sel_3p1f
             ptr_isMCzz[0] = isMCzz
             ptr_fr2[0] = fr2
             ptr_fr3[0] = fr3
             ptr_eventWeightFR[0] = new_weight
-            ptr_lep_RedBkgindex[0] = mylep1_fromz1.ndx_lepvec
-            ptr_lep_RedBkgindex[1] = mylep2_fromz1.ndx_lepvec
-            ptr_lep_RedBkgindex[2] = mylep1_fromz2.ndx_lepvec
-            ptr_lep_RedBkgindex[3] = mylep2_fromz2.ndx_lepvec
+            ptr_lep_RedBkgindex[0] = lep_idcs[0]
+            ptr_lep_RedBkgindex[1] = lep_idcs[1]
+            ptr_lep_RedBkgindex[2] = lep_idcs[2]
+            ptr_lep_RedBkgindex[3] = lep_idcs[3]
+
+            ptr_mass4l[0] = calc_mass4l_from_idcs(
+                tree, lep_idcs, kind="lepFSR"
+                )
+            ptr_mass4l_vtxFSR_BS[0] = calc_mass4l_from_idcs(
+                tree, lep_idcs, kind="vtxLepFSR_BS"
+                )
             new_tree.Fill()
+
             # ptr_eventWeight[0] = new_weight
         # End loop over subevents.
 

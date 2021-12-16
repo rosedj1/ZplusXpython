@@ -50,11 +50,11 @@ d_nicknames_files = {
 int_lumi = 59830
 year = 2018
 explain_skipevent = 0
-keep_only_mass4lgt0 = 0
+keep_only_mass4lgt0 = 1
 
 start_at_evt = 0
-break_at_evt = -1  # Use -1 to run over all events.
-print_every = 500000
+break_at_evt = 5000  # Use -1 to run over all events.
+print_every = 500
 
 fill_hists = 1
 hadd_files = 1
@@ -66,8 +66,8 @@ infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/bes
 
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
 # These base names will have name of data type appended ("Data", "ZZ").
-outfile_base_root = "rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf.root"
-outfile_base_json = "json/cjlstOSmethodevtsel_2p2plusf_3p1plusf_counter.json"
+outfile_base_root = "rootfiles/test/test02_cjlstOSmethodevtsel_2p2plusf_3p1plusf.root"
+outfile_base_json = "json/test/test02_cjlstOSmethodevtsel_2p2plusf_3p1plusf_counter.json"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

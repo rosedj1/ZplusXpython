@@ -111,6 +111,17 @@ class MyLepton:
 
 def make_filled_mylep_ls(tree):
     """Return list of MyLepton objs filled with lep info from this event."""
+    assert len(tree.lepFSR_pt) == \
+            len(tree.lepFSR_eta) == \
+            len(tree.lepFSR_phi) == \
+            len(tree.lepFSR_mass) == \
+            len(tree.lep_id) == \
+            len(tree.lep_tightId) == \
+            len(tree.lep_RelIsoNoFSR) == \
+            len(tree.lep_pt) == \
+            len(tree.lep_eta) == \
+            len(tree.lep_phi) == \
+            len(tree.lep_mass)
     mylep_ls = []
     for ndx, (lpt, leta, lphi, lmass, lid, ltightId, lRelIsoNoFSR,
               lpt_NoFSR, leta_NoFSR, lphi_NoFSR, lmass_NoFSR) in enumerate(

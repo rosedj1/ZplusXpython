@@ -88,6 +88,7 @@ def print_evt_info_bbf(evt):
         "lep_id" : "list",
         "lep_pt" : "list",
         "lepFSR_pt" : "list",
+        "vtxLepFSR_BS_pt" : "list",
         "lep_RelIso" : "list",
         "lep_tightId" : "list",
         "is2P2F" : "",

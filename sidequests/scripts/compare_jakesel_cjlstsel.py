@@ -11,12 +11,14 @@ from contextlib import redirect_stdout  # Having trouble with `tee`.
 
 from sidequests.data.filepaths import (
     infile_elisa_3p1f, infile_elisa_2p2f,
-    infile_matteo_data2018_fromhpg, infile_filippo_data_2018_fromhpg)
+    infile_matteo_data2018_fromhpg, infile_filippo_data_2018_fromhpg
+    )
 from sidequests.classes.filecomparer import FileRunLumiEvent
 from sidequests.funcs.evt_loops import evt_loop_evtselcjlst_atleast4leps
 from sidequests.funcs.evt_comparison import analyze_single_evt
 from Utils_Python.Utils_Files import (
-    open_json, save_to_pkl, open_pkl, check_overwrite)
+    open_json, save_to_pkl, open_pkl, check_overwrite
+    )
 from Utils_Python.printing import print_header_message
 
 verbose = 1
@@ -30,7 +32,7 @@ use_analyzer_bbf = 0
 use_analyzer_jake = 0
 
 save_bbf_pkl = 0
-open_bbf_pkl = 1
+open_bbf_pkl = 0
 # Premade dict of event IDs from Filippo's 2018 Data.
 pathpkl_bbf_evtid_set = "../pkls/bbf_evtid_set_data2018.pkl"
 
