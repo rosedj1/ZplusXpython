@@ -1,8 +1,11 @@
 from ROOT import TFile
 import numpy as np
 
-from Utils_Python.printing import print_periodic_evtnum
+from Utils_Python.printing import print_periodic_evtnum, print_header_message
 from sidequests.classes.cjlstflag import CjlstFlag
+from sidequests.funcs.evt_loops import (
+    evt_loop_evtsel_2p2plusf3p1plusf_subevents
+    )
 
 def write_tree_info_to_txt(infile, outtxt,
                            keep_2P2F=True, keep_3P1F=True, keep_all=False,
@@ -119,7 +122,37 @@ def print_evt_info_cjlst(tree):
         f"tree.ZZMass: {tree.ZZMass}"
         )
 
-def analyze_single_evt(tree, run, lumi, event, fw="bbf", which="all",
+def find_entries_using_runlumievent(
+    tree, run, lumi, event,
+    evt_start=0, evt_end=-1, print_every=10000,
+    which="all"
+    ):
+    """Return the entry of BBF NTuple that correspond to run, lumi, event.
+
+    Args:
+        which (str):
+        If "all", will find all entries with run, lumi, event.
+        If "first", break after first entry is found.
+    """
+    ls_entries = []
+    for evt_num in range(evt_start, evt_end):
+        print_periodic_evtnum(evt_num, evt_end, print_every=print_every)
+        tree.GetEntry(evt_num)
+        if tree.Run != run:
+            continue
+        if tree.LumiSect != lumi:
+            continue
+        if tree.Event != event:
+            continue
+        # Found entry.
+        ls_entries.extend([evt_num])
+        if which == "first":
+            break
+    if len(ls_entries) == 0:
+        print(f"WARNING: No entry found for {run} : {lumi} : {event}.")
+    return ls_entries
+
+def analyze_single_evt(tree, run, lumi, event, entry=None, fw="bbf", which="all",
                        evt_start=0, evt_end=-1, print_every=10000):
     """Return list of event numbers that correspond to run, lumi, event.
 
@@ -130,12 +163,23 @@ def analyze_single_evt(tree, run, lumi, event, fw="bbf", which="all",
     Parameters
     ----------
     fw : str
-        Which framework to use: "bbf", "cjlst"
+        Which framework to use: "bbf", "cjlst", "jake"
     which : str
         Which instance of the event you want to select.
         Options: "first", anything else prints all such events.
     evt_start : int
     """
+    if entry is None:
+        # Not sure which entry we want, so let's find it.
+        ls_entries = find_entries_using_runlumievent(
+                tree, run, lumi, event,
+                evt_start=0, evt_end=-1, print_every=10000,
+                which="all"
+                    )
+        # Run, Lumi, Event was specified.
+    else:
+
+
     print(f"Searching for event ID {run}:{lumi}:{event} in {fw.upper()} framework")
 
     n_tot = tree.GetEntries()
@@ -148,7 +192,7 @@ def analyze_single_evt(tree, run, lumi, event, fw="bbf", which="all",
         if (evt_num % print_every) == 0:
             print(f"Event {evt_num}/{n_tot}")
 
-        if fw in "bbf":
+        if (fw == "bbf") or (fw == "jake"):
             if tree.Run != run:
                 continue
             if tree.LumiSect != lumi:
@@ -156,10 +200,25 @@ def analyze_single_evt(tree, run, lumi, event, fw="bbf", which="all",
             if tree.Event != event:
                 continue
             print(f"Event {run}:{lumi}:{event} found. Index: {evt_num}")
-            print_evt_info_bbf(tree)
+            if fw == "bbf":
+                print_header_message("ANALYZER: BBF")
+                print_evt_info_bbf(tree)
+            if fw == "jake":
+                print_header_message("ANALYZER: Jake")
+                evt_loop_evtsel_2p2plusf3p1plusf_subevents(
+                    tree,
+                    infile_FR_wz_removed=None,
+                    outfile_root=None, outfile_json=None,
+                    name="Data", int_lumi=59830,
+                    start_at_evt=evt_num, break_at_evt=evt_num+1,
+                    fill_hists=False, explain_skipevent=True, verbose=False,
+                    print_every=1, smartcut_ZapassesZ1sel=False,
+                    overwrite=False, keep_only_mass4lgt0=False
+                    )
             store_evt = True
 
-        elif fw in "cjlst":
+        elif fw == "cjlst":
+            print_header_message("ANALYZER: CJLST")
             if tree.RunNumber != run:
                 continue
             if tree.LumiNumber != lumi:
@@ -179,6 +238,8 @@ def analyze_single_evt(tree, run, lumi, event, fw="bbf", which="all",
 
 def get_control_region(evt):
     """Return str of control region based on `lep_Hindex` and `lep_tightId`.
+
+    FIXME: Logic may be incorrect. Review it.
 
     Only works for BBF root files.
     """

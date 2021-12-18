@@ -35,10 +35,6 @@ from constants.analysis_params import (
     xs_dct_jake, n_sumgenweights_dataset_dct_jake
     )
 # from scipy.special import binom
-# DELETE BELOW:
-from sidequests.funcs.evt_comparison import print_evt_info_bbf
-# DELETE ABOVE:
-
 
 def find_combos_2tight2loose(mylep_ls):
     """Return a list of all possible 4-tuples of 2tight2loose MyLeptons.
@@ -363,7 +359,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     start_at_evt=0, break_at_evt=-1, fill_hists=True,
     explain_skipevent=False, verbose=False, print_every=50000,
     smartcut_ZapassesZ1sel=False, overwrite=False,
-    keep_only_mass4lgt0=False):
+    keep_only_mass4lgt0=False
+    ):
     """Apply RedBkg "subevent" event selection to all events in tree.
 
     NOTE:
