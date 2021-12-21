@@ -353,7 +353,7 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
 
 def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     tree,
-    infile_FR_wz_removed=None,
+    infile_FR_wz_removed,
     outfile_root=None, outfile_json=None,
     name="", int_lumi=59830,
     start_at_evt=0, break_at_evt=-1, fill_hists=True,
@@ -425,6 +425,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     evt_info_d = make_evt_info_d()  # Info for printing.
     evt_info_2p2f_3p1f_d = {}  # Info for json file.
 
+    assert infile_FR_wz_removed is not None
     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end = retrieve_FR_hists(
                                                     infile_FR_wz_removed
                                                     )
@@ -432,23 +433,23 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     if outfile_json is not None:
         check_overwrite(outfile_json, overwrite=overwrite)
     
+    # Make pointers to store new values. 
+    ptr_is2P2F = np.array([0], dtype=int)  # Close enough to bool lol.
+    ptr_is3P1F = np.array([0], dtype=int)
+    ptr_isMCzz = np.array([0], dtype=int)
+    ptr_fr2 = array('f', [0.])
+    ptr_fr3 = array('f', [0.])
+    ptr_eventWeightFR = array('f', [0.])
+    ptr_lep_RedBkgindex = array('i', [0, 0, 0, 0])
+    ptr_mass4l = array('f', [0.])
+    ptr_mass4l_vtxFSR_BS = array('f', [0.])
+    # ptr_eventWeight = array('f', [0.])
+
     if outfile_root is not None:
         check_overwrite(outfile_root, overwrite=overwrite)
         new_file = TFile.Open(outfile_root, "recreate")
         print("Cloning TTree.")
         new_tree = tree.CloneTree(0)  # Clone 0 events.
-
-        # Make pointers to store new values. 
-        ptr_is2P2F = np.array([0], dtype=int)  # Close enough to bool lol.
-        ptr_is3P1F = np.array([0], dtype=int)
-        ptr_isMCzz = np.array([0], dtype=int)
-        ptr_fr2 = array('f', [0.])
-        ptr_fr3 = array('f', [0.])
-        ptr_eventWeightFR = array('f', [0.])
-        ptr_lep_RedBkgindex = array('i', [0, 0, 0, 0])
-        ptr_mass4l = array('f', [0.])
-        ptr_mass4l_vtxFSR_BS = array('f', [0.])
-        # ptr_eventWeight = array('f', [0.])
 
         # Modify existing values of branches.
         new_tree.SetBranchAddress("mass4l", ptr_mass4l)
@@ -494,6 +495,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
 
         # Check the number of leptons in this event.
         n_tot_leps = len(tree.lepFSR_pt)
+        if verbose: print(f"  Total number of leptons found: {n_tot_leps}")
 
         # Ensure at least 4 leptons in event:
         if n_tot_leps < 4:
@@ -515,6 +517,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                     f"(contains {n_tight_leps} tight leps)."
                     )
                 print_skipevent_msg(msg, evt_num, run, lumi, event)
+            if verbose:
+                for lep in mylep_ls:
+                    lep.print_info()
             continue
         # Guaranteed to have at least 4-leps per event
         # of which exactly 2 or 3 pass tight selection.
@@ -695,13 +700,15 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             ptr_lep_RedBkgindex[2] = lep_idcs[2]
             ptr_lep_RedBkgindex[3] = lep_idcs[3]
 
-            ptr_mass4l[0] = calc_mass4l_from_idcs(
-                tree, lep_idcs, kind="lepFSR"
-                )
-            ptr_mass4l_vtxFSR_BS[0] = calc_mass4l_from_idcs(
-                tree, lep_idcs, kind="vtxLepFSR_BS"
-                )
-            new_tree.Fill()
+            # WARNING!!! UNCOMMENT THIS BLOCK!
+            # ptr_mass4l[0] = calc_mass4l_from_idcs(
+            #     tree, lep_idcs, kind="lepFSR"
+            #     )
+            # ptr_mass4l_vtxFSR_BS[0] = calc_mass4l_from_idcs(
+            #     tree, lep_idcs, kind="vtxLepFSR_BS"
+            #     )
+            if outfile_root is not None:
+                new_tree.Fill()
 
             # ptr_eventWeight[0] = new_weight
         # End loop over subevents.

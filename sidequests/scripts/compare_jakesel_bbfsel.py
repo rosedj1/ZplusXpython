@@ -1,10 +1,12 @@
-"""Compares event selections between BBF and "Jake" analyzers.
+"""Compare event selections between BBF and "Jake" analyzers.
 # ============================================================================
 # Created: 2021-12-16
+# Updated: 2021-12-21
 # Creator: Jake Rosenzweig
 # Comment: Useful for doing event synchronization.
 # ============================================================================
 """
+import sys
 from ROOT import TFile
 # Local imports.
 from sidequests.classes.filecomparer import FileRunLumiEvent
@@ -15,28 +17,17 @@ from sidequests.data.filepaths import infile_filippo_data_2018_fromhpg
 from sidequests.funcs.evt_comparison import (
     print_evt_info_bbf, analyze_single_evt
     )
-
-infile_bbf = infile_filippo_data_2018_fromhpg
-infile_jake = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf_mass4lgt0_2018_Data.root"
+from skimmers.select_evts_2P2plusF_3P1plusF import infile_FR_wz_removed
 
 inpkl_bbf_2p2f  = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/bbf_evtids_2p2f.pkl"
 inpkl_bbf_3p1f  = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/bbf_evtids_3p1f.pkl"
 inpkl_jake_2p2f = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/jake_evtids_2p2f.pkl"
 inpkl_jake_3p1f = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/jake_evtids_3p1f.pkl"
 
+explain_skipevent = True
+verbose = False
 use_exact_entry = True
-infile_exact_entries = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/scripts/output_diffbetween_jakeandbbf_3p1f.txt"
-# import sys
-# from ROOT import TFile
-# from contextlib import redirect_stdout  # Having trouble with `tee`.
-
-# from sidequests.data.filepaths import (
-#     infile_elisa_3p1f, infile_elisa_2p2f,
-#     infile_matteo_data2018_fromhpg, infile_filippo_data_2018_fromhpg
-#     )
-# from sidequests.funcs.evt_loops import evt_loop_evtselcjlst_atleast4leps
-# from sidequests.funcs.evt_comparison import analyze_single_evt
-# from Utils_Python.printing import print_header_message
+infile_exact_entries = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/scripts/bbf_unique3p1f_comparedtojake.out"
 
 def get_list_of_entries(txt):
     """Return a list of entries (int) from a txt file."""
@@ -49,25 +40,6 @@ def get_list_of_entries(txt):
                 entry = int(str_num.rstrip('\n'))
                 ls_entries.extend([entry])
     return ls_entries
-
-def analyze_entry(
-    tree, entry=None, run=None, lumi=None, event=None,
-    fw="jake", which="first"
-    ):
-    """Analyze one event found by either `entry` OR `run`, `lumi`, `event`.
-    
-    Args:
-    """
-    if entry is None:
-        assert all(x is not None for x in (run, lumi, event))
-        evt_start = 0
-        evt_end = -1
-    else:
-        evt_start = entry
-        evt_end = entry + 1
-        ls_bbf_evt_ndx = analyze_single_evt(tree, run, lumi, event, fw=fw, which=which,
-                        evt_start=evt_start, evt_end=evt_end, print_every=500000)
-        print()
 
 # if __name__ == '__main__':
 
@@ -95,15 +67,25 @@ tree_bbf = tf.Get("passedEvents")
 
 if use_exact_entry:
     ls_uniq_entries = get_list_of_entries(infile_exact_entries)
-    for entry in ls_uniq_entries[:2]:
-        analyze_entry(
-            tree_bbf, entry=entry, run=None, lumi=None, event=None,
+    for entry in ls_uniq_entries:
+        analyze_single_evt(
+            tree_bbf,
+            run=None, lumi=None, event=None,
+            entry=entry,
             fw="bbf", which="first"
             )
-        analyze_entry(
-            tree_bbf, entry=entry, run=None, lumi=None, event=None,
-            fw="jake", which="first"
+        analyze_single_evt(
+            tree_bbf,
+            run=None, lumi=None, event=None,
+            entry=entry,
+            fw="jake", which="first",
+            infile_FR_wz_removed=infile_FR_wz_removed,
+            explain_skipevent=explain_skipevent,
+            verbose=verbose
             )
+        print("=#" * 39)
+        print("=#" * 39)
+        print("=#" * 39)
 else:
     # Not sure which entry to use. Find using exactly run, lumi, event.
     for ct, tup_fili_uniq_evtid in enumerate(fili_unique_evts):

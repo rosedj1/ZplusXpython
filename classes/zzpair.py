@@ -77,27 +77,28 @@ class ZZPair:
               and if m(Zb) > 12 GeV, then this whole ZZ pair FAILS smart cut.
         - m(4l) > 70 GeV.
         """
+        skip_msg_prefix = f"Invalid ZZ cand (#{self.ndx_in_zzpair_ls})"
         # NOTE: Doing m(4l) cut first since it is an efficient cut.
         if self.get_m4l() < 70:
             if self.explain_skipevent:
-                print(f"Invalid ZZ cand. Failed m(4l) > 70 GeV.")
-                self.print_info()
+                print(f"  {skip_msg_prefix}: Failed m(4l) > 70 GeV.")
+                if self.verbose: self.print_info()
             return False
         
         # Step 1. Should already be taken into account, but just in case.
         if self.z_fir.has_overlapping_leps(self.z_sec):
             if self.explain_skipevent:
-                print(f"Invalid ZZ cand. Has overlapping leptons.")
-                self.print_info()
+                print(f"  {skip_msg_prefix}: Z's have overlapping leptons.")
+                if self.verbose: self.print_info()
             return False
         
         # Step 2.
         if not self.z_fir.passes_z1_kinematic_selec():
             if self.explain_skipevent:
                 print(
-                    f"Invalid ZZ cand. z_fir does not pass Z1 selections."
+                    f"  {skip_msg_prefix}: z_fir does not pass Z1 selections."
                 )
-                self.print_info()
+                if self.verbose: self.print_info()
             return False
         # Check if Z2 also comes from tight leptons.
         # If so, make sure m(Z1) is closer to PDG mass.
@@ -105,33 +106,33 @@ class ZZPair:
             if self.z_sec.has_closer_mass_to_ZPDG(self.z_fir):
                 if self.explain_skipevent:
                     print(
-                        f"  Invalid ZZ cand: "
+                        f"  {skip_msg_prefix}: "
                         f"m(Z2) closer to PDG than m(Z1) is."
                         )
-                    self.print_info()
+                    if self.verbose: self.print_info()
                 return False
         
         # Step 3.
         mylep_ls = self.get_mylep_ls()
         if not check_leps_separated_in_DeltaR(mylep_ls, min_sep=0.02):
             if self.explain_skipevent:
-                print(f"  Invalid ZZ cand: Leptons not separated in dR.")
-                self.print_info()
+                print(f"  {skip_msg_prefix}: Leptons not separated in dR.")
+                if self.verbose: self.print_info()
             return False
         if not check_leps_pass_leadsublead_pTcuts(mylep_ls):
             if self.explain_skipevent:
-                print(f"  Invalid ZZ cand: Leptons fail lead/sublead cuts.")
-                self.print_info()
+                print(f"  {skip_msg_prefix}: Leptons fail lead/sublead cuts.")
+                if self.verbose: self.print_info()
             return False
         if not leps_pass_lowmass_dilep_res(mylep_ls, min_mass=4):
             if self.explain_skipevent:
-                print(f"  Invalid ZZ cand: Low-mass dilep resonance found.")
-                self.print_info()
+                print(f"  {skip_msg_prefix}: Low-mass dilep resonance found.")
+                if self.verbose: self.print_info()
             return False
         if not self.passes_smart_cut():
             if self.explain_skipevent:
-                print(f"  Invalid ZZ cand: Failed smart cut.")
-                self.print_info()
+                print(f"  {skip_msg_prefix}: Failed smart cut.")
+                if self.verbose: self.print_info()
             return False
         return True
         
@@ -347,9 +348,11 @@ def select_better_zzcand(zzcand1, zzcand2, verbose=False):
     If two ZZs do NOT have same leptons, then choose the ZZ with higher Kd
     (this would only be possible when considering DIFFERENT lep quartets).
     """
+    ndx_fir = zzcand1.ndx_in_zzpair_ls
+    ndx_sec = zzcand2.ndx_in_zzpair_ls
     if zzcand1.has_same_4leps(zzcand2):
         print(
-            f"  ZZ cands share same 4 leptons.\n"
+            f"  ZZ cands (#{ndx_fir}, #{ndx_sec}) share same 4 leptons.\n"
             f"  Selecting the ZZ with m(Z1) closer to PDG value."
             )
         err_msg = (
@@ -357,29 +360,28 @@ def select_better_zzcand(zzcand1, zzcand2, verbose=False):
             f"  This could imply bad logic in literature smart cut!!!"
             )
         if zzcand1.z_fir.has_closer_mass_to_ZPDG(zzcand2.z_fir):
+            # First ZZ cand is the better cand.
             assert zzcand1.z_fir.passes_z1_kinematic_selec(), err_msg
-            print("  ZZ#1 selected as better cand, since Z1 was closer to PDG.")
-            if verbose:
-                print_header_info("ZZ#1 info:")
-                zzcand1.print_info()
-                print_header_info("ZZ#2 info:")
-                zzcand2.print_info()
-            return zzcand1
+            winning_zz = zzcand1
+            winning_zz_ndx = ndx_fir
         else:
             # Second ZZ cand is the better cand.
             assert zzcand2.z_fir.passes_z1_kinematic_selec(), err_msg
-            print("  ZZ#2 selected as better cand, since Z1 was closer to PDG.")
-            if verbose:
-                print_header_info("ZZ#1 info:")
-                zzcand1.print_info()
-                print_header_info("ZZ#2 info:")
-                zzcand2.print_info()
-            return zzcand2
+            winning_zz = zzcand2
+            winning_zz_ndx = ndx_sec
     else:
         raise ValueError(
                 f"  ZZ cands have different leptons.\n"
                 f"  Choose cand with higher Kd. HOW???"
                 )
+    # if verbose:
+    print(
+        f"  ZZ#{winning_zz_ndx} selected as better cand, "
+        f"since its Z1 was closer to PDG."
+        )
+    zzcand1.print_info()
+    zzcand2.print_info()
+    return winning_zz
 
 def get_all_ZZcands_passing_cjlst(zz_pair_ls):
     """Return a list subset of zz_pair_ls of the ZZs passing CJLST cuts.

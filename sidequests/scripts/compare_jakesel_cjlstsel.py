@@ -24,10 +24,10 @@ from Utils_Python.printing import print_header_message
 verbose = 1
 explain_skipevent = 0
 overwrite = 0
-print_n_common_evts = 1
+print_n_common_evts = 0
 smartcut_ZapassesZ1sel = 0
 
-use_analyzer_cjlst = 0
+use_analyzer_cjlst = 1
 use_analyzer_bbf = 0
 use_analyzer_jake = 0
 
@@ -47,7 +47,7 @@ user_evtid = None #(322605, 54, 99454570)  # Specific event, otherwise use `None
 
 scan_all_evts = 0  # Once BBF finds event index, it will give it to Jake.
 evt_start_bbfandjake = 6867156  #3333890  # Specific event, otherwise use `None`.
-evt_start_cjlst = None#76161          # Specific event, otherwise use `None`.
+evt_start_cjlst = 26#76161          # Specific event, otherwise use `None`.
 
 if __name__ == '__main__':
     check_overwrite(outlog_cjlst, outlog_bbf, outlog_jake,
@@ -73,14 +73,13 @@ if __name__ == '__main__':
     #--- Grab all Elisa's unique 3P1F events. ---#
     elisa_evts_3p1f_unique = frle_elisa_3p1f.analyze_evtids(frle_filippo_3p1f, event_type="unique")
     elisa_evts_2p2f_unique = frle_elisa_2p2f.analyze_evtids(frle_filippo_2p2f, event_type="unique")
-    with open("", "w") as f:
+    # with open("", "w") as f:
 
     #--- Count number of common events. ---#
     if print_n_common_evts:
         evts_3p1f_common = frle_elisa_3p1f.analyze_evtids(frle_filippo_3p1f, event_type="common")
         evts_2p2f_common = frle_elisa_2p2f.analyze_evtids(frle_filippo_2p2f, event_type="common")
 
-    sys.exit()
     f_cjlst = TFile.Open(infile_matteo_data2018_fromhpg, "read")
     tree_cjlst = f_cjlst.Get("CRZLLTree/candTree")
     print("Opened CJLST file.")
