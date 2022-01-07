@@ -4,6 +4,10 @@
  * - Useful for reducible background studies.
  * - VX+BS info is saved.
  * - Select events in the Z+L, Z+LL, and/or 4P control regions.
+ *   The Z+LL CR has undergone some changes!
+ *   The passedZXCRSelection flag does not account for different 4-lepton
+ *   quartets within the same event. Therefore this script should only be used
+ *   to select Z+L events for fake rate studies. 
  * - Specify either Data or MC using `isData` and check file paths!
  * AUTHOR: Jake Rosenzweig, jake.rose@cern.ch
  * CREATED: 2021-05-20, happy birthday, Sheldoni!

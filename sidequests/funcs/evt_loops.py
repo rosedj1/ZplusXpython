@@ -394,7 +394,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             Default is False.
         keep_only_mass4lgt0 (bool, optional):
             If True, then skip events whose tree.mass4l <= 0.
-            This is useful when you need to pull values from the BBF NTuple.
+            This is useful when you need to use the values that are already
+            stored in the BBF NTuple.
             Default is False.
     """
     if fill_hists:
@@ -700,7 +701,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             ptr_lep_RedBkgindex[2] = lep_idcs[2]
             ptr_lep_RedBkgindex[3] = lep_idcs[3]
 
-            # WARNING!!! UNCOMMENT THIS BLOCK!
+            # Getting an IndexError since there is a discrepancy in the length
+            # of vectors, like `lep_pt` and `vtxLepFSR_BS_pt`.
+            # WARNING!!! UNCOMMENT THIS BLOCK TO PROPERLY SAVE UPDATED DATA!
             # ptr_mass4l[0] = calc_mass4l_from_idcs(
             #     tree, lep_idcs, kind="lepFSR"
             #     )
@@ -709,8 +712,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             #     )
             if outfile_root is not None:
                 new_tree.Fill()
-
-            # ptr_eventWeight[0] = new_weight
         # End loop over subevents.
 
         #=== Some sanity checks. ===#

@@ -3,7 +3,7 @@
 This repo contains scripts to:
 
 - Skim NTuples.
-- Retrieving Data and MC info.
+- Retrieve Data and MC info.
 - Calculate lepton fake rates.
 - Remove the WZ contribution.
 - Estimate the total non-ZZ background contribution.
@@ -14,25 +14,32 @@ This repo contains scripts to:
 ## Skim NTuples
 
 1. Use the UFHZZ4LAnalyzer to skim the MiniAOD files (Data or MC).
+
 1. Combine files (using `hadd`) of the same process (e.g., MuonEG runs A-D) with:
    - `hadders/haddfiles_on_slurm.ipynb` (submits `hadd` jobs to SLURM)
    - **NOTE:** If you get an error like the one below
-   then get rid of unncessary branches using
-   `skimmers/skim_useless_branches.C` and then resume `hadd`ing:
+   then first get rid of unncessary branches using
+   `skimmers/skim_useless_branches.C`; then resume `hadd`ing.
 
    ```bash
    Error in <TBufferFile::WriteByteCount>: bytecount too large (more than 1073741822)
    ```
    
-1. Skim only the important branches with:
-   - `skimmers/apply_redbkg_evt_selection_vxbs`.
+1. Select Z+L events with:
+   - `skimmers/apply_redbkg_evt_selection_vxbs.C`
    - Apply the skimmer to multiple samples with:
       - `skimmers/skim_ZL_ZLL_4P_CR.sh`
+
+1. Select "OS Method" events (2P2F and 3P1F) with:
+   - `skimmers/select_evts_2P2plusF_3P1plusF.py`
+      
 1. Combine data files into a single file (e.g. `Data2018_Duplicates.root`) using `hadd`.
    - You can probably do it locally, but if the files are still large, use:
       - `hadders/haddfiles_on_slurm.ipynb`
-1. Remove duplicate events with:
-   - `skimmers/remove_duplicates.py`
+
+<!-- 1. Remove duplicate events with:
+   - `skimmers/remove_duplicates.py` -->
+   
 <!-- 1. [OPTIONAL] Combine Data files into a single file (e.g. `Data_*_NoDuplicates.root`).
    - May not be possible due to memory issues! May get `'bytecount too large'` error. 
    - Work around: skim these big files, hadd together, and THEN remove duplicates. -->
@@ -51,7 +58,7 @@ For historical purposes, let it be noted that the CJLST group uses
 
 You can also find cross sections associated with the generated samples, found on McM:
 
-1. Going to https://cms-pdmv.cern.ch/mcm/ > Request > Output Dataset
+1. Go to https://cms-pdmv.cern.ch/mcm/ > Request > Output Dataset
 1. Search for your data set by providing the data set name.
 2. Under 'PrepId' column, copy the name of the file.
 3. Under 'Dataset name' column, click on the icon to the right of the name
