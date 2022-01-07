@@ -87,7 +87,16 @@ if __name__ == '__main__':
                 evt_end = evt_start + 1
             ls_cjlst_evt_ndx = analyze_single_evt(tree_cjlst, run, lumi, event, fw="cjlst", which="all",
                             evt_start=evt_start, evt_end=evt_end, print_every=10000)
-                            #    evt_start=evt_start_cjlst, evt_end=evt_start_cjlst+1, print_every=10000)
+            # DISGUSTING HACK.
+            # Linux `tee` command won't print to screen and file for some reason...
+            # (`python script.py | tee output.txt`)
+            # So I analyze the files twice:
+            # once to print to screen and the other to save to file...
+            with 
+            for ndx in ls_cjlst_evt_ndx:
+                _ = analyze_single_evt(tree_cjlst, run, lumi, event, fw="cjlst", which="all",
+                            evt_start=ndx, evt_end=ndx+1, print_every=10000)
+                            
         ndx_bbf = None
         if use_analyzer_bbf:
             print_header_message("ANALYZER: BBF")
