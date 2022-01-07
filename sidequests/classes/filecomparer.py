@@ -154,17 +154,37 @@ class FileComparer:
 class FileRunLumiEvent:
     """TODO: Initialize instances of this class inside of FileComparer."""
 
-    def __init__(self, txt=None, ls_str_evtid=None):
-        """Load evtIDs from a txt file or a list of strings.
+    def __init__(
+        self,
+        txt=None,
+        ls_str_evtid=None,
+        ls_tup_evtid=None,
+        set_tup_evtid=None
+        ):
+        """Load a list of event IDs from some source of event IDs.
         
         Args:
-            txt (str): Text file with event IDs as strings.
-            ls_str_evtid (list of str)
+            txt (str):
+                Text file with event IDs as strings.
+            ls_str_evtid (list of str):
+                List contains event IDs as strings.
+            
         """
+        # Make sure only 1 source of events was given.
+        assert sum(x is not None for x in (
+                txt, ls_str_evtid, ls_tup_evtid, set_tup_evtid)
+                ) == 1
         self.txt = txt
-        self.ls_tup_evtid = self.get_ls_tup_evtid(txt, ls_str_evtid)
+        if ls_tup_evtid is not None:
+            self.ls_tup_evtid = ls_tup_evtid
+        else:
+            self.ls_tup_evtid = self.get_ls_tup_evtid(
+                txt,
+                ls_str_evtid,
+                set_tup_evtid
+                )
         
-    def get_ls_tup_evtid(self, txt, ls_str_evtid):
+    def get_ls_tup_evtid(self, txt, ls_str_evtid, set_tup_evtid):
         """Return a list of tuples of (Run, Lumi, Event).
 
         Args:
@@ -173,18 +193,16 @@ class FileRunLumiEvent:
                     'Run : Lumi : Event'
                 NOTE: Will strip newlines and whitespace from the ends.
             ls_str_evtid (list of str):
-                
 
         NOTE: Tuple elements are int.
         """
-        # Use exclusive or (xor) to make sure only one source of evtIDs.
-        txt_is_good = txt is not None
-        ls_is_good = ls_str_evtid is not None
-        assert (txt_is_good ^ ls_is_good)
-        if ls_is_good:
-            assert isinstance(ls_str_evtid, list)
+        if isinstance(ls_str_evtid, list):
+            # Check to make sure list has expected form.
             assert isinstance(ls_str_evtid[-1], str)
             return get_list_of_tuples(ls_str_evtid)
+        if isinstance(set_tup_evtid, set):
+            # We were given a set of tuples.
+            return list(set_tup_evtid)
         # Otherwise we are dealing with a txt file with evtID info.
         return get_runlumievent_ls_tup(txt)
     

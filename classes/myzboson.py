@@ -5,7 +5,6 @@ class MyZboson:
     def __init__(self, mylep1, mylep2, explain_skipevent=False):
         self.mylep1 = mylep1
         self.mylep2 = mylep2
-        self.mass = self.get_LorentzVector().M()
         self.made_from_tight_leps = mylep1.is_tight * mylep2.is_tight
         self.ndx_zcand_ls = None  # Index of this Z in list of Z candidates.
         self.explain_skipevent = explain_skipevent
@@ -19,16 +18,24 @@ class MyZboson:
         
         Doesn't mean that it has been SELECTED AS the Z1 candidate!
         """
-        if (self.mass < 40):
+        mass = self.get_mass()
+        if (mass < 40):
             if self.explain_skipevent:
-                print(f"Failed Z1 cut: mass ({self.mass:.6f}) < 40 GeV. ")
+                print(f"  Failed Z1 cut: mass ({mass:.6f}) < 40 GeV.")
             return False
         if not self.made_from_tight_leps:
             if self.explain_skipevent:
-                print(f"Failed Z1 cut: not built from tight leptons.")
+                print(f"  Failed Z1 cut: not built from tight leptons.")
             return False
         return True
     
+    def get_mass(self):
+        """Return the mass of this Z boson from its LorentzVector.
+        
+        NOTE: By default uses lep_FSR kinematics.
+        """
+        return self.get_LorentzVector().M()
+
     def print_info(self, name=""):
         """Print info about this Z boson.
         
@@ -59,7 +66,7 @@ class MyZboson:
         
     def get_distance_from_PDG_mass(self):
         """Return distance (float) this Z boson is from PDG Z mass value."""
-        return self.get_LorentzVector().M() - ZMASS_PDG
+        return self.get_mass() - ZMASS_PDG
     
     def get_mylep_ls(self):
         """Return a list of mylep1 and mylep2."""
@@ -69,6 +76,15 @@ class MyZboson:
         """Return a list of the indices of mylep1 and mylep2."""
         return [lep.ndx_lepvec for lep in self.get_mylep_ls()]
     
+    def get_mylep_idcs_pTorder(self):
+        """Return a 2-elem list of indices of the leps in pT order."""
+        lep1 = self.mylep1
+        lep2 = self.mylep2
+        if lep1.lpt > lep2.lpt:
+            return [lep1.ndx_lepvec, lep2.ndx_lepvec]
+        else:
+            return [lep2.ndx_lepvec, lep1.ndx_lepvec]
+
     def get_finalstate(self):
         """Return flavor (as str) of two leptons that built this Z.
 
@@ -90,6 +106,14 @@ class MyZboson:
             # Contains duplicates (overlaps)! Sets kill duplicates.
             return True
         return False
+
+    def has_closer_mass_to_ZPDG(self, other_z):
+        """Return True if mass of `self` is closer to PDG than other_z is."""
+        my_abs_dist = abs(self.get_distance_from_PDG_mass())
+        their_abs_dist = abs(other_z.get_distance_from_PDG_mass())
+        i_am_closer = ((my_abs_dist - their_abs_dist) < 0)
+        return True if i_am_closer else False
+
 # End of MyZboson.
 
 def makes_valid_zcand(lep1, lep2):
@@ -124,7 +148,7 @@ def makes_valid_zcand(lep1, lep2):
 def make_all_zcands(mylep_ls, explain_skipevent=False):
     """Return list of valid Z candidates as MyZboson objects.
     
-    This function does apply cuts to each Z!
+    This function DOES apply cuts to each Z!
 
     To form a valid Z candidate:
     - Leptons DO NOT HAVE TO be tight (loose+tightID+RelIso)!

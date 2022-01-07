@@ -14,7 +14,8 @@ LUMI_INT_2018_TWiki = 59740  # pb^{-1}, from Ref [1].
 
 xs_dct_jake = {
     # Cross section vals obtained from [2] and [3].
-    #--- Below is old! ---#
+    ###################################
+    #== Instructions below are old! ==#
     # MCM xs vals obtained by going to:
     # https://cms-pdmv.cern.ch/mcm/ > Request > Output Dataset >
     # Search for your data set by providing the data set name.
@@ -27,7 +28,8 @@ xs_dct_jake = {
     # file. Click this LHEGS file name.
     # > Select View > Generator parameters.
     # The cross section is in the 'Generator Parameters' column to the right.
-    #--- Above is old! ---#
+    #== Instructions above are old! ==#
+    ###################################
     'DY10' : 18610.0,
     'DY50' : 6077.22, # From [2] and [3].
     'TT'   : 87.31,

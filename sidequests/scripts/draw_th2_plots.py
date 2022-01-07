@@ -1,11 +1,13 @@
+import os
 from ROOT import TFile, TCanvas, gStyle
 
 from Utils_ROOT.ROOT_classes import make_pave
 
-# infile = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/rootfiles/h2_cjlstevtsel_ge4leps_2p2f_3p1f.root"
-infile = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/rootfiles/h2_cjlstevtsel_2p2f_3p1f_widebins_includepassfullsel.root"
+indir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
+# infile = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/rootfiles/h2_cjlstevtsel_2p2f_3p1f_widebins_includepassfullsel.root"
+infile = os.path.join(indir, "sidequests/rootfiles/h2_cjlstOSmethodevtsel_2p2plusf_3p1plusf.root")
 # outpdf = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/plots/h2_cjlstevtsel_ge4leps_2p2f_3p1f.pdf"
-outpdf = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/plots/cjlstevtsel_2p2f_3p1f_widebins_includepassfullsel.pdf"
+outpdf = os.path.join(indir, "sidequests/plots/cjlstOSmethodevtsel_2p2plusf_3p1plusf.pdf")
 
 show_ntot_2p2f_3p1f = True
 show_selections = False
@@ -18,8 +20,6 @@ def draw_th2(h2, as_percent=False, z_max=10000, selec="",
     h2.GetYaxis().SetNdivisions(11)
     h2.GetXaxis().CenterLabels(True)
     h2.GetYaxis().CenterLabels(True)
-    new_xtitle = h2.GetXaxis().GetTitle().replace("2P2F", "2T2L")
-    new_ytitle = h2.GetYaxis().GetTitle().replace("3P1F", "3T1L")
     h2.GetXaxis().SetTitle(new_xtitle)
     h2.GetYaxis().SetTitle(new_ytitle)
     gStyle.SetOptStat(0)
@@ -39,8 +39,8 @@ def draw_th2(h2, as_percent=False, z_max=10000, selec="",
         pave.SetTextSize(0.05)
         ntot_2p2f = get_ntot_2p2f_evts(h2)
         ntot_3p1f = get_ntot_3p1f_evts(h2)
-        pave.AddText(r"N_{2T2L} = %.0f" % ntot_2p2f)
-        pave.AddText(r"N_{3T1L} = %.0f" % ntot_3p1f)
+        pave.AddText(r"N_{2P2F} = %.0f" % ntot_2p2f)
+        pave.AddText(r"N_{3P1F} = %.0f" % ntot_3p1f)
     if show_selections:
         pave.SetTextSize(0.03)
         pave.AddText("Selection:")
@@ -101,8 +101,10 @@ if __name__ == '__main__':
     c.Print(outpdf + "[")
     for h in (h1_n2p2f_combos, h1_n3p1f_combos):
         h.GetXaxis().CenterLabels(True)
-        h.Draw("hist")
+        h.Draw("hist text")
+        c.SetLogy(True)
         c.Print(outpdf)
+    c.SetLogy(False)
     pave = draw_th2(h2_n3p1fcombos_n2p2fcombos, as_percent=False,
                     z_max=10000, selec="", show_ntot_2p2f_3p1f=show_ntot_2p2f_3p1f,
                     show_selections=show_selections)
