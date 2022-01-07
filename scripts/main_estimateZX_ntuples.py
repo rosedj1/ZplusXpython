@@ -1,6 +1,6 @@
 import ROOT
 from scripts.helpers.estimateZX import estimateZX
-from constants.physics import LUMI_INT_2018_Jake
+from constants.analysis_params import LUMI_INT_2018_Jake
 
 outfile_dir = "/blue/avery/rosedj1/ZplusXpython/data/controlreg_OS/20210802"
 suffix = ""

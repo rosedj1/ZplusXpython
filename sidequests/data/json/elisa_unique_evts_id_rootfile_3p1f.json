@@ -1,0 +1,2526 @@
+{
+    "315257:58:40785294": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/0A5EC29B-97BE-8948-8271-C72B030F58BA.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315259:11:6691550": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/88B4AD4D-6666-8E4A-959E-DD0D27DA14C5.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315267:72:71643124": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/909BA15C-56A6-A24B-B20B-CC79243E589E.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315270:147:126267922": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/726F6ECC-B619-5A4E-B721-06E30C7F44D1.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315357:120:90263024": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/39512301-E0FE-1E46-8237-B8B03275CF10.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315357:137:106622216": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/D04CB8DA-8DED-CE42-BEAD-D2F0FCE9125C.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315357:582:474271871": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/3A4B87C4-2F00-9147-88BF-2FDF28A5B959.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315361:81:50003576": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/6DC18900-B5DE-2A44-8F9F-39EC5214E21E.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315366:132:80193773": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/A4A94B41-3257-4B45-AB5C-0B24695746C3.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315366:213:126700025": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/7F41308A-1A98-2F47-AD7E-6EC052E051B3.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315420:1017:671153361": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/7E244C09-9F03-DB4D-93A5-1A34293E1046.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315420:147:111359074": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/459F5F6C-A53C-FC4A-88B0-6CDDFDE33E9A.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315420:36:19703356": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/F13CE97D-4AEC-E64E-B57A-DD3B3303EF2E.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315488:152:135937874": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/8511A2B2-770F-3B49-8390-3E526C1C9B2A.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315488:543:515166528": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/04023C75-9587-8048-B9E5-F49333F41EA7.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315488:564:533098650": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/35587FEB-E2A9-8C46-B6E7-71346D1EFF40.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315489:346:198881489": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/99C43D46-81E9-0647-85DF-8209E259C6D2.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315489:693:374300687": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/1A4E5D9E-25D6-834D-B33A-6FB7922771F1.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315512:947:703286863": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/40409AF1-8A4D-5C46-AA12-95961D0429F4.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315543:111:85282028": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/1038749F-C422-9B4B-A908-7B4385241C89.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315543:86:52595009": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/EE9FA45D-8821-7B43-8741-41A320F2D9CD.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315644:147:179419381": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/88212384-860D-9F4E-BE9D-90C515F03640.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315645:174:181433236": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/E1A56024-D24C-AB47-8D16-C98676D7C225.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315646:167:122430622": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/EF6A30E5-13F6-BD4D-A81B-CE002047BA3F.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315646:260:186107584": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/14979AAA-B400-3944-822F-DBCBEFF495BD.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315689:270:314627657": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/F923B627-F984-0544-8441-B7ECDCF6D418.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315689:342:398232246": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/009B720D-4825-BA42-9BDA-E01B629613C6.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315689:498:567893758": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/855F2B2B-A521-6B40-A5DF-822692544F1B.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315690:249:160661183": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/6B8D3E82-C004-8C42-AE35-B95877FA61C2.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315690:622:366745105": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/CC4904A3-5021-D744-B2BD-00A6410E85A2.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315702:61:35583530": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/52616969-7287-9340-A399-7667F50EBAB1.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315702:84:62087967": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/E2C38601-3F0C-1142-A5FB-DCB5ECCFB608.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315713:404:529745669": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/586DA225-1264-0C4F-8246-3D3DE5E6CD9C.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315713:837:1014968867": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/8432FD8D-EF4A-7B46-A8E1-A8D2B66C72FB.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315713:878:1055232114": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/798BEADC-4476-074C-8F11-BDAD9B59B7DA.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315721:555:693705887": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/7B4E5141-33F7-014A-A193-657CBFB3744B.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315764:252:345190884": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/9FDE2B80-F6D4-F942-98E0-84A7E5C77613.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315784:145:186162760": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/EBD125AB-4901-1E4D-B5A9-F7F1F681F3F2.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315785:102:135740613": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/D4FCFF34-AB83-7642-BB1C-BE3B4D526C1D.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315785:136:178239524": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/83ECCA3C-BF3C-BE4E-894B-586F32F05E62.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315786:56:57179885": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/A7BC8E2D-3DB7-A743-8D70-62906715A2BD.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315800:175:206507971": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/6D852136-0752-1245-91D1-CF80E51AC35B.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315800:259:318792103": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/0683F1B7-8FD8-3848-A475-65CB6460C040.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315800:620:742003408": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/ACFDA630-7D54-1244-88FD-4B7A003CD506.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315840:163:185963384": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/723CC9D7-AD9A-144B-BBE0-CDC64AE7880A.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315840:326:404575831": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/586DA225-1264-0C4F-8246-3D3DE5E6CD9C.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315840:442:546217305": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/FC9A2990-3BB4-014C-AFE4-3BCA39E3352F.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315840:973:1072588622": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/59EE5B26-C914-1F43-B69D-A450C6F1D3D1.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "315973:874:974128307": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/1EB9D441-FDE6-9242-AC3C-DADE3F3993EC.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316060:209:173798505": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/67E305C8-A04B-D04A-B036-B2FB77420456.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316060:46:38405314": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/8B6E1BEF-9FC8-0D42-AF67-C0DB891DE26D.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316060:480:497131326": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/EAB546EC-E25B-2E41-9EB5-C8DFC330B222.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316114:118:132556578": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/AFC4B890-0C91-2249-AD2D-6FED486DD224.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316114:1250:1270902402": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/503B3149-C488-4F4E-88F6-55BAF15CBB5E.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316114:1293:1312567745": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/77DDF9A1-C04F-514A-8A2F-E206152C95AC.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316114:234:256262652": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/431D36A5-F1F3-C74E-87AE-92343F4351BD.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316114:362:377556939": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/D909CB7B-F90A-1B4E-92F2-BE2E5E4A25BA.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316114:416:428493934": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/A9AD6760-A0E1-2E48-A5F4-45D9B1EA134D.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316114:893:891656605": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/FD0CE4A1-0F3A-614C-84A3-78FE241A36AE.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316153:659:891656906": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/36B286CC-51FC-7147-9C79-81F3C048A302.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316187:1051:1425247813": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/B96E2E8C-F2A1-C242-8E3A-28930FE8CA28.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316187:1060:1437296859": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/50E1F577-2233-584E-BB91-6E99A2E5A1D7.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316187:90:124321060": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/04EAC6A0-2878-844C-8926-0EBC78EFDBDD.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316199:1085:1506604692": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/70A74BDD-A4A8-F744-A2E0-339F1CCF75C7.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316199:273:385005740": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/6032A12C-5D7E-274A-9B00-5CB329183557.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316199:355:504516796": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/FAF18C73-DE84-0541-A8DE-5BC4C3823C9A.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316199:795:1087561944": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/1092D753-0A08-7346-9651-99D98F26CC12.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316199:860:1188017841": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/59F08FE1-B384-6741-97EF-72447EC3C30F.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316199:891:1234508172": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/512E9B2B-EDDF-BA46-A4FF-9098750F8348.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316202:242:349739017": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/8BD0EE4D-A246-E441-966E-F2E5026139EC.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316217:211:255406575": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/B7C0295F-2817-7347-A339-1A71BA6F8069.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316218:760:1057128632": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/6E538A48-19D1-BA42-BDED-8CB6FDE776BC.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316219:33:52252370": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/D9267E6E-7D75-0647-8F8A-875D1F58FE5B.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316239:543:672514410": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/7D6B2924-AA6C-1C44-948B-44DE04F46B65.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316240:1116:1568940575": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/732B2CAA-00AA-AE43-94E2-770147A0C731.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316240:1175:1654263652": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/516A3536-BBDE-CA48-8CE8-D87F2403B297.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316240:295:411981590": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/E131B1A0-D70B-8D4A-8464-17FE57D7AC35.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316362:32:21941154": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/DF21E101-E9F8-EA41-9CC1-0B3F42F006F9.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316457:1283:1444462304": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/8BD0EE4D-A246-E441-966E-F2E5026139EC.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316457:1310:1472332465": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/56ACCBD8-7FA0-3641-B14F-D3CBD3425089.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316457:1452:1626136210": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/BA73873F-638C-E046-8CE8-3644D458DC1C.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316469:145:180024471": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/5006F4B9-C464-5343-8517-85C8765F7F4B.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316470:298:392788086": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/1B2A82D6-5DF4-8F46-B2F9-0189612B8E1F.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316470:440:573845268": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/339266A5-2258-8648-8AD0-4F5C2FFAE528.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316470:444:579106300": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/8E7B2204-C339-7E41-B28E-67662601E43A.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316470:447:582167202": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/04FEB0F1-7A0A-974A-AF84-8646DF502962.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316505:379:453353226": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/AF499605-94C4-9F42-9C0F-B598454415C8.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316505:929:1207721305": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/D064E784-3990-D047-8C4E-CEA97A1EC0B5.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316569:1369:1879123903": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/966E7316-A1DA-8A45-9F48-49A66CC910A7.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316569:186:231133982": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/6EC8F048-F52A-B548-B2D7-BD6B7CC6CF5F.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316569:1943:2705015154": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/740AF59A-3FD1-2649-8306-24A53E868FC2.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316569:482:621033180": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/90A85D15-D094-744E-91EE-AC80CAB2B790.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316569:757:1024211491": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/7BC3A725-8202-2040-A151-DA7E729DD47F.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316569:890:1215163645": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/40C0470A-C860-AA47-8E43-1215B48ECAA9.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316615:259:155450029": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/0C0471AE-180E-2C4A-BC1E-9EAD2DFC1E79.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316666:206:259336324": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/B6198C67-25C5-C147-A05B-EE95AA00EAF3.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316666:249:330184607": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/821A022C-2A59-1E46-9C20-1272A6437068.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316700:235:295775110": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/A9CC2597-714D-4446-BB52-5B0CE705B654.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316700:244:308580586": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/0DADEF6A-4FCC-7A4F-A3B9-E147EC474809.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316701:284:408489512": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/60AAFF34-F8B6-ED48-9EC5-074A75B3B65B.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316702:61:87567360": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/AF9E2F04-5ED3-DF4F-805E-2F470675715C.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316719:68:95037316": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/501293C8-4D31-FA4D-BAED-81D54A910D4A.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316722:430:591055348": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/1EAC84BF-2382-1F49-A932-95AD8B3BC449.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316722:621:890990191": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/80D680E9-A7E2-AA4D-88E3-FF56CA0B9E36.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316722:96:136325710": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/674D3DCD-86C2-9149-9F96-8C2B59821EEE.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316758:1068:1521771357": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/6351506D-2DBB-3741-9C6D-1E76C6C86F87.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316758:650:904342993": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/89DFF606-8F83-6D4E-B91D-A15D4A10C971.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316758:915:1305016666": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/05B4AC78-415D-214D-9CAB-E4A694448F59.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316758:940:1341643244": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/E34E23D7-61C2-3C4A-9021-A759A55B4AF8.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316766:1109:1530597817": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/CB06D003-1AF9-BF4A-9EF4-D7E7179B764F.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316766:1271:1746994599": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/4CDAC9DD-C2CD-7A4A-9B6F-C1B68CBB58DF.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316766:179:208365005": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/593311FB-90BD-3548-B278-BBEB5A5109C4.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316766:1876:2586721777": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/CF946941-D487-FC4D-8AAB-D9FB9C219BAE.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316766:1884:2594040013": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/100000/5880838B-0CCF-1C41-BDBD-D9134FEB227B.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316766:2064:2870262900": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/F521C1E8-23C8-8F4D-8D9D-2485C6163A5D.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316766:830:1123383162": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/68977892-E857-9C4C-8EAC-2DB72C8BB2B2.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316766:871:1182270757": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/270000/B088697E-FD37-C842-A70C-9D789C964A32.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316876:378:534436938": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/120000/F88BF047-7A84-1E4A-9E60-3201BA5EDFDC.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316985:419:563856174": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/ED0B927B-76A4-AA45-968A-10C26CD3112F.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316985:492:652314033": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/ECBA3B2E-6616-CD49-9ED7-BDEF9487F49C.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316993:230:268903598": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/110000/80E6FFF4-8671-2C43-9B1F-04D2CB3BE4C3.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "316995:396:596768051": [
+        "/store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/60000/7F5FC5C7-C063-0940-A965-97DF2BC38864.root",
+        "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
+    ],
+    "317087:515:632687438": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/198EDDCF-CB49-6C47-800C-0208BA926EA8.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317087:529:656313729": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/CCA5F03A-CD99-E947-B369-F307A93767B4.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317087:718:952431980": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/5BE9B2DA-6DDE-7E46-92AC-938025F287F1.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317087:735:978025481": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/9DD03D83-C2B0-E34E-B181-1B7FD765A336.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317087:91:79887383": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/7AE0BFAE-A0A2-3C4A-BB1C-B37921EAC876.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317089:131:176910388": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/B4E2E427-DD95-3A4E-9C0F-2DDF6D033BBB.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317089:209:283740263": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/B4E2E427-DD95-3A4E-9C0F-2DDF6D033BBB.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317089:503:730290130": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/49E8FDB4-A1A6-EC4C-9FB8-AD29F46AC4D9.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317089:952:1441755947": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/FC8DC4AD-FF47-ED40-8344-F7C217AF14AA.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317182:530:685103194": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/B8D18179-A17F-6A49-A3B5-26059C258CCE.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317182:63:49072379": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/EBBA3078-4F12-1E47-B4F0-59FC5B61EB3D.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317182:641:866424344": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/0D45ECFC-FF4C-764D-80D5-7210E8AB8477.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317182:776:1071372296": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/ACAB1709-16AE-DC40-B9D5-FF6DE86A59FC.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317182:866:1209428434": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/2180F116-4C19-3F4B-98C2-0EEE02A1DCBD.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317213:61:79877290": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/71B57289-DD76-304D-8ED7-1C515EF9066E.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317291:687:962433624": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/8FAFF3C3-4D4B-104C-9DEA-F184E8DA8A1D.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317291:729:1027866327": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/025AB73E-AB6F-8F44-89DC-5625C1A1BBEA.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317291:89:89672990": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/E4C5D4E3-9D96-F242-8413-1A80E29EAE1F.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317292:108:164466331": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/AE78593F-79AE-AF4E-93D5-A5F7A6E6126A.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317297:524:829605824": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/98E41A26-BC85-E945-9346-66B00AE5377D.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317320:1263:1875457729": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/C0504FE6-625D-964D-B1C4-E38E46857F1A.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317320:1733:2614238981": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/110000/0DBF7237-BD34-F540-BB22-7D79332D817E.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317320:393:530716208": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/110000/DA4F345F-65D2-B34E-B892-5E93C5F60182.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317320:919:1337070089": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/304E9712-55CB-BF42-9EB8-CD67B066B749.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317340:366:492361960": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/99AF310B-0F7B-184E-8A63-8041B9852D5C.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317340:89:115330262": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/D560EB8F-DE07-4945-AF6E-70D388D2489B.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317382:99:73431935": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/4F56C0CB-88D6-0540-8D34-8B00EC062539.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317392:1137:1604619521": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/1667788A-7DBB-5346-A802-2CD0FCE507C0.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317392:1139:1607583897": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/31585A58-10F9-9C4F-A292-728245B488BD.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317392:1200:1700800708": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/81565EFC-4D2C-6349-868D-19995F290A77.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317392:1222:1734755160": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/81565EFC-4D2C-6349-868D-19995F290A77.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317392:1553:2221657271": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/BA72018B-0F08-434D-BD0E-952B7C8B5D05.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317392:435:585315976": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/4913459A-7784-2E49-909E-AA8D76961D39.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317435:244:314296060": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/1D8472D0-259D-8C4E-8F33-AAA95D115BA7.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317435:36:48283994": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/CD91985F-4A12-C341-990E-779A283650BB.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317435:622:892377010": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/001D3442-066F-8C4F-91E0-5C95620142E7.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317438:164:257227680": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/AADE1A7A-9738-104D-8FE7-F8D88E7A0BFA.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317488:145:203155527": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/E5052966-9A6D-A840-855C-514287DA0C97.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317488:332:476404203": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/B63E1B4B-0CF1-A544-8039-D7B2E50D6B05.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317488:458:666040407": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/36C5112F-4686-4443-9429-1E2C30058C80.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317527:1391:1992720836": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/419BCABB-2D85-B443-8C37-024FF9D2D502.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317626:103:127459905": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/76555F04-2D74-0945-9737-981BA8845E4F.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317626:1279:1938096534": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/423E0C05-C74E-8045-880E-BC69C14A73D1.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317626:1285:1947733480": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/FF47BB90-FC1A-CC44-A635-2B8B8C64AA39.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317626:129:171086590": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/7BD5EE3D-A975-2941-83D4-57901AB5D066.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317626:1637:2446022682": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/07412D83-9F98-FB4A-B5EA-E1553FBFF25E.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317626:234:322598287": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/2CD9A870-FC17-534F-B510-33FFB37424BE.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317626:265:368013702": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/5A904DEC-DEB0-9240-9E16-BD7369B62060.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317626:306:427271140": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/16C4E802-5079-6543-AE08-BE09DDEE2496.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317626:621:932192627": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/5A26EEDC-FC77-8744-8528-42B126A245E2.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317626:661:999120696": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/5652BFB3-0A8D-0248-883C-43D4321B1C51.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317640:425:592909782": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/100000/0E9A80F6-C602-EA45-9A5E-218F04CBC8D9.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317641:849:1273866148": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/110000/7B762ED6-C706-7442-B265-E40ECC4CC399.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317648:58:48360780": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/110000/F1FF5F85-C952-A949-B0D6-15E0515E74EA.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317649:165:242457983": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/110000/7A2162C4-66AD-F447-B232-74A247B61FC2.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317649:438:674016434": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/4BB757D1-64D1-BB4F-BBAD-B2C3A0364959.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317649:473:726704587": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/5BE9B2DA-6DDE-7E46-92AC-938025F287F1.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317650:494:739958461": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/8CE7F509-406D-414A-A51B-C617BC4C3109.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317661:691:1026332173": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/900EDEC8-9A65-164A-9EFB-BA0317592B6D.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317661:869:1297723178": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/EAA7E2D9-BE29-C04E-931D-651D45600855.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317661:920:1374345612": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/00000/C9FBDA4E-5088-AF43-804B-BD22F550C347.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317663:151:213717305": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/F6452991-0893-424E-8855-89F39632F6DF.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317663:197:277400914": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/ED17507F-A45A-9248-ACE6-BCFB6C9EE353.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317663:596:907277076": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/E430E5D1-9588-0A40-9C86-4436441E83EF.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317683:199:255555243": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/40533A90-ED6B-0640-AF39-F9A15E223364.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317683:223:281184472": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/123A473E-0336-A349-A374-D5FF5B2814E9.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317696:599:892861879": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/9748C3EB-EC0D-6B49-8C77-7341D148BE2A.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "317696:655:983029992": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/270000/1260C7CB-62E6-B344-842D-67FD9617D03C.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "318872:236:341098519": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/7C81152D-6A46-2243-8C04-2C0D0BC0DE73.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "318874:201:327848795": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/E65ACBFA-9D19-5E49-A858-570ED5504459.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "318877:142:212539136": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/C5784ABE-7CC8-3540-93F9-467C2997479E.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "318877:165:247808687": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/102D0DDB-23BC-184D-B73B-F00526512926.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "318877:308:456613420": [
+        "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/B0AB249F-46EC-FB43-9E69-0BCEEFC34B65.root",
+        "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
+    ],
+    "319337:1095:946824604": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/5B9D4CBB-0305-3746-86CC-2F22DFF8288A.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319337:1744:1717880627": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/2A366A91-004D-3049-8D0E-CDEC7656A1BE.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319337:875:660161773": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/E1340C17-DDC7-0C42-81B3-FEFEA53D2E46.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319347:454:587166066": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/45B0C00B-5AFA-DA42-9418-72E89A6128F9.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319347:541:702120503": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/6AC75472-7421-5540-B5B6-C9C37F1275C5.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319348:36:20879622": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/603DEE89-939E-AE40-9B72-B5A01416CA6E.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319450:421:640368061": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/F45F7D9C-EC30-6040-8973-5E3E1709735D.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319524:1347:2013473362": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/82DDFD31-3D67-7143-A76C-90BCD2CB6369.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319524:142:159355763": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/110000/DE279DC5-FBE7-AA47-8371-164A0D02AF28.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319524:334:446542034": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/60000/AC2943AE-2E82-184A-B154-0E2E7C84D45D.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319524:60:50265540": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/110000/8EB7EAB6-8090-CA47-B903-AFADD04861AF.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319524:837:1233423306": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/110000/BB7A8EE5-3B85-9E4D-A52B-A051BD03C6AB.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319524:885:1310553109": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/110000/E6439BBA-3632-E247-9DC2-44B473A50510.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319526:266:490147710": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/7DCC46A4-F902-D744-85AE-0714EEAF3D79.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319526:35:61882137": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/42E7B0E1-206D-1841-8FF1-6363FB27D492.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319528:221:280572255": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/100000/A3C47838-9F22-7F43-A917-8483B793CB33.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319528:42:62428572": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/100000/6F352AF0-B190-794A-AEFE-7F4D407FAE42.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:1541:2358798711": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/2109B848-85A8-9E4C-B8F0-6EF1255B4D90.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:179:210179749": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/5D490827-8620-F648-BCC6-60C86A06F143.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:1902:2980447789": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/2FDA5584-E4B1-2F4A-ACD5-71F756A511B0.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:1974:3097865171": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/DAEB9068-E216-2645-AFA4-560F33E77421.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:2117:3325726560": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/9779D763-DDD5-2742-BAC3-4B54537D68BE.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:2200:3454641909": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/A5CCEE73-F9A4-1B4B-8D7C-66761C46E06F.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:238:295829669": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/100000/11419174-BB52-2245-BFA4-99A0CE4C1D32.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:2548:3958554295": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/60000/3B6E047A-F202-7B40-9BEB-E4D751D1ADD4.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:2660:4108437363": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/60000/3022D7AE-9DB9-C04D-AD16-1861164AB502.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:460:650097398": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/EEF4B6C1-E1BC-BA41-8C65-90466CB2ABA6.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319579:606:870925837": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/9CFA39C8-9455-844F-8B9C-A1839471A6A8.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319625:152:226501464": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/60000/8D29B835-8DC0-4F4F-ABD2-01812C4D96CA.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319639:100:117898040": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/100000/012444DE-F1D6-E84E-98D8-4F7D16F273C8.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319639:1203:1735818903": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/60000/5D7BAC20-B202-3147-AFAA-2E2F7D0644A0.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319639:1342:1952604463": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/100000/C4458C14-B013-5D4A-BE6E-8C6AACFFC1E9.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319639:419:656181348": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/60000/F3F1B51E-65B7-4749-AA34-30A00F227C6C.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319639:832:1234505974": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/60000/92D89BCA-5C4E-F54B-9BCB-096543965F1C.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319658:223:359170475": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/100000/50B07359-BD0F-2547-AB23-F1B2FC9A2D86.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319678:108:127326717": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/00000/651E03CC-338B-A849-A1A5-72A41CEF996C.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319756:1416:2265259869": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/615EB51C-E255-5E41-AD36-37FC9B6ED875.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319756:505:813462768": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/D8FC6B91-09B1-714A-BF11-2A2FB695ECEC.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319840:186:270949122": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/60000/4B89EAB1-1861-0C4C-B4F0-B9A2EE41292B.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319849:465:778725049": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/72082B87-D240-C346-8A50-3C24B838CAE7.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319849:478:800125271": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/1DEE7B26-F0EA-4B44-88E8-4907B98921BF.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319853:139:220864884": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/A229FB62-87B1-B143-9F02-52738E454EA3.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319910:89:142171797": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/00000/4EBBFDBE-6C30-A34C-8C69-07F0B48F4A52.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319912:50:104700793": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/120000/5A2D8759-1636-1943-90CA-C25FCCEC4EBC.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319991:192:259232602": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/5E6EABDC-57B3-F744-8456-55F787355C00.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319991:508:763783182": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/66110615-0389-9A4B-9F59-0E59CA19A6C7.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319991:786:1227622708": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/85FE8432-BECC-3348-B2FB-AC866B1930D2.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319993:134:221669019": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/00000/07DC36E2-4042-AF4E-AFB8-F5AF6FDC9098.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "319993:95:157577715": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/110000/FBBA567C-A37F-2847-9E27-3A6DFD57C09D.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320002:119:117338179": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/B3110B07-E326-F642-BF29-570151956A41.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320002:189:229465060": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/576F8FDD-B932-7F4C-8FBA-EB26270C70DE.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320006:142:239484988": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/F0A90CCE-6580-A44A-8AC4-D2EEB6725A14.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320006:147:248252602": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/15DC24E0-35D8-5247-9E7A-641F79E7F14C.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320006:152:255043863": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/270000/AC170B35-DB32-3743-903B-A59141F262B4.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320006:251:425095204": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/00000/30803B4C-111C-5541-8EB3-C7BC3BEB7736.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320010:252:396036506": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/60000/E533CE42-B649-6846-8F74-2AA298C2D12A.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320012:46:74926024": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/100000/04CBF0BD-8A32-8146-9C45-5248EA478397.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320024:358:596096883": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/00000/992BA4B6-5DF7-8341-BDBF-3FE3AAF41037.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320025:26:42016254": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/00000/02D70635-CF40-E644-83C3-2C32D282FE6F.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320026:143:211644453": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/00000/70FB44C6-3126-6343-97BA-D71A50FEAA11.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320038:81:76284361": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/60000/DDE45909-0355-4E43-98A3-EC3E2AEF4837.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320059:80:130200070": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/100000/1E944061-482C-614E-B3E6-17EA96BF7A7F.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320065:808:1274424537": [
+        "/store/data/Run2018C/SingleMuon/MINIAOD/17Sep2018-v1/00000/58B35165-13E0-3B47-B5D4-2C4AA04CFB2D.root",
+        "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
+    ],
+    "320674:21:8015838": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/8737B912-D5FA-E344-8614-B12F5BE12139.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320674:307:170248938": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/1A64E35D-1C28-C14E-971A-A45184501F17.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320688:231:284182033": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/B007197F-D598-8D44-89A7-F54D94216188.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320688:77:38508271": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/6DAB6D1D-1DA4-7143-97D6-B40E8A2947F5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320757:371:532438291": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/CCF27856-9A52-BA49-BDD8-B491607984C2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320804:268:375885671": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/EF3375A9-707F-5E4D-8D7A-1AB33ACC3524.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320804:512:767176096": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/5A1C8F52-5D25-BA47-8E96-2D189F08C5B1.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320804:760:1142878817": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/E210FEB1-13F4-FF4F-8CA7-EF3A930E2E5D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320804:811:1211717404": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/9DE8D8C8-ECC2-A24A-8685-3CCCB17B560D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320809:190:304788865": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/2B5B6DFC-C71B-1E45-8633-AA9CC539822A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320809:639:902806684": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/3638773E-6E2C-184C-AE19-DDFA5D12FA8C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320821:118:130885195": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/A8C1E3E2-E2F1-0043-9DA4-03F082B9681D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320821:140:169923367": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/949EC899-C5E9-074D-90A8-067FD9951E26.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320821:172:224664258": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/D4CABA36-C658-6749-B220-C68BA8B48D3F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320822:261:438093762": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/F671078F-8CD2-FD4E-BE58-D98F04427391.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320822:511:829370317": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/68DFDDFD-F8EB-7946-930B-C82BF78727F0.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320823:160:247890744": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/75F5AF5A-0A8E-AE4E-888F-952D077EF26C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320823:171:264541399": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/D5BDA553-B072-944F-BE4D-4A6A905E96B6.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320823:197:307721705": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/0AB74113-EBE1-5141-9337-FF1DB6FC8D50.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320823:316:494001359": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/3DC31720-6A81-7648-83C9-2774841E13A7.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320824:38:56889355": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/304FEF7F-A8A4-484E-9367-38075F4C5020.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320824:81:119572039": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/3179E718-9C5C-EA49-87D8-D73CA2707F95.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320824:830:1230952589": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/CBE3F8F0-4C67-5D41-B8E9-09177E6C5BA2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320838:166:212185794": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/1E2EC42E-4972-484F-90BA-D5CED452E69F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320840:405:662921734": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/09363BD5-9B59-274C-838E-C640BEB022B9.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320840:46:74415542": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/7F554D10-CC5C-5E42-B9B2-B4E6C8D687CF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320841:119:175425134": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/4A017CE4-2AB6-E64A-BE94-F47A12C8B6BD.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320841:30:43217586": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/F786ADD4-065B-8449-B981-BC6B912058AF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320841:30:44598260": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/F786ADD4-065B-8449-B981-BC6B912058AF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320853:135:160924507": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/B55F246D-51AF-AA48-AA61-5731C9B56EE2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320853:231:321209116": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/41E8102C-2250-6D4D-9311-B2D34C34A21C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320855:283:448096025": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/CB6C79E5-6037-EE42-AB8F-76D04F8DEB72.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320855:47:72510834": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/37D0DA81-07E0-BE43-8344-4760188B5009.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320855:480:741306469": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/7B1DE6AC-BA94-5F49-B57B-3B218CA6A236.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320855:535:833454803": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/C156A86D-B88E-3942-8CBA-0797D8F5FEAA.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320857:5:7473695": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/4AAB334C-18EA-9545-9C10-AF3E6172817E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320858:14:23229637": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/D751F7B4-548D-2343-9955-EC01CAEB0155.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320917:1263:2012318121": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/F73B7959-308F-2C47-B55F-F50F0EB8FD4B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320917:1554:2452291431": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/CDA631E4-3F73-B040-855B-720D2F352F74.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320917:1588:2506677814": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/A9943275-0F28-CA47-A95C-FC971FD214D8.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320917:1863:2936043915": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/AD5DCAA5-1D3F-7344-9518-E2FACB25BA54.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320917:824:1341836237": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/B832087C-4F3D-6244-9CA2-C2685F59F643.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320933:121:140475077": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/8145F7FE-89CD-6A48-942C-1F8BB6AB4268.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320934:34:56786368": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/35DD850E-4C2C-F94A-812B-AD5F38ECD135.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320934:613:967806523": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/8E9532EE-F5D7-3A46-8F7D-7C17FE03C48D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320980:78:74021838": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/7C507DFA-14BD-4A47-9259-C0A400548EC0.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "320995:170:257594776": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/A650136C-D0C3-4240-A495-B15DB9E5220A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321004:118:148155618": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/7BE83010-DF20-4449-9AF4-3C8E40FADC71.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321004:163:222802326": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/C80E32E0-A35A-B547-AC0F-648EBB78088B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321006:28:49963457": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/6C7FE6C9-B62E-E74A-8329-7BABC30DB02A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321010:33:54826308": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/132A22EB-96E3-D245-878B-2634F9C790CC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321011:172:230469850": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/235FDCA1-2BCC-964B-A56C-679AD98E4A32.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321051:1101:1613001454": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/52369CF6-7565-0240-AF5B-FE8F8400E606.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321051:249:315001139": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/B8808D0B-C912-6946-9E11-B21604CCD0D7.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321051:333:452445569": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/3427BE08-22A5-E549-8CFC-1855746BFB05.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321067:364:511582983": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/75222482-65C2-924B-95F2-9C13B80D0452.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321067:42:19727682": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/CA7653FD-5F07-724B-9ACC-DD543F74EE87.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321067:529:757373512": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/C1F935B5-1E1B-E548-84A0-03BBA0D5F947.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321067:76:65574560": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/498F99FE-72C4-094C-93B7-C9A2920F1594.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321068:212:307244005": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/EF41EB88-8E54-D148-8844-DA7D39F603D4.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321068:4:5631831": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/DD645FA1-FAA1-B540-A8E6-E61B537327CC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321119:114:120082403": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/B18FBEE4-24BD-F64C-9C71-03AAE1694A3E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321122:202:326089031": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/0031E61A-EC1B-7D4F-8AC3-5AC61EC4C222.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321122:240:390354439": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/96DABCB2-E38F-7A44-9FB5-39B796A773F9.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321122:81:134734756": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/1AC55122-4889-174D-9CB4-67418805A9D4.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321124:517:769385645": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/4B649B13-2CD9-7B49-8D23-5CB6212CF536.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321134:56:41117145": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/FDEBDC65-AF2A-B24E-BD13-A9A64492A353.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321138:639:905528665": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/DF8E9695-D6EB-BE4E-BB1C-3D4913658F4F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321138:644:911167555": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/DF8E9695-D6EB-BE4E-BB1C-3D4913658F4F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321140:568:818727083": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/076C2B5C-0852-A34F-A7D4-BD757F59128B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321149:1109:1665036813": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/97047AE1-0316-1941-8EA4-B22BF6FB72DD.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321149:1380:2069338536": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/B28B85F4-1A35-0545-B47B-550368934614.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321149:717:1087332679": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/8F48E06B-42AB-EC45-BC59-0C27E1494E06.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321149:83:84405100": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/F3857F04-CE1E-A04A-8075-AAE59CE4158B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321167:118:177692160": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/6266B260-2B52-6442-A4D6-D5C28256A691.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321167:137:204972823": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/427D6831-5B96-E34E-B061-FEEFAFC3CB34.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321167:181:278479113": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/B8E51CB5-89DF-9342-B793-76BBCE118EB1.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321167:604:948906528": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/3B9DEF21-4814-6845-947B-BE85B162E7B0.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321167:667:1043308169": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/5FB27250-1039-3B49-8CF5-418E0554CA2D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321177:173:240198360": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/50BD9E0F-A74B-194A-90AB-CE99B0E633A2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321178:8:5971532": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/AF7A864F-95A3-E646-9AF4-23F39DA7E203.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321218:318:427196024": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/1CFBB3D5-98A7-3743-BCF0-3AD2E53FB0BC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321218:320:430900133": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/1CFBB3D5-98A7-3743-BCF0-3AD2E53FB0BC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321218:353:485151116": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/2C1F0D10-20AE-2347-948B-1B80908E2DC8.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321218:848:1255591474": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/4A7F8607-AA6F-C942-A1FA-94D0881EDACA.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321219:144:199160992": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/88A5F2FF-5C4B-7F41-8A90-2EFE5AA8D098.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321219:392:580167253": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/AFD1647F-17FE-124B-B8AD-882F995CEC6B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321219:453:670729527": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/09D83E00-DB10-8449-8278-13BF99C4565B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321219:696:1030027972": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/FBB9F112-1F10-D74E-AD5A-E22566999E9F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321230:44:16560313": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/4C58F0C6-F672-074D-91A9-DBA13610F771.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321233:146:220113866": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/54020779-4E49-D14B-BF54-86E54567BA35.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321233:175:265885773": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/ECC1B724-0D3A-9545-BFB6-EE8A0E1EFD35.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321233:370:577703782": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/BB1CA32F-D51C-0D41-B770-F00638F6FB95.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321233:642:1006829226": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/FDFE2B34-B52D-3A4B-8409-B8FACB9944D5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321233:692:1083651168": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/0F542223-D910-AE4F-BB0B-5FB46C85181A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321295:342:550445587": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/18FB78C0-0D3F-0249-A7EC-3C560A047182.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321305:1003:1613586694": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/9599B4C0-8AFB-534D-A6FF-637CA51C6483.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321305:1283:2026662336": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/93CB593C-85ED-704E-8012-6ABC1D51A4EF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321305:1290:2038696638": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/10220142-A88D-0E49-B8D2-6AD99F8EC40A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321305:1320:2085591533": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/6ED2FB1A-FBF7-AC49-B0B8-E7F3F03B97F9.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321305:1462:2303284282": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/CBD7A1CB-61EB-FD48-A25E-34029ED89039.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321305:214:340437205": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/659D254E-2B3D-1447-AFEB-06ACAF171293.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321305:616:999008428": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/0F467CAA-F0E3-E54B-B447-01BFCFEF8084.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321305:774:1263020734": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/D9E5B43D-82F8-454B-A3CA-C9E944BFCF1A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321312:474:383601041": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/6DB49875-99C2-5746-9022-D82B8C165153.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321313:319:207419364": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/6DB49875-99C2-5746-9022-D82B8C165153.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321396:1170:1810379646": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/E3CDEBED-8EBD-0E4C-8971-55074CBC58AF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321397:21:20990885": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/F81244AE-482F-C841-9BAD-0BDBAC905BD0.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321414:1198:1996491133": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/C99E37A8-C7DA-9C41-82D1-0834AE1D7D03.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321414:33:27367239": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/061DC651-6A8E-8A47-AE44-D988B79E24F8.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321414:398:674166002": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/6A73D213-4F4E-C346-97E9-6E462EC99521.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321414:500:859657349": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/83A90013-AFC6-5A4C-A78E-9951FD18C8F1.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321414:577:991151630": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/5254F0B8-1884-B34E-A332-49374FA7771E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321414:603:1034233936": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/E49771A5-2476-2445-91BD-4FE48D15A1E4.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321415:95:154493574": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/8F33E71F-7913-2744-8F9B-5740F5300692.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321433:78:128213588": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/BD3BC952-8F8A-0248-A97F-04920CB0408C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321434:241:403787423": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/7AECE01D-3B6C-504E-BF8D-D7A3EBE854E2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321434:319:531497142": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/7CE84964-D9E3-E442-8228-0911AB2C1EB3.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321434:326:542897171": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/6227BE69-9B44-0F4D-AFE3-294AAF1B7FC1.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321434:39:65055154": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/601C373B-B528-074C-9F9B-9ECA8F7730C0.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321434:47:79396775": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/89589141-FA6C-4D43-B625-4DA2C4F2242E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321434:62:104841179": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/CD9F908F-4BA6-E14C-B150-9ED70B9D4B2B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321434:632:1017307467": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/FA7F38EA-98A6-7E45-B83C-9643D7C43547.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321457:1069:1702270678": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/EB47AD92-2C75-FA4D-AA11-B60EB4D0DD01.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321457:1513:2369180145": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/E795FB23-B5F5-6E48-B98B-AC2DD87EAF18.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321457:1756:2734026296": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/6A060773-3FD9-6B4D-878D-34A4D1676A7B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321461:7:10387487": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/B16059F9-5EEC-E045-B133-6DAC2FB3D228.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321475:1017:1607783908": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/23B0C219-0B96-224D-A694-A7DA9753C9D9.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321475:1970:3026368001": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/BBB99150-1C81-134E-91C2-AC32810FD158.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321475:425:663619573": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/C53381D7-1614-E847-9EC4-4FEA302A8677.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321475:770:1233975660": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/FE518F30-710B-0C44-A6BE-616FAE9C981F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321730:206:375294561": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/D0CAC1CE-37ED-5A43-B868-7D5FF3C1EED7.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321732:1289:2309397564": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/1822E5BE-AF58-754A-BB7E-371611DEFE2E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321732:235:440815119": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/129E21B3-456D-0F44-951C-FEB34663605C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321732:454:839112192": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/D7BA78DD-C01A-C34D-96C5-6C4E324B0832.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321732:639:1155266328": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/2C2E3689-F56A-B246-8579-2FF9B6573A2F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321755:334:507696357": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/213F7C2F-374F-904F-A412-7FB6F00D25B8.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321755:476:725778095": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/89FDDCEC-C876-E542-ADEE-741088F2EFEB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321755:597:939137323": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/0A2C776B-0E48-DB46-89E9-6414AF269C23.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321755:85:97929656": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/AFF0534B-9731-AE47-AEFB-3F1FF0BF9081.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321758:81:128192932": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/F5A7962F-9790-FC43-BF98-683D40C196BC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321760:384:657574310": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/4690901A-170C-DE45-9CD0-EEADE70122E2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321780:47:78435230": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/CE39D410-8C76-3E45-83D6-51866B0FCE3D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321781:121:224798909": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/D10E7DB0-A114-D84B-A9AF-65964B51149E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321813:340:589046484": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/22B90888-8A53-264A-9D0B-DA7551FD8166.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321815:3:3379632": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/FA2CE03B-47D4-234D-A31B-526862494BEC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321817:282:498758376": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/2F3A82CA-9103-C847-BCF5-C208ECF1CFC7.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321817:310:546510724": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/01548FDE-3055-6F4D-B3BB-622DB5115E9B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321818:123:216459943": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/8816AC9D-34B4-2D42-BE65-CEA97F9DE1D9.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321818:35:62681893": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/01548FDE-3055-6F4D-B3BB-622DB5115E9B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321820:42:65638996": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/D6F85746-1769-FB4C-85CC-F79BDD59F063.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321831:265:449489616": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/70D679E8-37FF-CB4E-9B7C-C4E44EF04F3B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321831:482:846096735": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/CD2DF055-8A40-444C-887E-3F60EA815A64.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321831:555:978102204": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/3CFFA038-09ED-B84C-8D9E-331D41E6C438.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321831:704:1250684465": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/2C751BE5-1746-D348-868F-4151CA83959D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321832:102:166884119": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/BD161F4B-D39C-9F4D-A6D6-1A196CEE99D3.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321832:223:366702445": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/F8DDD712-0EA4-E942-87CE-1E0649A55200.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321832:223:367224221": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/F8DDD712-0EA4-E942-87CE-1E0649A55200.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321832:365:617596640": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/DEC5BD14-B68A-1A41-B511-46A861FEFC44.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321834:84:126135620": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/50E27EC2-2CB7-1F4A-9DF5-EA71DB5F499F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321879:233:380742799": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/B72BE2E8-045A-2245-9401-F13446E892F2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321887:450:722204060": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/B510BFA2-BD9D-EF46-AEFC-E0246E892B3E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321887:530:866933458": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/1F3A59C6-4050-4D49-98E4-329BD7E02715.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321887:684:1132742251": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/F87D8BF3-410C-394E-BEC5-569BCED6C670.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321887:761:1266877937": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/28F54515-21A2-2440-BC0A-495FAA37ED05.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321887:882:1463646920": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/9BEDD07A-9C1F-4B4A-B35B-DDFF0815080D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321887:96:88365466": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/8129663D-B9BC-D445-A475-6B732AA53C6C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321908:361:574569039": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/D1F2BBDE-CE25-9D49-857C-44B7065EA576.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321908:81:81271826": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/1B327943-285C-DB4A-9025-F9B5BD95056E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321909:1578:2582320122": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/B603FA69-682E-1C45-9A43-ADD9E369DEF5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321909:318:543241955": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/85142C5C-10AF-8B42-9E35-0337910E0F04.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321909:354:601078236": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/88ABD64F-9A39-A843-BA90-FC79072296ED.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321917:186:325919725": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/12952201-BFB3-4142-B24C-983B753A4300.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321917:680:1242527270": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/93BC89ED-8680-914D-92B2-7A988DDC79FB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321961:151:275766823": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/781BF925-7A89-0F4D-8141-698D5EA47B8E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321961:73:137354523": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/CEC90F75-3AEB-6C4E-AAB7-F37FAE3DDA79.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321961:96:176415136": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/587F3D70-703A-874D-8897-E6EADFCFE23F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321973:1049:1827029712": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/830F55D6-FEFD-864F-A8BD-CB3538A8D632.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321973:1103:1921944134": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/15EFC80A-AD19-DE41-B306-68E45A2E45AB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321973:1133:1973286739": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/763D58A0-F41B-5047-AA8D-81B2CDD92AED.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321973:454:787471448": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/ECDE2E89-6DE8-4A46-84CE-FDA52A5B6459.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321975:74:114360249": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/E0254669-CBFD-7F40-AEF3-30E17A3CE464.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321988:1106:1943307652": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/AFF3D4FC-C53C-F046-A242-ED57EA80A4C5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321988:1187:2087171876": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/03E654A2-9475-2247-9E2F-38CFAE571ECB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321988:867:1538625217": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/5CF0574E-4BF3-0247-A1C5-1ED94596736A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321990:11:19348238": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/81010346-4390-4B48-A187-C8129C593B8C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "321990:164:299221432": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/D46AA38E-5C58-F14E-B3B0-31E6C5B8BDA4.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322022:1382:2373710325": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/2E3994E7-DA80-D045-B352-55F149907C54.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322022:1795:3113282310": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/8299AF73-F508-4D4B-A0B6-31BE400E5C9F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322022:365:598644571": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/34D69D9F-F08E-314E-8857-3AEDD009023D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322022:68:55049048": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/CC8F09EE-485B-ED40-9092-EFCED8C9AB4A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322022:757:1317925848": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/B2CBE0B6-EC8D-6A4C-897F-53E04AF8D3C4.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322022:809:1405591998": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/696E1FCE-B9C1-7E4E-A037-02BAF51DCE0A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322068:149:201308324": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/7DA3A6D7-4054-DA43-9328-A32415F647DF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322068:193:284310102": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/1032A831-FB8F-FA47-BAE3-F054DE5333FE.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322068:224:336041311": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/491F1460-A559-F248-A02F-57866B43EBD2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322068:357:589167669": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/B1140FC8-952E-8E4F-A1AF-E30256571AE5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322079:158:253915549": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/F97C5D3B-8EEA-D546-91BB-D6EC46D80B3A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322106:370:619735409": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/B2D0567A-CD9E-6E4C-A102-6F79C6E9D8EB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322118:444:820766798": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/A845103F-8DE1-AC49-BE40-CA69E605E05A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322118:688:1250415839": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/D0776446-5262-F14F-B4DB-351CAB62B438.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322118:778:1399393765": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/F8BBA4E4-FAF6-B14E-92F3-EAADC9A6FB32.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322118:77:138520052": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/FA2CE03B-47D4-234D-A31B-526862494BEC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322179:1053:1801318221": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/79663517-4D6E-6244-BDA0-9E254A7EDA3A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322179:1123:1927270855": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/A86B20EA-50D9-3B46-8AF9-881E7E435187.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322179:1198:2061878621": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/44E77BAA-5954-6D4E-9318-4BF569879B29.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322179:433:733706348": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/3B93ECAC-C719-B942-BE2C-4751B0E901A8.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322179:553:956134577": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/55AA49EF-8DF7-D243-836E-6F54353857C6.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322179:583:1012047584": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/058DB33C-7191-5C4F-AEAA-F1255A73232C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322179:65:43139138": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/70147A4E-497D-6845-A4D8-BECC8D430E5B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322179:908:1567301106": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/14029837-F329-704E-9DCE-A2CA9B686A6F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322201:217:341313523": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/FE4A72E7-EEED-0F4C-9515-9A3957FE2E81.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322204:516:939309930": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/0F8CB8C3-076F-9B42-B83B-583AF6DE2F68.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322204:668:1199875891": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/EAA2A5E4-2EA1-F04E-8517-F59D39601BD6.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322204:745:1325934560": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/AC8181A6-1562-4847-A804-F921992A760A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322204:808:1436534058": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/9216FD7C-D600-E24F-8243-0EE78D2ADEBD.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322204:866:1544245921": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/1B2664EA-C83C-FE48-AB98-4C58B648AB86.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322204:93:176272507": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/35496C57-C351-5841-A965-721FA751E067.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322204:961:1712713911": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/2C68A7A5-A4E6-0349-95CB-13CD34EB5A8F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322222:422:777880620": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/1DA99082-8791-F043-BD3B-785856EAA560.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322222:441:807916758": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/027BC9FB-1BB5-BD46-8ED6-81FD8903DEDB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322252:417:709787181": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/D63DA63E-AC60-DA49-B0E3-E969107F4FBF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322252:500:873258450": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/1BE4C22D-34B5-5D49-9BBE-68ED9C77F2CB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322252:526:921661039": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/85646031-C506-9F4C-B3A2-50051370058D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322252:789:1387313719": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/C50C7608-6ACF-4C4C-A44E-81B1ED3DFDD5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322252:940:1642051369": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/BDB18914-224D-E549-A1EB-99FAB8370A94.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322322:279:526122160": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/61A6D559-F178-AF4C-9B2F-B04A9A956563.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322322:511:951970534": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/67B74EE9-1476-8344-B4E3-B964D2968651.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322322:580:1074539050": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/7B7F73A9-86A4-B745-B04A-AC3DB9B102A5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322322:682:1244544747": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/1EE5C6C9-D922-9249-A372-63C488DC0472.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322322:865:1572118111": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/79550805-04FF-5849-A064-E7F7FEB1F9E7.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322322:879:1598074438": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/78378601-C8F8-1C4A-BAE5-1A9B3F0906EB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322348:1030:1835297150": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/C689ED1E-F8E5-C94A-86A1-62694BFA3BEA.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322348:1355:2404742539": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/5F57BA92-CB94-E443-9093-3B3FFCD4E61D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322348:1482:2649762963": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/230CE4F2-106E-4D4E-B3B4-2796ABF6AF17.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322348:149:229893382": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/CF8D1349-6619-7345-8301-26120CD9FBAB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322348:827:1498597313": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/8245CB99-9FE1-6446-9296-893B79885AA4.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322348:851:1539184753": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/7C15E2D7-5CCB-D141-93EC-1D678FB696D5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322356:777:1403979181": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/AB2E8AEA-42EF-0040-B15F-70952D70CDFF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322356:77:149212248": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/DE2D5CDA-0530-C148-A0F4-575A591D0309.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322381:199:301618537": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/42B1F14A-7FDB-6F40-947D-A182DC4264E5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322381:519:907098290": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/2AD89959-EABE-8340-BB02-865CA74507B3.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322430:331:543297179": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/B7087A2B-889A-F949-BC32-30E6DCB0D78A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322430:411:699537865": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60002/2792F4C1-30D1-614A-9445-BB76BA7C6D6C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322430:426:728208363": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/9A8FC040-F4C4-3446-A428-A96CFCA5B994.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322480:130:137885914": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/E224D603-85BA-DE44-80BF-6F24FA8B082A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322480:386:625322473": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/6B5229F8-E196-1846-9339-3CAEF7D80D59.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322492:48:80566428": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/CCB697D1-C8D1-554F-9425-FAF8810CFEF2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322510:40:17296322": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/BACFB1B2-3E96-F54F-B1C5-D74123592939.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322599:224:359072495": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/D355CD40-8B48-9A42-89C6-6ED5E7A45060.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322605:49:90987996": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/55814F47-9EEF-5C4E-9B77-235A7300B1A1.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322617:324:559351775": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/270000/DFBC722F-807C-CE43-B3FC-8659E872451A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322617:424:727477134": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/270000/0D3B3896-A5F3-B044-9263-02FDF68032D4.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322617:556:952324501": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/E77B9517-1403-E64A-B24E-6A7B57DE7D67.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322625:1039:1829221467": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/270000/DDA2EF72-F146-754D-B03F-9A1E9470D94C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322625:239:379085701": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/A2F7B322-9AC2-C949-A475-D99F40FBDE44.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322625:256:413822888": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/65FF5B27-A738-2743-938C-6172664BC64D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322625:549:970063253": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/51A8284E-398F-444E-AF6E-4967966795A6.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322625:75:71497433": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/1CC82E5B-B534-5E4D-93D2-2786D011008D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "322625:818:1450146494": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/270000/4B7297CA-17CB-BF48-9025-9DD420598385.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323474:200:377925313": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/3C44782C-760C-B740-86B7-5C413DD9C7E0.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323488:359:656231860": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/61695984-49D9-8F42-9127-BA644C31B97B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323495:36:64425988": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/307BAF88-7D51-A249-8605-6AA2AB606C95.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323525:122:215795461": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/F4CBFCAB-55E5-A547-8BCE-51CB4DC7DF6A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323525:125:220595626": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/E49FF2B3-24D4-1F41-BD23-E715C3CD4027.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323525:481:832731650": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/C129C551-0E0D-764F-B786-C8F4D487ADFA.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323525:527:912578885": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/40CFC321-0C32-2849-A165-672458944D88.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323525:966:1694963411": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/BB0D07DB-C379-264E-B57A-669BD5E427F1.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323525:99:175802594": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/BA7BF497-F130-F64E-9955-2326D8FC8921.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323526:232:347969579": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/D47633C4-2D61-1341-8AEC-781455E632C7.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323526:353:510635749": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/231A8284-7B64-2541-9A79-78A4D950F936.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323696:135:260891538": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/D60061E8-1CD5-4E49-8610-41555DDF1166.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323702:148:241950575": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/AFC629DC-1E0D-1543-AC79-6A80C9248CA8.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323702:406:720281595": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/976B10BD-0B01-1143-8B37-919BFF50ABCC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323702:526:924835195": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/58852F88-77AC-3045-8A33-CD9B497AB6EE.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323725:163:267011317": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/E9575488-97A3-A74C-8F05-6790412D5968.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323727:842:1514329429": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/C3F7F294-5AC6-034D-B707-F5FE7CB707A4.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323755:151:230756431": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/85646031-C506-9F4C-B3A2-50051370058D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323755:432:762941454": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/05A696C8-230F-524B-954A-C61EFAE63371.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323755:607:1108262050": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/B169482D-5A2F-BF4B-8654-223E9A151A35.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323755:793:1452478154": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/CD9F908F-4BA6-E14C-B150-9ED70B9D4B2B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323778:140:272660658": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/49CB0EBB-B498-374A-8023-8A63F90C90EF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323778:151:292668498": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/77103530-9027-DB44-897A-BC5EEDBE14A6.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323778:726:1358247568": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/4D72A413-1150-934D-B2EC-41C7D3B1BAF0.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323790:418:730097178": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/6DE64E0F-1326-1443-83E0-DB6F80E6ED9A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323790:419:731613041": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/6DE64E0F-1326-1443-83E0-DB6F80E6ED9A.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323794:47:88131102": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/72487871-75FE-8949-B490-13E6D6CEB24C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323841:170:239275966": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/BD70AFF6-2382-B74E-A156-89375E0C8D37.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323841:192:284582315": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/500384CD-9083-C247-B9A4-30EA88806A4E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323857:207:379124515": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/556D97E1-216F-9340-89A9-4380E9B47FBD.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323940:1138:2092883557": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/0C724C26-AFE6-7E4C-AE41-62B8B4C93DC5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323940:1163:2139020729": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/85A2546D-F6C8-5F47-BF54-3BAED58D2E7E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323940:1193:2192242582": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/9419861F-64FA-174E-866E-6A1D1A0E456B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323940:1219:2239952998": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/3FE47ED5-956B-754F-87FF-EA01A05F5D92.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323976:58:64318211": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/F05737D8-8977-9C4F-B02F-6BA617C7D815.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323983:126:250982857": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/D1FDA9C0-C5C8-994F-87F1-136536BEEB05.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "323983:79:159794391": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/40A03099-4108-F84A-BF85-7687654C6364.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324021:337:561498731": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/67751D13-4B31-324D-920B-FC6E1FC8C84E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324021:343:572243404": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/5AA270AA-F141-404D-B86A-C412E43B5EC7.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324021:393:670180256": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/CBEB2991-9F3F-4B47-91D5-10CEF42A4CE3.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324021:465:809016366": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/007743BD-D80A-5B40-9690-9458E42E3C9E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324021:552:990251223": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/D9437DA9-D675-B44E-97B5-37BD91295509.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324077:729:1323106982": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/A3B4600E-E1AE-EC46-950D-CD1E2CDB1617.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324201:102:162862016": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/BEBAC9B4-BEE4-5442-83BD-29E94811D7D8.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324201:1174:2214478075": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/3DEA8808-26C4-A44C-9EEB-F0A933A3A66F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324201:1272:2393605178": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/57E1334D-5FEB-E446-99CC-BDFE5EEB4005.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324201:190:346841182": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/0FF1D3A5-490D-AA44-AFCC-1579F415C130.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324201:193:353694954": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/334555C1-5C71-844D-A907-29A4A36EE7C9.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324201:414:808176523": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/A2899712-3FB8-A642-8164-64037F4BBCA5.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324201:969:1858686034": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/E2B142E8-C0EB-0B48-8A24-2A8405FDB41C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324237:117:165089737": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/77245243-A381-7A4E-A0FC-F7E33311CCE8.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324245:1284:2374067673": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/3438D11B-9F9C-9547-B74B-743F8828A766.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324245:1342:2487912318": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/C9835D3A-5D90-1B46-B190-E24299DD8629.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324245:1481:2753948187": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/54DE7FF7-22A2-3047-B450-935DCE8155FE.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324245:1579:2934965254": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/23E9FA4B-451F-724D-A702-DEC43161E2AA.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324245:305:565502182": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/BCB450C3-389B-B74A-A555-229E78946FFB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324245:898:1688912620": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/2C06253D-CB53-234C-AFBA-59AEA22200A7.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324293:2087:3682685735": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/926B3CB6-27C9-F041-B6E5-88B09A664A12.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324293:2203:3829564269": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/9E20A63D-101D-8E41-B6AC-BD25597F9086.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324293:254:422376404": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/B581773B-EC5F-744D-93C6-495196818900.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324293:463:847164031": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/15988413-14CF-FE4C-9A25-2B53F5BE3C47.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324293:539:999268242": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/5C85E9E3-9F1C-6E4C-97AB-5EE8745339A0.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324293:610:1135124442": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/93B933EB-2055-7E49-A3B7-DA7F5EC1DDF9.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324293:669:1248626834": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60000/9ACF978B-7506-2A48-AEBD-21B1D0A3F345.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324293:858:1592058106": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/B2B5F1D4-72B6-5A40-A372-82CB76329C07.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324420:101:213813590": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/D02BE2C0-922E-DF4C-B395-35DF037CDD83.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324420:87:182974077": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/BD3BC952-8F8A-0248-A97F-04920CB0408C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324729:66:83260427": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/C09339A8-3DFB-CC43-A45E-EEF90157264F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324747:184:230867407": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/7C252139-058E-CD4A-96B6-C3090519DE0F.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324764:130:228070371": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/44F53386-1543-3049-976B-1379474B89E2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324785:107:59261619": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/2F49508B-E0E7-B348-97B0-4F56378CEFF1.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324785:415:674247289": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/5E5A8419-A3C0-5A4B-9BEF-65FBF9D56EAF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324785:467:779321482": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/E76DBD39-037A-0647-94F5-3CBEA507BECE.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324791:1059:1925093313": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/0DCC0878-0255-904F-9142-148A3F1E25C2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324791:89:161882255": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/DE7EBBC5-9E2F-8147-BCE7-F895EA545475.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324835:112:139315101": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/0BA835A3-B0F5-5741-8B1D-462FDDDB6AED.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324835:215:346223485": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/21E2583F-2944-7947-A1BA-8B9EE4503566.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324841:1149:2116823657": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/323843AF-ED9C-9948-A0FB-3B4CBE49C201.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324841:1212:2227776509": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/2E50CCAD-E592-3B4C-9AD8-2ECDA627BC07.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324841:1230:2258433943": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/BE3E206B-0904-5B4B-848E-CE6E672EC7DB.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324841:941:1730822811": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/1C0C9814-9C61-6045-BCCE-3B262E09049B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324841:978:1803985632": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/8093F74F-B4F1-BC47-AFD7-2A830A813B7C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324878:1028:1874195322": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/976B10BD-0B01-1143-8B37-919BFF50ABCC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324878:1430:2657063878": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/C85B110C-845B-5143-8E4A-3151BAFB2348.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324878:1732:3190509459": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/6E6ED312-E2F7-0744-9E71-3A7FE976DA54.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324878:279:463410599": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/99D2958C-7852-744E-AF95-51D8E3403B5B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324878:937:1711849547": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/CD109B27-5E7F-0943-9AFD-1E21BAA9F20B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324878:956:1747534040": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/D8B492CE-10CB-4343-BC9D-0F67C826AE88.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324970:1895:3418887299": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/86CA78F8-3D29-834A-9E1A-946F85CABE62.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324970:263:465832410": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/204817F2-729C-0340-8A64-3FF44A6C22B2.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324970:514:940343957": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/F1844E8A-C593-874F-A6B5-BFA51B67254C.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324980:1111:2059795946": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/F2AC52F7-9CD3-AB4D-9AB9-D5D378AD2D4B.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324980:142:200384798": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/EC313B64-E8CE-FD4A-B99D-69418D54D7F0.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324980:1481:2730022725": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/2C31F856-5249-BF4C-BDF2-73BE429CA22E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324980:2052:3682667760": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/9C39B031-AA76-304B-9449-55F8D35112CC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324980:2231:3929242523": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/B1423C83-21D1-7B4C-B7BE-794FD15F2790.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324980:2285:3999459811": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/BBEEDE43-EE76-9F4D-A9C3-CFD1D2E58753.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324980:359:627599348": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/703E9224-49D6-9B41-87EE-E50AE6A360AF.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324980:540:1000634532": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/DBDF121B-2C41-2C4A-8615-7A288287395E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324980:630:1175399451": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/613DBA9D-44A5-F54C-A551-1FBE5BAF50C6.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "324998:197:400879342": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/65FDB1D0-D566-014E-B3F2-FABDAEE0A9CE.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325000:219:401488597": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/7B8D837E-CA7F-B043-8DBF-9958952F08EA.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325000:47:88731609": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/60001/4801767C-D6B8-2145-9DAC-21F0AB9B5C4D.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325057:187:271326249": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/696617C4-17AC-9149-AEEE-CABD74018144.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325099:277:557889183": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/270000/C4D9C216-86D9-D343-82AA-A25D570AD507.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325101:429:798059261": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/270000/CEB33628-E1E6-744C-9725-644A67C31F18.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325101:59:109452772": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/0A0E4A26-756E-7A4A-B438-C01BF5EA3DDC.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325117:432:742771175": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/20A94796-6286-DE49-A7A1-FAC4EF9FB8CA.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325117:461:787028149": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/20A94796-6286-DE49-A7A1-FAC4EF9FB8CA.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325159:181:259586791": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110001/770DEE54-11E7-7940-8E5E-AEFB0D99501E.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325170:258:484838032": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/2B9BFC16-B06F-C643-8B5D-726EBBB82BD7.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325170:454:846525254": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/110000/D29BC34D-DFE6-B841-8496-8D4759840814.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ],
+    "325172:276:421838056": [
+        "/store/data/Run2018D/SingleMuon/MINIAOD/22Jan2019-v2/120000/17C253AC-3AE0-CB49-BA22-B718C1916A13.root",
+        "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
+    ]
+}

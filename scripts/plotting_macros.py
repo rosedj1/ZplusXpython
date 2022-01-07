@@ -3,7 +3,7 @@ import ROOT
 import numpy as np
 from ROOT import TColor
 from helpers.analyzeZX import setCavasAndStyles
-from constants.physics import LUMI_INT_2018_Jake
+from constants.analysis_params import LUMI_INT_2018_Jake
 from Utils_Python.Utils_Files import check_overwrite
 
 x_lim = [70.0, 170.0]  # GeV.
@@ -23,8 +23,6 @@ class Sample:
         self.label = label
         self.sample_type = sample_type
         self.isData = isData
-
-    
 
 sample_dct = {
     # Nickname : {"filepath", "label", "fillcolor", "linecolor", "isData"}
@@ -104,7 +102,7 @@ class ControlRegPlot:
         h_addtostack.SetStats(0)
         h_addtostack.SetLineColor(TColor.GetColor("#000099"))
         h_addtostack.SetLineStyle(0)
-        h_addtostack.SetMarkerStyle(20)
+        h_addtostack.SetMarkerStyle(20)  # Black data points.
         h_addtostack.GetXaxis().SetLabelFont(42)
         h_addtostack.GetXaxis().SetLabelOffset(0.007)
         h_addtostack.GetXaxis().SetLabelSize(0.05)

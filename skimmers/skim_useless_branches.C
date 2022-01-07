@@ -1,0 +1,159 @@
+/**
+ * PURPOSE: Copy a TTree to a new root file, but only keep certain branches.
+ * NOTES: User should add/remove branches in vector branches in script.
+ * AUTHOR: Jake Rosenzweig, jake.rose@cern.ch
+ * CREATED: 2021-11-12
+ * UPDATED: 2022-01-07
+ */
+
+#include <iostream>
+#include <vector>
+#include "TFile.h"
+#include "TTree.h"
+#include "TString.h"
+
+using namespace std;
+
+void skim_useless_branches() {
+  /**
+   * 
+   */
+  // TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon.root";
+  // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon_skimmed.root";
+  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/ZZTo4L_TuneCP5_13TeV_powheg_pythia8_2018.root";
+  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/skimmedbranches/ZZTo4L_TuneCP5_13TeV_powheg_pythia8_2018.root";
+  TString intree = "Ana/passedEvents";
+  unsigned int n_evts_to_keep = -1;  // Use -1 for "all".
+  bool verbose = true;
+
+  vector<TString> branches{
+    /* Used to synch with Filippo's 2018 Data file. */
+    "Run",
+    "Event",
+    "LumiSect",
+    "nVtx",
+    "nInt",
+    "PV_x",
+    "PV_y",
+    "PV_z",
+    "BS_x",
+    "BS_y",
+    "BS_z",
+    "BS_xErr",
+    "BS_yErr",
+    "BS_zErr",
+    "BeamWidth_x",
+    "BeamWidth_y",
+    "BeamWidth_xErr",
+    "BeamWidth_yErr",
+    "finalState",
+    "passedFullSelection",
+    "passedZXCRSelection",
+    "nZXCRFailedLeptons",
+    "genWeight",
+    "k_ggZZ",
+    "k_qqZZ_qcd_M",
+    "k_qqZZ_ewk",
+    "pileupWeight",
+    "dataMCWeight",
+    "eventWeight",
+    "prefiringWeight",
+    "crossSection",
+    "lep_d0BS",
+    "lep_d0PV",
+    "lep_numberOfValidPixelHits",
+    "lep_trackerLayersWithMeasurement",
+    "vtxLep_BS_pt",
+    "vtxLep_BS_pt_NoRoch",
+    "vtxLep_BS_ptError",
+    "vtxLep_BS_eta",
+    "vtxLep_BS_phi",
+    "vtxLep_BS_mass",
+    "vtxLep_BS_d0",
+    "vtxLep_pt",
+    "vtxLep_ptError",
+    "vtxLep_eta",
+    "vtxLep_phi",
+    "vtxLep_mass",
+    "vtxLepFSR_BS_pt",
+    "vtxLepFSR_BS_eta",
+    "vtxLepFSR_BS_phi",
+    "vtxLepFSR_BS_mass",
+    "vtxLepFSR_pt",
+    "vtxLepFSR_eta",
+    "vtxLepFSR_phi",
+    "vtxLepFSR_mass",
+    "commonPV_x",
+    "commonPV_y",
+    "commonPV_z",
+    "commonBS_x",
+    "commonBS_y",
+    "commonBS_z",
+    "lep_pt_genFromReco",
+    "lep_id",
+    "lep_pt",
+    "lep_pterr",
+    "lep_eta",
+    "lep_phi",
+    "lep_mass",
+    "lepFSR_pt",
+    "lepFSR_eta",
+    "lepFSR_phi",
+    "lepFSR_mass",
+    "lep_Hindex",
+    "lep_ecalDriven",
+    "lep_tightId",
+    "lep_Sip",
+    "lep_RelIso",
+    "lep_RelIsoNoFSR",
+    "dataMC_VxBS",
+    "mass4l",
+    "mass4lErr",
+    "mass4lREFIT",
+    "mass4lErrREFIT",
+    "massZ1REFIT",
+    "massZ2REFIT",
+    "mass4l_vtx_BS",
+    "mass4l_vtxFSR_BS",
+    "mass4lErr_vtx_BS",
+    "mass4lREFIT_vtx_BS",
+    "mass4lErrREFIT_vtx_BS",
+    "massZ1REFIT_vtx_BS",
+    "massZ2REFIT_vtx_BS",
+    "mass4l_vtx",
+    "mass4l_vtxFSR",
+    "mass4lErr_vtx",
+    "mass4lREFIT_vtx",
+    "mass4lErrREFIT_vtx",
+    "massZ1",
+    "massH_vtx_chi2_BS",
+    "massZ2",
+    "met",
+    "D_bkg_kin",
+    "D_bkg_kin_vtx_BS",
+    "D_bkg",
+    "D_VBF",
+  };
+
+  TFile *tf = new TFile(infile, "READ");
+  TTree *tree = (TTree*)tf->Get(intree);
+  cout << "Successfully opened file:\n" << infile << endl;
+  cout << "TTree has " << tree->GetEntries() << " entries." << endl;
+  // cout << "Saving " << n_evts_to_keep << "(" << n_evts_to_keep/tree->GetEntries() << ")" << " entries." << endl;
+
+  // Turn off all branches, then manually turn on the ones to keep.
+  tree->SetBranchStatus("*",0);//1);
+
+  if (verbose) cout << "Saving branches:" << endl;
+  for (auto & branch : branches) {
+    if (verbose) cout << "  " << branch << endl;
+    tree->SetBranchStatus(branch, 1);
+  }
+
+  TFile *tf_out = new TFile(outfile, "RECREATE");
+  TTree *newtree = tree->CloneTree(n_evts_to_keep);
+
+  newtree->Write();
+  cout << "New TTree saved to file:\n" << outfile << endl;
+  return;
+} // end function

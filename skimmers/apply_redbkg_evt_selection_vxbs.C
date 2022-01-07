@@ -4,10 +4,14 @@
  * - Useful for reducible background studies.
  * - VX+BS info is saved.
  * - Select events in the Z+L, Z+LL, and/or 4P control regions.
+ *   The Z+LL CR has undergone some changes!
+ *   The passedZXCRSelection flag does not account for different 4-lepton
+ *   quartets within the same event. Therefore this script should only be used
+ *   to select Z+L events for fake rate studies. 
  * - Specify either Data or MC using `isData` and check file paths!
  * AUTHOR: Jake Rosenzweig, jake.rose@cern.ch
  * CREATED: 2021-05-20, happy birthday, Sheldoni!
- * UPDATED: 2021-08-31
+ * UPDATED: 2021-10-06
  */
 
 #include <iostream>
@@ -50,7 +54,7 @@ void apply_redbkg_evt_selection_vxbs(
   // TString infile4 = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/SingleMuon_2018.root";
     // outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZL_ZLL_CR/" + outfilename;
     // outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/" + outfilename;
-    intree = "passedEvents";
+    intree = "Ana/passedEvents";
   } else {
     // MC.
     // infilename = "FILENAME"; // Will be replaced by bash script.
@@ -76,7 +80,9 @@ void apply_redbkg_evt_selection_vxbs(
   TTreeReader reader(cc);
   unsigned int n_tot_tree = reader.GetEntries(true);
   // Assign TTreeReader to a branch on old tree.
-  // TTreeReaderValue<ULong64_t> Event_reader(reader, "Event"); Doesn't store useful info.
+  TTreeReaderValue<ULong64_t> Run_reader(reader, "Run");
+  TTreeReaderValue<ULong64_t> Event_reader(reader, "Event");
+  TTreeReaderValue<ULong64_t> LumiSect_reader(reader, "LumiSect");
   TTreeReaderValue<int>            finalState_reader(reader, "finalState");
   TTreeReaderValue<bool>           passedZ1LSelection_reader(reader, "passedZ1LSelection");
   TTreeReaderValue<bool>           passedZXCRSelection_reader(reader, "passedZXCRSelection");
@@ -130,7 +136,9 @@ void apply_redbkg_evt_selection_vxbs(
   TTreeReaderValue<float>  D_bkg_kin_reader(reader, "D_bkg_kin");
   TTreeReaderValue<float>  D_bkg_kin_vtx_BS_reader(reader, "D_bkg_kin_vtx_BS");
   // Make variables which will attach to new branch.
-  // ULong64_t Event;
+  ULong64_t Run;
+  ULong64_t Event;
+  ULong64_t LumiSect;
   int finalState;
   bool passedZ1LSelection;
   bool passedZXCRSelection;
@@ -178,7 +186,9 @@ void apply_redbkg_evt_selection_vxbs(
   float D_bkg_kin_vtx_BS;
 
   // Set vars to new branch.
-  // newtree->Branch("Event", &Event);
+  newtree->Branch("Run", &Run);
+  newtree->Branch("Event", &Event);
+  newtree->Branch("LumiSect", &LumiSect);
   newtree->Branch("finalState", &finalState);
   newtree->Branch("passedZ1LSelection", &passedZ1LSelection);
   newtree->Branch("passedZXCRSelection", &passedZXCRSelection);
@@ -294,7 +304,10 @@ void apply_redbkg_evt_selection_vxbs(
     if (!keep_event) continue;
     // Found an event worth keeping.
 
-    // Store the values in the new branches: branch = reader_val    
+    // Store the values in the new branches: branch = reader_val
+    Run = *Run_reader;
+    Event = *Event_reader;
+    LumiSect = *LumiSect_reader;
     finalState = *finalState_reader;
     eventWeight = *eventWeight_reader;
     k_qqZZ_qcd_M = *k_qqZZ_qcd_M_reader;
