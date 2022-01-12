@@ -2,7 +2,7 @@
 ==============================================================================
 Author: Jake Rosenzweig
 Created: 2021-11-30
-Updated: 2022-01-07
+Updated: 2022-01-12
 Notes:
     This code selects 2P2+F and 3P1+F reducible background events.
     It considers events with >4 leptons and properly handles all possible
@@ -13,6 +13,8 @@ Notes:
 
     In effect this is an updated event selection that bypasses the bool:
         passedZXCRSelection.
+
+    User can 
     
     This code makes a json file which stores the Run:Lumi:Event of all
     events which pass 3P1F or 2P2F event selection. It also creates a TH2
@@ -70,8 +72,8 @@ fill_hists = 1
 hadd_files = 1
 
 start_at_evt = 0
-break_at_evt = 5000  # Use -1 to run over all events.
-print_every = 500
+break_at_evt = -1  # Use -1 to run over all events.
+print_every = 1000000
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 
 # infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZLL_CR/Data_2018_NoDuplicates.root"
@@ -79,8 +81,8 @@ infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/bes
 
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
 # These base names will have name of data type appended ("Data", "ZZ").
-outfile_base_root = "rootfiles/test/test03_cjlstOSmethodevtsel_2p2plusf_3p1plusf.root"
-outfile_base_json = "json/test/test03_cjlstOSmethodevtsel_2p2plusf_3p1plusf_counter.json"
+outfile_base_root = "rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale.root"
+outfile_base_json = "json/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_counter.json"
 ##############################################
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -351,10 +351,11 @@ def select_better_zzcand(zzcand1, zzcand2, verbose=False):
     ndx_fir = zzcand1.ndx_in_zzpair_ls
     ndx_sec = zzcand2.ndx_in_zzpair_ls
     if zzcand1.has_same_4leps(zzcand2):
-        print(
-            f"  ZZ cands (#{ndx_fir}, #{ndx_sec}) share same 4 leptons.\n"
-            f"  Selecting the ZZ with m(Z1) closer to PDG value."
-            )
+        if verbose:
+            print(
+                f"  ZZ cands (#{ndx_fir}, #{ndx_sec}) share same 4 leptons.\n"
+                f"  Selecting the ZZ with m(Z1) closer to PDG value."
+                )
         err_msg = (
             f"  Z1 from best ZZ doesn't pass tight selections!\n"
             f"  This could imply bad logic in literature smart cut!!!"
@@ -374,13 +375,13 @@ def select_better_zzcand(zzcand1, zzcand2, verbose=False):
                 f"  ZZ cands have different leptons.\n"
                 f"  Choose cand with higher Kd. HOW???"
                 )
-    # if verbose:
-    print(
-        f"  ZZ#{winning_zz_ndx} selected as better cand, "
-        f"since its Z1 was closer to PDG."
-        )
-    zzcand1.print_info()
-    zzcand2.print_info()
+    if verbose:
+        print(
+            f"  ZZ#{winning_zz_ndx} selected as better cand, "
+            f"since its Z1 was closer to PDG."
+            )
+        zzcand1.print_info()
+        zzcand2.print_info()
     return winning_zz
 
 def get_all_ZZcands_passing_cjlst(zz_pair_ls):

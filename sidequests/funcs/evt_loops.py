@@ -29,7 +29,8 @@ from sidequests.containers.hists_th1 import (
 from sidequests.containers.hists_th2 import h2_n3p1fcombos_n2p2fcombos
 from scripts.helpers.analyzeZX import (
     get_evt_weight, check_which_Z2_leps_failed,
-    get_fakerate, retrieve_FR_hists
+    retrieve_FR_hists, get_fakerate_and_error,
+    calc_fakerate_up, calc_fakerate_down
     )
 from constants.analysis_params import (
     xs_dct_jake, n_sumgenweights_dataset_dct_jake
@@ -438,9 +439,15 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     ptr_is2P2F = np.array([0], dtype=int)  # Close enough to bool lol.
     ptr_is3P1F = np.array([0], dtype=int)
     ptr_isMCzz = np.array([0], dtype=int)
+    ptr_fr2_down = array('f', [0.])
     ptr_fr2 = array('f', [0.])
+    ptr_fr2_up = array('f', [0.])
+    ptr_fr3_down = array('f', [0.])
     ptr_fr3 = array('f', [0.])
+    ptr_fr3_up = array('f', [0.])
+    ptr_eventWeightFR_down = array('f', [0.])
     ptr_eventWeightFR = array('f', [0.])
+    ptr_eventWeightFR_up = array('f', [0.])
     ptr_lep_RedBkgindex = array('i', [0, 0, 0, 0])
     ptr_mass4l = array('f', [0.])
     ptr_mass4l_vtxFSR_BS = array('f', [0.])
@@ -455,15 +462,20 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         # Modify existing values of branches.
         new_tree.SetBranchAddress("mass4l", ptr_mass4l)
         new_tree.SetBranchAddress("mass4l_vtxFSR_BS", ptr_mass4l_vtxFSR_BS)
-        # new_tree.SetBranchAddress("eventWeight", ptr_eventWeight)
 
         # Make new corresponding branches in the TTree.
         new_tree.Branch("is2P2F", ptr_is2P2F, "is2P2F/I")
         new_tree.Branch("is3P1F", ptr_is3P1F, "is3P1F/I")
         new_tree.Branch("isMCzz", ptr_isMCzz, "isMCzz/I")
+        new_tree.Branch("fr2_down", ptr_fr2_down, "fr2_down/F")
         new_tree.Branch("fr2", ptr_fr2, "fr2/F")
+        new_tree.Branch("fr2_up", ptr_fr2_up, "fr2_up/F")
+        new_tree.Branch("fr3_down", ptr_fr3_down, "fr3_down/F")
         new_tree.Branch("fr3", ptr_fr3, "fr3/F")
+        new_tree.Branch("fr3_up", ptr_fr3_up, "fr3_up/F")
+        new_tree.Branch("eventWeightFR_down", ptr_eventWeightFR_down, "eventWeightFR_down/F")
         new_tree.Branch("eventWeightFR", ptr_eventWeightFR, "eventWeightFR/F")
+        new_tree.Branch("eventWeightFR_up", ptr_eventWeightFR_up, "eventWeightFR_up/F")
         # Record the indices of the leptons in passing quartet.
         new_tree.Branch(
             "lep_RedBkgindex",
@@ -610,61 +622,87 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 # NOTE: Turns out this will never trigger!
                 # This is due to the way that I build the 3P1F quartets.
                 # I always place the 1 failing lepton as the 4th lepton.
-                # Therefore, fr3 will always be != 0.
+                # Therefore, fr3 (the 4th lepton) will always be != 0.
                 assert subevt_passes_sel_3p1f
                 assert mylep1_fromz2.is_loose
-                fr2 = get_fakerate(
+                fr2, fr2_err = get_fakerate_and_error(
                     mylep1_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
                     )
+                fr2_down = calc_fakerate_down(fr2, fr2_err)  # Scale down.
+                fr2_up = calc_fakerate_up(fr2, fr2_err)  # Scale up.
                 fr3 = 0
+                fr3_err = 0
+                fr3_down = 0
+                fr3_up = 0
+                # Use fake rates to calculate new event weight.
+                new_weight_down = (fr2_down / (1-fr2_down)) * evt_weight_calcd
                 new_weight = (fr2 / (1-fr2)) * evt_weight_calcd
+                new_weight_up = (fr2_up / (1-fr2_up)) * evt_weight_calcd
             elif n_fail_code == 3:
                 # Second lep from Z2 failed.
                 assert subevt_passes_sel_3p1f
                 assert mylep2_fromz2.is_loose
                 fr2 = 0
-                fr3 = get_fakerate(
+                fr2_err = 0
+                fr2_down = 0
+                fr2_up = 0
+                fr3, fr3_err = get_fakerate_and_error(
                     mylep2_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
                     )
+                fr3_down = calc_fakerate_down(fr3, fr3_err)  # Scale down.
+                fr3_up = calc_fakerate_up(fr3, fr3_err)  # Scale up.
+                # Use fake rates to calculate new event weight.
+                new_weight_down = (fr3_down / (1-fr3_down)) * evt_weight_calcd
                 new_weight = (fr3 / (1-fr3)) * evt_weight_calcd
+                new_weight_up = (fr3_up / (1-fr3_up)) * evt_weight_calcd
             #=== 2P2F subevent. ===#
             elif n_fail_code == 5:
                 # Both leps failed.
                 assert subevt_passes_sel_2p2f
-                fr2 = get_fakerate(
+                fr2, fr2_err = get_fakerate_and_error(
                     mylep1_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
                     )
-                fr3 = get_fakerate(
+                fr3, fr3_err = get_fakerate_and_error(
                     mylep2_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
                     )
+                fr2_down = calc_fakerate_down(fr2, fr2_err)  # Scale down.
+                fr2_up = calc_fakerate_up(fr2, fr2_err)  # Scale up.
+                fr3_down = calc_fakerate_down(fr3, fr3_err)  # Scale down.
+                fr3_up = calc_fakerate_up(fr3, fr3_err)  # Scale up.
+                # Use fake rates to calculate new event weight.
+                new_weight_down = (fr2_down / (1-fr2_down)) * (fr3_down / (1-fr3_down)) * evt_weight_calcd
                 new_weight = (fr2 / (1-fr2)) * (fr3 / (1-fr3)) * evt_weight_calcd
-
+                new_weight_up = (fr2_up / (1-fr2_up)) * (fr3_up / (1-fr3_up)) * evt_weight_calcd
             if verbose:
                 print(
                     f"Subevent is:\n"
-                    f"2P2F={subevt_passes_sel_2p2f}, "
+                    f"  2P2F={subevt_passes_sel_2p2f}, "
                     f"3P1F={subevt_passes_sel_3p1f}\n"
-                    f"This fail code: {n_fail_code}\n"
-                    f"Z2 lep codes FOR DEBUGGING:\n"
-                    f"===========================\n"
-                    f"0, if neither lep from Z2 failed\n"
-                    f"2, if first lep from Z2 failed\n"
-                    f"3, if second lep from Z2 failed\n"
-                    f"5, if both leps from Z2 failed\n"
-                    f"===========================\n"
-                    f"fr2={fr2:.6f}, fr3={fr3:.6f}\n"
+                    f"  This fail code: {n_fail_code}\n"
+                    f"  Z2 lep codes FOR DEBUGGING:\n"
+                    f"  ===========================\n"
+                    f"  0, if neither lep from Z2 failed\n"
+                    f"  2, if first lep from Z2 failed\n"
+                    f"  3, if second lep from Z2 failed\n"
+                    f"  5, if both leps from Z2 failed\n"
+                    f"  ===========================\n"
+                    f"  fr2_down={fr2_down:.6f}, fr3_down={fr3_down:.6f}\n"
+                    f"       fr2={fr2:.6f},      fr3={fr3:.6f}\n"
+                    f"    fr2_up={fr2_up:.6f},   fr3_up={fr3_up:.6f}\n"
                     # f"eventWeight(from NTuple) = {tree.eventWeight:.6f}\n"
-                    f"        tree.eventWeight = {tree.eventWeight:.6f}\n"
-                    f"        evt_weight_calcd = {evt_weight_calcd:.6f}\n"
-                    f"              new_weight = {new_weight:.6f}"
+                    f"    tree.eventWeight = {tree.eventWeight:.6f}\n"
+                    f"    evt_weight_calcd = {evt_weight_calcd:.6f}\n"
+                    f"          new_weight_down = {new_weight_down:.6f}\n"
+                    f"               new_weight = {new_weight:.6f}\n"
+                    f"            new_weight_up = {new_weight_up:.6f}"
                 )
                 zzcand.print_info()
 
@@ -693,14 +731,19 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             ptr_is2P2F[0] = subevt_passes_sel_2p2f
             ptr_is3P1F[0] = subevt_passes_sel_3p1f
             ptr_isMCzz[0] = isMCzz
+            ptr_fr2_down[0] = fr2_down
             ptr_fr2[0] = fr2
+            ptr_fr2_up[0] = fr2_up
+            ptr_fr3_down[0] = fr3_down
             ptr_fr3[0] = fr3
+            ptr_fr3_up[0] = fr3_up
+            ptr_eventWeightFR_down[0] = new_weight_down
             ptr_eventWeightFR[0] = new_weight
+            ptr_eventWeightFR_up[0] = new_weight_up
             ptr_lep_RedBkgindex[0] = lep_idcs[0]
             ptr_lep_RedBkgindex[1] = lep_idcs[1]
             ptr_lep_RedBkgindex[2] = lep_idcs[2]
             ptr_lep_RedBkgindex[3] = lep_idcs[3]
-
             # Getting an IndexError since there is a discrepancy in the length
             # of vectors, like `lep_pt` and `vtxLepFSR_BS_pt`.
             # WARNING!!! UNCOMMENT THIS BLOCK TO PROPERLY SAVE UPDATED DATA!
