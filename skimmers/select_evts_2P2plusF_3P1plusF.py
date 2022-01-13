@@ -66,15 +66,16 @@ d_nicknames_files = {
 int_lumi = 59830
 year = 2018
 
-explain_skipevent = 0
-keep_only_mass4lgt0 = 1
-fill_hists = 1
-hadd_files = 1
-
 start_at_evt = 0
 break_at_evt = -1  # Use -1 to run over all events.
 print_every = 1000000
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
+
+explain_skipevent = 0
+keep_only_mass4lgt0 = 1
+recalc_mass4l_vals = 0
+fill_hists = 1
+hadd_files = 0
 
 # infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZLL_CR/Data_2018_NoDuplicates.root"
 infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
@@ -148,7 +149,8 @@ if __name__ == '__main__':
             print_every=print_every,
             smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
             overwrite=overwrite,
-            keep_only_mass4lgt0=keep_only_mass4lgt0
+            keep_only_mass4lgt0=keep_only_mass4lgt0,
+            recalc_mass4l_vals=recalc_mass4l_vals
             )
         
         ls_all_outfiles.append(outfile_root)

@@ -360,7 +360,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     start_at_evt=0, break_at_evt=-1, fill_hists=True,
     explain_skipevent=False, verbose=False, print_every=50000,
     smartcut_ZapassesZ1sel=False, overwrite=False,
-    keep_only_mass4lgt0=False
+    keep_only_mass4lgt0=False,
+    recalc_mass4l_vals=False,
     ):
     """Apply RedBkg "subevent" event selection to all events in tree.
 
@@ -398,9 +399,11 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             This is useful when you need to use the values that are already
             stored in the BBF NTuple.
             Default is False.
+        recalc_mass4l_vals (bool, optional):
+            If True, recalculate mass4l values using selected lepton quartet.
     """
     if fill_hists:
-        # Prepare histograms
+        # Prep histograms.
         d_hists = {
             "Data" : {
                 "2p2f" : {
@@ -459,9 +462,10 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         print("Cloning TTree.")
         new_tree = tree.CloneTree(0)  # Clone 0 events.
 
-        # Modify existing values of branches.
-        new_tree.SetBranchAddress("mass4l", ptr_mass4l)
-        new_tree.SetBranchAddress("mass4l_vtxFSR_BS", ptr_mass4l_vtxFSR_BS)
+        if recalc_mass4l_vals:
+            # Modify existing values of branches.
+            new_tree.SetBranchAddress("mass4l", ptr_mass4l)
+            new_tree.SetBranchAddress("mass4l_vtxFSR_BS", ptr_mass4l_vtxFSR_BS)
 
         # Make new corresponding branches in the TTree.
         new_tree.Branch("is2P2F", ptr_is2P2F, "is2P2F/I")
@@ -526,7 +530,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             evt_info_d["n_evts_not2or3tightleps"] += 1
             if explain_skipevent:
                 msg = (
-                    f"Doesn't contain 2 or 3 tight leps "
+                    f"  Doesn't contain 2 or 3 tight leps "
                     f"(contains {n_tight_leps} tight leps)."
                     )
                 print_skipevent_msg(msg, evt_num, run, lumi, event)
@@ -744,15 +748,16 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             ptr_lep_RedBkgindex[1] = lep_idcs[1]
             ptr_lep_RedBkgindex[2] = lep_idcs[2]
             ptr_lep_RedBkgindex[3] = lep_idcs[3]
-            # Getting an IndexError since there is a discrepancy in the length
-            # of vectors, like `lep_pt` and `vtxLepFSR_BS_pt`.
-            # WARNING!!! UNCOMMENT THIS BLOCK TO PROPERLY SAVE UPDATED DATA!
-            # ptr_mass4l[0] = calc_mass4l_from_idcs(
-            #     tree, lep_idcs, kind="lepFSR"
-            #     )
-            # ptr_mass4l_vtxFSR_BS[0] = calc_mass4l_from_idcs(
-            #     tree, lep_idcs, kind="vtxLepFSR_BS"
-            #     )
+
+            if recalc_mass4l_vals:
+                # Getting an IndexError since there is a discrepancy in the length
+                # of vectors, like `lep_pt` and `vtxLepFSR_BS_pt`.
+                ptr_mass4l[0] = calc_mass4l_from_idcs(
+                    tree, lep_idcs, kind="lepFSR"
+                    )
+                ptr_mass4l_vtxFSR_BS[0] = calc_mass4l_from_idcs(
+                    tree, lep_idcs, kind="vtxLepFSR_BS"
+                    )
             if outfile_root is not None:
                 new_tree.Fill()
         # End loop over subevents.
