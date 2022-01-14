@@ -354,7 +354,7 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
 
 def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     tree,
-    infile_FR_wz_removed,
+    infile_fakerates,
     outfile_root=None, outfile_json=None,
     name="", int_lumi=59830,
     start_at_evt=0, break_at_evt=-1, fill_hists=True,
@@ -430,9 +430,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     evt_info_d = make_evt_info_d()  # Info for printing.
     evt_info_2p2f_3p1f_d = {}  # Info for json file.
 
-    assert infile_FR_wz_removed is not None
+    assert infile_fakerates is not None
     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end = retrieve_FR_hists(
-                                                    infile_FR_wz_removed
+                                                    infile_fakerates
                                                     )
 
     if outfile_json is not None:

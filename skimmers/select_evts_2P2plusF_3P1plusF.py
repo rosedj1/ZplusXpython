@@ -59,7 +59,7 @@ from Utils_Python.Commands import shell_cmd
 #########################
 # Files to analyze.
 d_nicknames_files = {
-    "Data" : infile_filippo_data_2018_fromhpg,
+    # "Data" : infile_filippo_data_2018_fromhpg,
     "ZZ" : mc_2018_zz_hpg,
 }
 
@@ -78,12 +78,15 @@ fill_hists = 1
 hadd_files = 0
 
 # infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZLL_CR/Data_2018_NoDuplicates.root"
-infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
+# infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
+#=== WARNING!!! Using uncorrected fake rates for testing! ===#
+infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_Data.root"
+#=== WARNING!!! Using uncorrected fake rates for testing! ===#
 
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
-# These base names will have name of data type appended ("Data", "ZZ").
-outfile_base_root = "rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale.root"
-outfile_base_json = "json/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_counter.json"
+# Base names below will have name of data type appended ("Data", "ZZ").
+outfile_base_root = "rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf_mass4lgt0_downupscale_uncorrFRs.root"
+outfile_base_json = "json/cjlstOSmethodevtsel_2p2plusf_3p1plusf_mass4lgt0_downupscale_uncorrFRs_counter.json"
 ##############################################
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -91,8 +94,8 @@ if __name__ == '__main__':
     # parser.add_argument('-r', '--infile_fakerate', type=str, dest="infile_fr", help="input root file with fake rate hists (WZ removed)")
     # parser.add_argument('-o', '--outfile',         type=str, dest="outfile", help="output rootfile")
     # parser.add_argument('-n', '--nickname',        type=str, dest="name", help="nickname of file/process ('ZZ' or 'Data')")
-    parser.add_argument('-x', '--overwrite',       dest="overwrite", action="store_true", help="overwrite output file (1) or not (0)")
-    parser.add_argument('-v', '--verbose',       dest="verbose", action="store_true", help="verbose output (1) or not (0)")
+    parser.add_argument('-x', '--overwrite', dest="overwrite", action="store_true", help="overwrite output file (1) or not (0)")
+    parser.add_argument('-v', '--verbose',   dest="verbose",   action="store_true", help="verbose (1) or not (0)")
     args = parser.parse_args()
 
     # infile = args.infile
@@ -136,7 +139,7 @@ if __name__ == '__main__':
 
         evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             tree,
-            infile_FR_wz_removed=infile_FR_wz_removed,
+            infile_fakerates=infile_FR_wz_removed,
             outfile_root=outfile_root,
             outfile_json=outfile_json,
             name=name,
