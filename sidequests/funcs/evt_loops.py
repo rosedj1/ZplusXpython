@@ -357,11 +357,14 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     infile_fakerates,
     outfile_root=None, outfile_json=None,
     name="", int_lumi=59830,
-    start_at_evt=0, break_at_evt=-1, fill_hists=True,
+    start_at_evt=0, break_at_evt=-1,
+    fill_hists=True,
     explain_skipevent=False, verbose=False, print_every=50000,
-    smartcut_ZapassesZ1sel=False, overwrite=False,
+    smartcut_ZapassesZ1sel=False,
+    overwrite=False,
     keep_only_mass4lgt0=False,
     recalc_mass4l_vals=False,
+    allow_ge4tightleps=False,
     ):
     """Apply RedBkg "subevent" event selection to all events in tree.
 
@@ -401,6 +404,11 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             Default is False.
         recalc_mass4l_vals (bool, optional):
             If True, recalculate mass4l values using selected lepton quartet.
+        allow_ge4tightleps (bool, optional):
+            If True, keep lepton quartets which satisfy 2P2F/3P1F selections,
+            even if 4 or more tight leptons are present in event.
+            Default behavior is to only look at events in which there are
+            exactly 2 or 3 tight leptons.
     """
     if fill_hists:
         # Prep histograms.
@@ -441,6 +449,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     # Make pointers to store new values. 
     ptr_is2P2F = np.array([0], dtype=int)  # Close enough to bool lol.
     ptr_is3P1F = np.array([0], dtype=int)
+    ptr_isData = np.array([0], dtype=int)
     ptr_isMCzz = np.array([0], dtype=int)
     ptr_fr2_down = array('f', [0.])
     ptr_fr2 = array('f', [0.])
@@ -470,6 +479,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         # Make new corresponding branches in the TTree.
         new_tree.Branch("is2P2F", ptr_is2P2F, "is2P2F/I")
         new_tree.Branch("is3P1F", ptr_is3P1F, "is3P1F/I")
+        new_tree.Branch("isData", ptr_isData, "isData/I")
         new_tree.Branch("isMCzz", ptr_isMCzz, "isMCzz/I")
         new_tree.Branch("fr2_down", ptr_fr2_down, "fr2_down/F")
         new_tree.Branch("fr2", ptr_fr2, "fr2/F")
@@ -498,6 +508,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     #=== Event Loop ===#
     ####################
     isMCzz = 1 if name in "ZZ" else 0
+    isData = 1 if name in "Data" else 0
     for evt_num in range(start_at_evt, n_tot):
         if evt_num == break_at_evt:
             break
@@ -526,18 +537,19 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         n_loose_leps = get_n_loose_myleps(mylep_ls)
 
         # Require exactly 2 or 3 leptons passing tight selection.
-        if (n_tight_leps < 2) or (n_tight_leps > 3):
-            evt_info_d["n_evts_not2or3tightleps"] += 1
-            if explain_skipevent:
-                msg = (
-                    f"  Doesn't contain 2 or 3 tight leps "
-                    f"(contains {n_tight_leps} tight leps)."
-                    )
-                print_skipevent_msg(msg, evt_num, run, lumi, event)
-            if verbose:
-                for lep in mylep_ls:
-                    lep.print_info()
-            continue
+        if allow_ge4tightleps:
+            if (n_tight_leps < 2) or (n_tight_leps > 3):
+                evt_info_d["n_evts_not2or3tightleps"] += 1
+                if explain_skipevent:
+                    msg = (
+                        f"  Doesn't contain 2 or 3 tight leps "
+                        f"(contains {n_tight_leps} tight leps)."
+                        )
+                    print_skipevent_msg(msg, evt_num, run, lumi, event)
+                if verbose:
+                    for lep in mylep_ls:
+                        lep.print_info()
+                continue
         # Guaranteed to have at least 4-leps per event
         # of which exactly 2 or 3 pass tight selection.
         # The remaining leptons must be loose.
@@ -734,6 +746,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 ]
             ptr_is2P2F[0] = subevt_passes_sel_2p2f
             ptr_is3P1F[0] = subevt_passes_sel_3p1f
+            ptr_isData[0] = isData
             ptr_isMCzz[0] = isMCzz
             ptr_fr2_down[0] = fr2_down
             ptr_fr2[0] = fr2

@@ -136,6 +136,7 @@ void skim_useless_branches() {
     "D_VBF",
     "is2P2F",
     "is3P1F",
+    "isData",
     "isMCzz",
     "fr2_down",
     "fr2",

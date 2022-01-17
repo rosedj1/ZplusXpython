@@ -127,7 +127,13 @@ def get_expected_n_evts(xs, lumi, isMCzz, event):
         n_exp *= (event.k_qqZZ_qcd_M * event.k_qqZZ_ewk)
     return n_exp
 
-def get_evt_weight(xs_dct, Nickname, lumi, event, n_dataset_tot, orig_evt_weight):
+def get_evt_weight(
+    xs_dct,
+    Nickname,
+    lumi,
+    event,
+    n_dataset_tot,
+    orig_evt_weight):
     """
     Return the event weight of Data (1) or MC based on L_int collected.
 
