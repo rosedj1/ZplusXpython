@@ -29,7 +29,8 @@ from sidequests.containers.hists_th1 import (
 from sidequests.containers.hists_th2 import h2_n3p1fcombos_n2p2fcombos
 from scripts.helpers.analyzeZX import (
     get_evt_weight, check_which_Z2_leps_failed,
-    get_fakerate, retrieve_FR_hists
+    retrieve_FR_hists, get_fakerate_and_error,
+    calc_fakerate_up, calc_fakerate_down
     )
 from constants.analysis_params import (
     xs_dct_jake, n_sumgenweights_dataset_dct_jake
@@ -353,13 +354,17 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
 
 def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     tree,
-    infile_FR_wz_removed,
+    infile_fakerates,
     outfile_root=None, outfile_json=None,
     name="", int_lumi=59830,
-    start_at_evt=0, break_at_evt=-1, fill_hists=True,
+    start_at_evt=0, break_at_evt=-1,
+    fill_hists=True,
     explain_skipevent=False, verbose=False, print_every=50000,
-    smartcut_ZapassesZ1sel=False, overwrite=False,
-    keep_only_mass4lgt0=False
+    smartcut_ZapassesZ1sel=False,
+    overwrite=False,
+    keep_only_mass4lgt0=False,
+    recalc_mass4l_vals=False,
+    allow_ge4tightleps=False,
     ):
     """Apply RedBkg "subevent" event selection to all events in tree.
 
@@ -397,9 +402,16 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             This is useful when you need to use the values that are already
             stored in the BBF NTuple.
             Default is False.
+        recalc_mass4l_vals (bool, optional):
+            If True, recalculate mass4l values using selected lepton quartet.
+        allow_ge4tightleps (bool, optional):
+            If True, keep lepton quartets which satisfy 2P2F/3P1F selections,
+            even if 4 or more tight leptons are present in event.
+            Default behavior is to only look at events in which there are
+            exactly 2 or 3 tight leptons.
     """
     if fill_hists:
-        # Prepare histograms
+        # Prep histograms.
         d_hists = {
             "Data" : {
                 "2p2f" : {
@@ -426,9 +438,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     evt_info_d = make_evt_info_d()  # Info for printing.
     evt_info_2p2f_3p1f_d = {}  # Info for json file.
 
-    assert infile_FR_wz_removed is not None
+    assert infile_fakerates is not None
     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end = retrieve_FR_hists(
-                                                    infile_FR_wz_removed
+                                                    infile_fakerates
                                                     )
 
     if outfile_json is not None:
@@ -437,10 +449,17 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     # Make pointers to store new values. 
     ptr_is2P2F = np.array([0], dtype=int)  # Close enough to bool lol.
     ptr_is3P1F = np.array([0], dtype=int)
+    ptr_isData = np.array([0], dtype=int)
     ptr_isMCzz = np.array([0], dtype=int)
+    ptr_fr2_down = array('f', [0.])
     ptr_fr2 = array('f', [0.])
+    ptr_fr2_up = array('f', [0.])
+    ptr_fr3_down = array('f', [0.])
     ptr_fr3 = array('f', [0.])
+    ptr_fr3_up = array('f', [0.])
+    ptr_eventWeightFR_down = array('f', [0.])
     ptr_eventWeightFR = array('f', [0.])
+    ptr_eventWeightFR_up = array('f', [0.])
     ptr_lep_RedBkgindex = array('i', [0, 0, 0, 0])
     ptr_mass4l = array('f', [0.])
     ptr_mass4l_vtxFSR_BS = array('f', [0.])
@@ -452,18 +471,25 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         print("Cloning TTree.")
         new_tree = tree.CloneTree(0)  # Clone 0 events.
 
-        # Modify existing values of branches.
-        new_tree.SetBranchAddress("mass4l", ptr_mass4l)
-        new_tree.SetBranchAddress("mass4l_vtxFSR_BS", ptr_mass4l_vtxFSR_BS)
-        # new_tree.SetBranchAddress("eventWeight", ptr_eventWeight)
+        if recalc_mass4l_vals:
+            # Modify existing values of branches.
+            new_tree.SetBranchAddress("mass4l", ptr_mass4l)
+            new_tree.SetBranchAddress("mass4l_vtxFSR_BS", ptr_mass4l_vtxFSR_BS)
 
         # Make new corresponding branches in the TTree.
         new_tree.Branch("is2P2F", ptr_is2P2F, "is2P2F/I")
         new_tree.Branch("is3P1F", ptr_is3P1F, "is3P1F/I")
+        new_tree.Branch("isData", ptr_isData, "isData/I")
         new_tree.Branch("isMCzz", ptr_isMCzz, "isMCzz/I")
+        new_tree.Branch("fr2_down", ptr_fr2_down, "fr2_down/F")
         new_tree.Branch("fr2", ptr_fr2, "fr2/F")
+        new_tree.Branch("fr2_up", ptr_fr2_up, "fr2_up/F")
+        new_tree.Branch("fr3_down", ptr_fr3_down, "fr3_down/F")
         new_tree.Branch("fr3", ptr_fr3, "fr3/F")
+        new_tree.Branch("fr3_up", ptr_fr3_up, "fr3_up/F")
+        new_tree.Branch("eventWeightFR_down", ptr_eventWeightFR_down, "eventWeightFR_down/F")
         new_tree.Branch("eventWeightFR", ptr_eventWeightFR, "eventWeightFR/F")
+        new_tree.Branch("eventWeightFR_up", ptr_eventWeightFR_up, "eventWeightFR_up/F")
         # Record the indices of the leptons in passing quartet.
         new_tree.Branch(
             "lep_RedBkgindex",
@@ -482,6 +508,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     #=== Event Loop ===#
     ####################
     isMCzz = 1 if name in "ZZ" else 0
+    isData = 1 if name in "Data" else 0
     for evt_num in range(start_at_evt, n_tot):
         if evt_num == break_at_evt:
             break
@@ -510,18 +537,19 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         n_loose_leps = get_n_loose_myleps(mylep_ls)
 
         # Require exactly 2 or 3 leptons passing tight selection.
-        if (n_tight_leps < 2) or (n_tight_leps > 3):
-            evt_info_d["n_evts_not2or3tightleps"] += 1
-            if explain_skipevent:
-                msg = (
-                    f"Doesn't contain 2 or 3 tight leps "
-                    f"(contains {n_tight_leps} tight leps)."
-                    )
-                print_skipevent_msg(msg, evt_num, run, lumi, event)
-            if verbose:
-                for lep in mylep_ls:
-                    lep.print_info()
-            continue
+        if allow_ge4tightleps:
+            if (n_tight_leps < 2) or (n_tight_leps > 3):
+                evt_info_d["n_evts_not2or3tightleps"] += 1
+                if explain_skipevent:
+                    msg = (
+                        f"  Doesn't contain 2 or 3 tight leps "
+                        f"(contains {n_tight_leps} tight leps)."
+                        )
+                    print_skipevent_msg(msg, evt_num, run, lumi, event)
+                if verbose:
+                    for lep in mylep_ls:
+                        lep.print_info()
+                continue
         # Guaranteed to have at least 4-leps per event
         # of which exactly 2 or 3 pass tight selection.
         # The remaining leptons must be loose.
@@ -610,61 +638,87 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 # NOTE: Turns out this will never trigger!
                 # This is due to the way that I build the 3P1F quartets.
                 # I always place the 1 failing lepton as the 4th lepton.
-                # Therefore, fr3 will always be != 0.
+                # Therefore, fr3 (the 4th lepton) will always be != 0.
                 assert subevt_passes_sel_3p1f
                 assert mylep1_fromz2.is_loose
-                fr2 = get_fakerate(
+                fr2, fr2_err = get_fakerate_and_error(
                     mylep1_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
                     )
+                fr2_down = calc_fakerate_down(fr2, fr2_err)  # Scale down.
+                fr2_up = calc_fakerate_up(fr2, fr2_err)  # Scale up.
                 fr3 = 0
+                fr3_err = 0
+                fr3_down = 0
+                fr3_up = 0
+                # Use fake rates to calculate new event weight.
+                new_weight_down = (fr2_down / (1-fr2_down)) * evt_weight_calcd
                 new_weight = (fr2 / (1-fr2)) * evt_weight_calcd
+                new_weight_up = (fr2_up / (1-fr2_up)) * evt_weight_calcd
             elif n_fail_code == 3:
                 # Second lep from Z2 failed.
                 assert subevt_passes_sel_3p1f
                 assert mylep2_fromz2.is_loose
                 fr2 = 0
-                fr3 = get_fakerate(
+                fr2_err = 0
+                fr2_down = 0
+                fr2_up = 0
+                fr3, fr3_err = get_fakerate_and_error(
                     mylep2_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
                     )
+                fr3_down = calc_fakerate_down(fr3, fr3_err)  # Scale down.
+                fr3_up = calc_fakerate_up(fr3, fr3_err)  # Scale up.
+                # Use fake rates to calculate new event weight.
+                new_weight_down = (fr3_down / (1-fr3_down)) * evt_weight_calcd
                 new_weight = (fr3 / (1-fr3)) * evt_weight_calcd
+                new_weight_up = (fr3_up / (1-fr3_up)) * evt_weight_calcd
             #=== 2P2F subevent. ===#
             elif n_fail_code == 5:
                 # Both leps failed.
                 assert subevt_passes_sel_2p2f
-                fr2 = get_fakerate(
+                fr2, fr2_err = get_fakerate_and_error(
                     mylep1_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
                     )
-                fr3 = get_fakerate(
+                fr3, fr3_err = get_fakerate_and_error(
                     mylep2_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
                     )
+                fr2_down = calc_fakerate_down(fr2, fr2_err)  # Scale down.
+                fr2_up = calc_fakerate_up(fr2, fr2_err)  # Scale up.
+                fr3_down = calc_fakerate_down(fr3, fr3_err)  # Scale down.
+                fr3_up = calc_fakerate_up(fr3, fr3_err)  # Scale up.
+                # Use fake rates to calculate new event weight.
+                new_weight_down = (fr2_down / (1-fr2_down)) * (fr3_down / (1-fr3_down)) * evt_weight_calcd
                 new_weight = (fr2 / (1-fr2)) * (fr3 / (1-fr3)) * evt_weight_calcd
-
+                new_weight_up = (fr2_up / (1-fr2_up)) * (fr3_up / (1-fr3_up)) * evt_weight_calcd
             if verbose:
                 print(
                     f"Subevent is:\n"
-                    f"2P2F={subevt_passes_sel_2p2f}, "
+                    f"  2P2F={subevt_passes_sel_2p2f}, "
                     f"3P1F={subevt_passes_sel_3p1f}\n"
-                    f"This fail code: {n_fail_code}\n"
-                    f"Z2 lep codes FOR DEBUGGING:\n"
-                    f"===========================\n"
-                    f"0, if neither lep from Z2 failed\n"
-                    f"2, if first lep from Z2 failed\n"
-                    f"3, if second lep from Z2 failed\n"
-                    f"5, if both leps from Z2 failed\n"
-                    f"===========================\n"
-                    f"fr2={fr2:.6f}, fr3={fr3:.6f}\n"
+                    f"  This fail code: {n_fail_code}\n"
+                    f"  Z2 lep codes FOR DEBUGGING:\n"
+                    f"  ===========================\n"
+                    f"  0, if neither lep from Z2 failed\n"
+                    f"  2, if first lep from Z2 failed\n"
+                    f"  3, if second lep from Z2 failed\n"
+                    f"  5, if both leps from Z2 failed\n"
+                    f"  ===========================\n"
+                    f"  fr2_down={fr2_down:.6f}, fr3_down={fr3_down:.6f}\n"
+                    f"       fr2={fr2:.6f},      fr3={fr3:.6f}\n"
+                    f"    fr2_up={fr2_up:.6f},   fr3_up={fr3_up:.6f}\n"
                     # f"eventWeight(from NTuple) = {tree.eventWeight:.6f}\n"
-                    f"        tree.eventWeight = {tree.eventWeight:.6f}\n"
-                    f"        evt_weight_calcd = {evt_weight_calcd:.6f}\n"
-                    f"              new_weight = {new_weight:.6f}"
+                    f"    tree.eventWeight = {tree.eventWeight:.6f}\n"
+                    f"    evt_weight_calcd = {evt_weight_calcd:.6f}\n"
+                    f"          new_weight_down = {new_weight_down:.6f}\n"
+                    f"               new_weight = {new_weight:.6f}\n"
+                    f"            new_weight_up = {new_weight_up:.6f}"
                 )
                 zzcand.print_info()
 
@@ -692,24 +746,31 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 ]
             ptr_is2P2F[0] = subevt_passes_sel_2p2f
             ptr_is3P1F[0] = subevt_passes_sel_3p1f
+            ptr_isData[0] = isData
             ptr_isMCzz[0] = isMCzz
+            ptr_fr2_down[0] = fr2_down
             ptr_fr2[0] = fr2
+            ptr_fr2_up[0] = fr2_up
+            ptr_fr3_down[0] = fr3_down
             ptr_fr3[0] = fr3
+            ptr_fr3_up[0] = fr3_up
+            ptr_eventWeightFR_down[0] = new_weight_down
             ptr_eventWeightFR[0] = new_weight
+            ptr_eventWeightFR_up[0] = new_weight_up
             ptr_lep_RedBkgindex[0] = lep_idcs[0]
             ptr_lep_RedBkgindex[1] = lep_idcs[1]
             ptr_lep_RedBkgindex[2] = lep_idcs[2]
             ptr_lep_RedBkgindex[3] = lep_idcs[3]
 
-            # Getting an IndexError since there is a discrepancy in the length
-            # of vectors, like `lep_pt` and `vtxLepFSR_BS_pt`.
-            # WARNING!!! UNCOMMENT THIS BLOCK TO PROPERLY SAVE UPDATED DATA!
-            # ptr_mass4l[0] = calc_mass4l_from_idcs(
-            #     tree, lep_idcs, kind="lepFSR"
-            #     )
-            # ptr_mass4l_vtxFSR_BS[0] = calc_mass4l_from_idcs(
-            #     tree, lep_idcs, kind="vtxLepFSR_BS"
-            #     )
+            if recalc_mass4l_vals:
+                # Getting an IndexError since there is a discrepancy in the length
+                # of vectors, like `lep_pt` and `vtxLepFSR_BS_pt`.
+                ptr_mass4l[0] = calc_mass4l_from_idcs(
+                    tree, lep_idcs, kind="lepFSR"
+                    )
+                ptr_mass4l_vtxFSR_BS[0] = calc_mass4l_from_idcs(
+                    tree, lep_idcs, kind="vtxLepFSR_BS"
+                    )
             if outfile_root is not None:
                 new_tree.Fill()
         # End loop over subevents.
