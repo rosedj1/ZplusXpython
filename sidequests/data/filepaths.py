@@ -12,7 +12,16 @@ filippo_file = "store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/fullstats/f
 infile_filippo_data_2018_fromlxp = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/data_from_HPG/Data_2018_03Nov.root"
 infile_filippo_data_2018_fromhpg = f"/cmsuf/data/{filippo_file}"
 
-mc_2018_zz_hpg = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/skimmedbranches/ZZTo4L_TuneCP5_13TeV_powheg_pythia8_2018.root"
+mc_2018_basedir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/skimmedbranches/"
+mc_2018_dy_hpg = os.path.join(mc_2018_basedir, "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root")
+mc_2018_tt_hpg = os.path.join(mc_2018_basedir, "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_2018.root")
+mc_2018_wz_hpg = os.path.join(mc_2018_basedir, "WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_realistic_v15_ext1-v2_2018.root")
+mc_2018_zz_hpg = os.path.join(mc_2018_basedir, "ZZTo4L_TuneCP5_13TeV_powheg_pythia8_2018.root")
+
+####################
+#--- Fake Rates ---#
+####################
+fakerates_WZremoved = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
 
 #####################
 #--- CJLST files ---#

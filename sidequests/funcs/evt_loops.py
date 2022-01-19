@@ -4,8 +4,7 @@ from array import array
 # Local imports.
 from Utils_Python.Utils_Physics import perc_diff, calc_mass4l_from_idcs
 from Utils_Python.printing import (
-    print_periodic_evtnum,
-    print_skipevent_msg, pretty_print_dict
+    print_periodic_evtnum, print_skipevent_msg, pretty_print_dict
     )
 from Utils_Python.Utils_Files import save_to_json, check_overwrite
 from classes.zzpair import (
@@ -19,6 +18,8 @@ from classes.mylepton import (
 from sidequests.containers.hists_th1 import (
     h1_data_2p2f_m4l,
     h1_data_3p1f_m4l,
+    h1_data_2p2fpred_m4l,
+    h1_data_3p1fpred_m4l,
     h1_data_n2p2f_combos,
     h1_data_n3p1f_combos,
     h1_zz_2p2f_m4l,
@@ -27,14 +28,18 @@ from sidequests.containers.hists_th1 import (
     h1_zz_n3p1f_combos,
     )
 from sidequests.containers.hists_th2 import h2_n3p1fcombos_n2p2fcombos
+from sidequests.classes.cjlstflag import CjlstFlag
 from scripts.helpers.analyzeZX import (
     get_evt_weight, check_which_Z2_leps_failed,
-    retrieve_FR_hists, get_fakerate_and_error,
+    retrieve_FR_hists, get_fakerate_and_error_mylep,
     calc_fakerate_up, calc_fakerate_down
     )
+from scripts.plotters.plot_redbkg_CRs import make_fs_histdict_from_clone
 from constants.analysis_params import (
     xs_dct_jake, n_sumgenweights_dataset_dct_jake
     )
+from constants.finalstates import dct_finalstates
+
 # from scipy.special import binom
 
 def find_combos_2tight2loose(mylep_ls):
@@ -447,6 +452,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         check_overwrite(outfile_json, overwrite=overwrite)
     
     # Make pointers to store new values. 
+    ptr_finalState = np.array([0], dtype=int)
     ptr_is2P2F = np.array([0], dtype=int)  # Close enough to bool lol.
     ptr_is3P1F = np.array([0], dtype=int)
     ptr_isData = np.array([0], dtype=int)
@@ -462,7 +468,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     ptr_eventWeightFR_up = array('f', [0.])
     ptr_lep_RedBkgindex = array('i', [0, 0, 0, 0])
     ptr_mass4l = array('f', [0.])
-    ptr_mass4l_vtxFSR_BS = array('f', [0.])
+    # ptr_mass4l_vtxFSR_BS = array('f', [0.])
     # ptr_eventWeight = array('f', [0.])
 
     if outfile_root is not None:
@@ -471,12 +477,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         print("Cloning TTree.")
         new_tree = tree.CloneTree(0)  # Clone 0 events.
 
-        if recalc_mass4l_vals:
-            # Modify existing values of branches.
-            new_tree.SetBranchAddress("mass4l", ptr_mass4l)
-            new_tree.SetBranchAddress("mass4l_vtxFSR_BS", ptr_mass4l_vtxFSR_BS)
-
         # Make new corresponding branches in the TTree.
+        new_tree.Branch("finalState", ptr_finalState, "finalState/I")
         new_tree.Branch("is2P2F", ptr_is2P2F, "is2P2F/I")
         new_tree.Branch("is3P1F", ptr_is3P1F, "is3P1F/I")
         new_tree.Branch("isData", ptr_isData, "isData/I")
@@ -496,7 +498,16 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             ptr_lep_RedBkgindex,
             "lep_RedBkgindex[4]/I"
             )
-        # new_tree.Branch("eventWeight", ptr_eventWeight, "eventWeight/F")
+
+        if recalc_mass4l_vals:
+            # Modify existing values of branches.
+            new_tree.SetBranchAddress("mass4l", ptr_mass4l)
+            # new_tree.SetBranchAddress("mass4l_vtxFSR_BS", ptr_mass4l_vtxFSR_BS)
+
+        if not keep_only_mass4lgt0:
+            # Allow new lepton quartets to be stored.
+            # Need to update finalState branch.
+            new_tree.SetBranchAddress("finalState", ptr_finalState)
 
     n_tot = tree.GetEntries()
     print(
@@ -536,8 +547,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         n_tight_leps = get_n_tight_myleps(mylep_ls)
         n_loose_leps = get_n_loose_myleps(mylep_ls)
 
-        # Require exactly 2 or 3 leptons passing tight selection.
         if allow_ge4tightleps:
+            # Require exactly 2 or 3 leptons passing tight selection.
             if (n_tight_leps < 2) or (n_tight_leps > 3):
                 evt_info_d["n_evts_not2or3tightleps"] += 1
                 if explain_skipevent:
@@ -550,8 +561,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                     for lep in mylep_ls:
                         lep.print_info()
                 continue
-        # Guaranteed to have at least 4-leps per event
-        # of which exactly 2 or 3 pass tight selection.
+        # Guaranteed to have at least 4 leptons per event.
+        # At least 2 leptons pass tight selection.
         # The remaining leptons must be loose.
 
         # Make all lepton quartets (i.e. make all subevents).
@@ -597,14 +608,12 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             if len(ls_zzcand) == 0:
                 # No good ZZ candidate found.
                 continue
+
             # Good 2P2F or 3P1F subevent!
             # For now, the function above only picks out a single ZZ cand.
             zzcand = ls_zzcand[0]
             subevt_passes_sel_2p2f = evt_is_2p2plusf
             subevt_passes_sel_3p1f = evt_is_3p1plusf
-            # if zzcand.z_sec.mylep1.is_loose and evt_is_3p1plusf:
-            #     msg = f"  Found 3P1F quartet where Z2 lep1 is loose: {evt_id}"
-            #     raise RuntimeError(msg)
 
             if subevt_passes_sel_2p2f:
                 n_subevts_2p2f += 1
@@ -641,7 +650,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 # Therefore, fr3 (the 4th lepton) will always be != 0.
                 assert subevt_passes_sel_3p1f
                 assert mylep1_fromz2.is_loose
-                fr2, fr2_err = get_fakerate_and_error(
+                fr2, fr2_err = get_fakerate_and_error_mylep(
                     mylep1_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
@@ -664,7 +673,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 fr2_err = 0
                 fr2_down = 0
                 fr2_up = 0
-                fr3, fr3_err = get_fakerate_and_error(
+                fr3, fr3_err = get_fakerate_and_error_mylep(
                     mylep2_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
@@ -679,12 +688,12 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             elif n_fail_code == 5:
                 # Both leps failed.
                 assert subevt_passes_sel_2p2f
-                fr2, fr2_err = get_fakerate_and_error(
+                fr2, fr2_err = get_fakerate_and_error_mylep(
                     mylep1_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
                     )
-                fr3, fr3_err = get_fakerate_and_error(
+                fr3, fr3_err = get_fakerate_and_error_mylep(
                     mylep2_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
                     verbose=verbose
@@ -697,6 +706,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 new_weight_down = (fr2_down / (1-fr2_down)) * (fr3_down / (1-fr3_down)) * evt_weight_calcd
                 new_weight = (fr2 / (1-fr2)) * (fr3 / (1-fr3)) * evt_weight_calcd
                 new_weight_up = (fr2_up / (1-fr2_up)) * (fr3_up / (1-fr3_up)) * evt_weight_calcd
+
             if verbose:
                 print(
                     f"Subevent is:\n"
@@ -744,6 +754,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 mylep1_fromz2.ndx_lepvec,
                 mylep2_fromz2.ndx_lepvec,
                 ]
+            ptr_finalState[0] = dct_finalstates[zzcand.get_finalstate()]
             ptr_is2P2F[0] = subevt_passes_sel_2p2f
             ptr_is3P1F[0] = subevt_passes_sel_3p1f
             ptr_isData[0] = isData
@@ -768,9 +779,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 ptr_mass4l[0] = calc_mass4l_from_idcs(
                     tree, lep_idcs, kind="lepFSR"
                     )
-                ptr_mass4l_vtxFSR_BS[0] = calc_mass4l_from_idcs(
-                    tree, lep_idcs, kind="vtxLepFSR_BS"
-                    )
+                # ptr_mass4l_vtxFSR_BS[0] = calc_mass4l_from_idcs(
+                #     tree, lep_idcs, kind="vtxLepFSR_BS"
+                #     )
             if outfile_root is not None:
                 new_tree.Fill()
         # End loop over subevents.
@@ -839,3 +850,60 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         save_to_json(evt_info_2p2f_3p1f_d, outfile_json, overwrite=overwrite,
                     sort_keys=False)
     
+def analyze_cjlstntuple_osmethod(
+    infile_path,
+    infile_fakerates,
+    start_at=0, break_at=-1,
+    print_every=10000,
+    outfile_root=None,
+    # int_lumi=59830,
+    # fill_hists=True,
+    verbose=False,
+    overwrite=False
+    ):
+    """Run over events in CJLST NTuple and apply OS Method evt sel."""
+    f = TFile.Open(infile_path, "read")
+    t = f.Get("CRZLLTree/candTree")
+
+    h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE = retrieve_FR_hists(
+        infile_fakerates
+        )
+
+    # d_2p2f_fs_hists = make_fs_histdict_from_clone(h1_data_2p2f_m4l)  # Raw Data events.
+    # d_3p1f_fs_hists = make_fs_histdict_from_clone(h1_data_3p1f_m4l)  # Raw Data events.
+    d_2p2fpred_fs_hists = make_fs_histdict_from_clone(h1_data_2p2fpred_m4l)  # Predicted using FRs.
+    d_3p1fpred_fs_hists = make_fs_histdict_from_clone(h1_data_3p1fpred_m4l)  # Predicted using FRs.
+
+    n_tot = t.GetEntries()
+    for evt_num in range(start_at, n_tot):
+        print_periodic_evtnum(evt_num, n_tot, print_every)
+        if evt_num == break_at:
+            break
+        t.GetEntry(evt_num)
+
+        if t.CRflag == CjlstFlag['CR3P1F'].value:
+            islep3_good = bool(np.array(t.LepisID, dtype=bool)[2])
+            islep4_good = bool(np.array(t.LepisID, dtype=bool)[3])
+            assert islep3_good ^ islep4_good  # xor.
+            idx = 2 if islep3_good else 3
+                
+            fakelep_id = list(t.LepisID)[idx]
+            fakelep_pt = list(t.LepPt)[idx]
+            fakelep_eta = list(t.LepEta)[idx]
+            wgt_3p1f = calc_wgt_3p1f_cr(
+                fakelep_id, fakelep_pt, fakelep_eta,
+                h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
+                )
+        elif t.CRflag == CjlstFlag['CR2P2F'].value:
+            wgt = calc_wgt_2p2f_cr(
+                fakelep_id1, fakelep_pt1, fakelep_eta1,
+                fakelep_id2, fakelep_pt2, fakelep_eta2,
+                h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
+            )
+
+
+
+
+
+
+        

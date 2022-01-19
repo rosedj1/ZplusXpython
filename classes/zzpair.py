@@ -144,7 +144,7 @@ class ZZPair:
         """Return a Lorentz vector version of this ZZ candidate."""
         return self.z_fir.get_LorentzVector() + self.z_sec.get_LorentzVector()
 
-    def get_finalstate(self):
+    def get_finalstate(self, as_int=False):
         """Return str of 4-lepton final state:
 
         One of: '4e', '4mu', '2e2mu', '2mu2e'
@@ -453,7 +453,7 @@ def get_ZZcands_from_myleps_OSmethod(
         return empty_ls
     
     # Build all ZZ candidates.
-    if verbose: print("Making all ZZ candidates.")
+    if verbose: print("  Making all ZZ candidates.")
     zz_pair_ls = make_all_zz_pairs(zcand_ls,
                      explain_skipevent=explain_skipevent,
                      smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel)
@@ -463,8 +463,8 @@ def get_ZZcands_from_myleps_OSmethod(
     n_zzcands = len(ls_all_passing_zz)
     if verbose:
         print(
-            f"Made {n_zzpairs} ZZ pairs (pair != candidate).\n"
-            f"Made {n_zzcands} ZZ cands."
+            f"  Made {n_zzpairs} ZZ pairs (pair != candidate).\n"
+            f"  Made {n_zzcands} ZZ cands."
             )
     # Each lepton quartet can provide up to TWO ZZ cands: Z1Z2 and ZaZb.
     # Must decide which ZZ is the best.

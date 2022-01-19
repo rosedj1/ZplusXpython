@@ -20,10 +20,9 @@ void skim_useless_branches() {
    */
   // TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon.root";
   // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon_skimmed.root";
-  // TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/ZZTo4L_TuneCP5_13TeV_powheg_pythia8_2018.root";
-  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf_mass4lgt0_downupscale_uncorrFRs_2018_Data.root";
-  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf_mass4lgt0_downupscale_uncorrFRs_2018_Data_removebranch.root";
-  TString intree = "passedEvents";
+  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
+  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/skimmedbranches/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
+  TString intree = "Ana/passedEvents";
   unsigned int n_evts_to_keep = -1;  // Use -1 for "all".
   bool verbose = true;
 
@@ -50,7 +49,7 @@ void skim_useless_branches() {
     "finalState",
     "passedFullSelection",
     "passedZXCRSelection",
-    // "nZXCRFailedLeptons",
+    "nZXCRFailedLeptons",
     "genWeight",
     "k_ggZZ",
     "k_qqZZ_qcd_M",
@@ -134,20 +133,20 @@ void skim_useless_branches() {
     "D_bkg_kin_vtx_BS",
     "D_bkg",
     "D_VBF",
-    "is2P2F",
-    "is3P1F",
-    "isData",
-    "isMCzz",
-    "fr2_down",
-    "fr2",
-    "fr2_up",
-    "fr3_down",
-    "fr3",
-    "fr3_up",
-    "eventWeightFR_down",
-    "eventWeightFR",
-    "eventWeightFR_up",
-    "lep_RedBkgindex",
+    // "is2P2F",
+    // "is3P1F",
+    // "isData",
+    // "isMCzz",
+    // "fr2_down",
+    // "fr2",
+    // "fr2_up",
+    // "fr3_down",
+    // "fr3",
+    // "fr3_up",
+    // "eventWeightFR_down",
+    // "eventWeightFR",
+    // "eventWeightFR_up",
+    // "lep_RedBkgindex",
   };
 
   TFile *tf = new TFile(infile, "READ");

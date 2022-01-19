@@ -308,11 +308,12 @@ def reconstruct_Zcand_leptons(event):
     lep_2.SetPtEtaPhiM(event.lep_pt[ndx1], event.lep_eta[ndx1], event.lep_phi[ndx1], event.lep_mass[ndx1])
     return (lep_1, lep_2)
 
-def get_fakerate_and_error(
+def get_fakerate_and_error_mylep(
     mylep,
     h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
     eta_bound_elec=1.497, eta_bound_muon=1.2,
-    verbose=False):
+    verbose=False
+    ):
     """Return the fake rate and error based on `mylep` kinematics.
     
     Returns:
@@ -320,12 +321,30 @@ def get_fakerate_and_error(
             fake_rate (float),
             fake_rate_err (float)
             )
-
-    If there is some error, then 
     """
-    lep_id = mylep.lid
-    lep_pt = mylep.lpt
-    lep_eta = mylep.leta
+    fr, fr_err = get_fakerate_and_error(
+        mylep.lid, mylep.lpt, mylep.leta,
+        h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
+        eta_bound_elec=eta_bound_elec,
+        eta_bound_muon=eta_bound_muon,
+        verbose=verbose,
+        )
+    return (fr, fr_err)
+
+def get_fakerate_and_error(
+    lep_id, lep_pt, lep_eta,
+    h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
+    eta_bound_elec=1.497, eta_bound_muon=1.2,
+    verbose=False,
+    ):
+    """Return the fake rate and error based on lep ID, pT, and eta.
+    
+    Returns:
+        tuple(
+            fake_rate (float),
+            fake_rate_err (float)
+            )
+    """
     if verbose:
         print("Retrieving fake rates.")
         # Prep info message.
@@ -425,6 +444,89 @@ def retrieve_FR_hists(infile):
     h_FRmu_end.SetDirectory(0)
     f.Close()
     return (h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end)
+
+def calc_wgt_3p1f_cr(
+    fakelep_id, fakelep_pt, fakelep_eta,
+    h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
+    eta_bound_elec=1.497, eta_bound_muon=1.2,
+    verbose=False,
+    ):
+    """Return the weighted contribution of this fake lepton to 3P1F CR.
+
+    Args:
+        fakelep_id (int): Lepton's PDG ID.
+        fakelep_pt (float): Lepton's transverse momentum (GeV).
+        fakelep_eta (float): Lepton's pseudorapidity.
+
+    NOTE:
+        * Specifically returns the quantity: f / (1-f)
+            where f = fake rate of this lepton.
+            Fake rate depends on lepton's pT and eta.
+        * Only works for DATA right now.
+            To work for ZZ, must account for previous event weight.
+    """
+    fr, fr_err = get_fakerate_and_error(
+        lep_id=fakelep_id,
+        lep_pt=fakelep_pt,
+        lep_eta=fakelep_eta,
+        h1D_FRel_EB=h1D_FRel_EB,
+        h1D_FRel_EE=h1D_FRel_EE,
+        h1D_FRmu_EB=h1D_FRmu_EB,
+        h1D_FRmu_EE=h1D_FRmu_EE,
+        eta_bound_elec=eta_bound_elec,
+        eta_bound_muon=eta_bound_muon,
+        verbose=verbose,
+        )
+    return (fr / (1-fr))
+
+def calc_wgt_2p2f_cr(
+    fakelep_id1, fakelep_pt1, fakelep_eta1,
+    fakelep_id2, fakelep_pt2, fakelep_eta2,
+    h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
+    eta_bound_elec=1.497, eta_bound_muon=1.2,
+    verbose=False,
+    ):
+    """Return the weighted contribution of two fake leptons to 2P2F CR.
+
+    Args:
+        fakelep_id (int): Lepton's PDG ID.
+        fakelep_pt (float): Lepton's transverse momentum (GeV).
+        fakelep_eta (float): Lepton's pseudorapidity.
+
+    NOTE:
+        * Specifically returns the quantity:
+                (f_1 / (1-f_1)) * (f_2 / (1-f_2)), where
+            f_1 = fake rate of lepton 1 and
+            f_2 = fake rate of lepton 2.
+            Fake rates depend on leptons' pT and eta.
+        * Only works for DATA right now.
+            To work for ZZ, must account for previous event weight.
+    """
+    fr1, fr1_err = get_fakerate_and_error(
+        lep_id=fakelep_id1,
+        lep_pt=fakelep_pt1,
+        lep_eta=fakelep_eta1,
+        h1D_FRel_EB=h1D_FRel_EB,
+        h1D_FRel_EE=h1D_FRel_EE,
+        h1D_FRmu_EB=h1D_FRmu_EB,
+        h1D_FRmu_EE=h1D_FRmu_EE,
+        eta_bound_elec=eta_bound_elec,
+        eta_bound_muon=eta_bound_muon,
+        verbose=verbose,
+        )
+    fr2, fr2_err = get_fakerate_and_error(
+        lep_id=fakelep_id2,
+        lep_pt=fakelep_pt2,
+        lep_eta=fakelep_eta2,
+        h1D_FRel_EB=h1D_FRel_EB,
+        h1D_FRel_EE=h1D_FRel_EE,
+        h1D_FRmu_EB=h1D_FRmu_EB,
+        h1D_FRmu_EE=h1D_FRmu_EE,
+        eta_bound_elec=eta_bound_elec,
+        eta_bound_muon=eta_bound_muon,
+        verbose=verbose,
+        )
+    return (fr1 / (1-fr1)) * (fr2 / (1-fr2))
 
 def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi=59700, kinem_ls=['']):
     """Analyze each event in sample `Nickname` and create histograms.

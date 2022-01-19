@@ -49,7 +49,8 @@ from sidequests.funcs.evt_loops import (
     )
 from sidequests.data.filepaths import (
     infile_filippo_data_2018_fromhpg,
-    mc_2018_zz_hpg
+    mc_2018_zz_hpg,
+    fakerates_WZremoved
     )
 from Utils_Python.Utils_Files import check_overwrite
 from Utils_Python.Commands import shell_cmd
@@ -59,8 +60,8 @@ from Utils_Python.Commands import shell_cmd
 #########################
 # Files to analyze.
 d_nicknames_files = {
-    # "Data" : infile_filippo_data_2018_fromhpg,
-    "ZZ" : mc_2018_zz_hpg,
+    "Data" : infile_filippo_data_2018_fromhpg,
+    # "ZZ" : mc_2018_zz_hpg,
 }
 
 int_lumi = 59830
@@ -72,21 +73,20 @@ print_every = 1000000
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 
 explain_skipevent = 0
-keep_only_mass4lgt0 = 1
-recalc_mass4l_vals = 0
+keep_only_mass4lgt0 = 0
+recalc_mass4l_vals = 1
+allow_ge4tightleps = 1
+
 fill_hists = 1
 hadd_files = 0
 
 # infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZLL_CR/Data_2018_NoDuplicates.root"
-# infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
-#=== WARNING!!! Using uncorrected fake rates for testing! ===#
-infile_FR_wz_removed = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_Data.root"
-#=== WARNING!!! Using uncorrected fake rates for testing! ===#
+infile_FR_wz_removed = fakerates_WZremoved
 
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
 # Base names below will have name of data type appended ("Data", "ZZ").
-outfile_base_root = "rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf_mass4lgt0_downupscale_uncorrFRs.root"
-outfile_base_json = "json/cjlstOSmethodevtsel_2p2plusf_3p1plusf_mass4lgt0_downupscale_uncorrFRs_counter.json"
+outfile_base_root = "rootfiles/test/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_test02.root"
+outfile_base_json = "json/test/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_test02_counter.json"
 ##############################################
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -153,7 +153,8 @@ if __name__ == '__main__':
             smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
             overwrite=overwrite,
             keep_only_mass4lgt0=keep_only_mass4lgt0,
-            recalc_mass4l_vals=recalc_mass4l_vals
+            recalc_mass4l_vals=recalc_mass4l_vals,
+            allow_ge4tightleps=allow_ge4tightleps
             )
         
         ls_all_outfiles.append(outfile_root)
