@@ -15,11 +15,16 @@ from classes.mylepton import (
     make_filled_mylep_ls,
     get_n_tight_myleps, get_n_loose_myleps, has_2p2f_leps, has_3p1f_leps
     )
+from sidequests.funcs.cjlst_handling import (
+    is_tight_cjlst_lep, convert_to_bbf_fs, print_evt_info_cjlst
+    )
+from sidequests.containers.dicts_th1 import make_dct_hists_all_crs
 from sidequests.containers.hists_th1 import (
-    h1_data_2p2f_m4l,
     h1_data_3p1f_m4l,
-    h1_data_2p2fpred_m4l,
+    h1_data_2p2f_m4l,
     h1_data_3p1fpred_m4l,
+    h1_data_2p2fpred_m4l,
+    h1_data_2p2fin3p1f_m4l,
     h1_data_n2p2f_combos,
     h1_data_n3p1f_combos,
     h1_zz_2p2f_m4l,
@@ -32,9 +37,9 @@ from sidequests.classes.cjlstflag import CjlstFlag
 from scripts.helpers.analyzeZX import (
     get_evt_weight, check_which_Z2_leps_failed,
     retrieve_FR_hists, get_fakerate_and_error_mylep,
-    calc_fakerate_up, calc_fakerate_down
+    calc_fakerate_up, calc_fakerate_down,
+    calc_wgt_2p2f_cr, calc_wgt_3p1f_cr
     )
-from scripts.plotters.plot_redbkg_CRs import make_fs_histdict_from_clone
 from constants.analysis_params import (
     xs_dct_jake, n_sumgenweights_dataset_dct_jake
     )
@@ -592,8 +597,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         else:
             raise ValueError(err_msg)
      
-        # The event has EITHER 2 tight leps OR 3 tight leps, and loose leps.
-        # Now analyze each lepton quartet (subevent).
+        # Analyze each lepton quartet (subevent).
         n_subevts_2p2f = 0
         n_subevts_3p1f = 0
         for fourlep_tup in fourlep_combos:
@@ -737,7 +741,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                     evt_info_d["n_quartets_skip_mass4l_le0"] += 1
                     continue
 
-                # TESTING:
                 # Make sure mass4l vars in TTree come from same leps
                 # as the leps that built the ZZ candidate I selected.
                 lep_Hindex_ls = list(tree.lep_Hindex)
@@ -850,29 +853,24 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         save_to_json(evt_info_2p2f_3p1f_d, outfile_json, overwrite=overwrite,
                     sort_keys=False)
     
-def analyze_cjlstntuple_osmethod(
-    infile_path,
+def fillhists_osmethod_cjlstntuple(
+    t,
     infile_fakerates,
     start_at=0, break_at=-1,
     print_every=10000,
-    outfile_root=None,
-    # int_lumi=59830,
-    # fill_hists=True,
-    verbose=False,
-    overwrite=False
     ):
-    """Run over events in CJLST NTuple and apply OS Method evt sel."""
-    f = TFile.Open(infile_path, "read")
-    t = f.Get("CRZLLTree/candTree")
+    """Select OS Method events in CJLST NTuple and fill hists."""
+    d_2p2f_fs_hists, d_3p1f_fs_hists, d_2p2fpred_fs_hists, d_3p1fpred_fs_hists, d_2p2fin3p1f_fs_hists = make_dct_hists_all_crs(
+        h1_data_2p2f_m4l,
+        h1_data_3p1f_m4l,
+        h1_data_2p2fpred_m4l,
+        h1_data_3p1fpred_m4l,
+        h1_data_2p2fin3p1f_m4l
+        )
 
     h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE = retrieve_FR_hists(
         infile_fakerates
         )
-
-    # d_2p2f_fs_hists = make_fs_histdict_from_clone(h1_data_2p2f_m4l)  # Raw Data events.
-    # d_3p1f_fs_hists = make_fs_histdict_from_clone(h1_data_3p1f_m4l)  # Raw Data events.
-    d_2p2fpred_fs_hists = make_fs_histdict_from_clone(h1_data_2p2fpred_m4l)  # Predicted using FRs.
-    d_3p1fpred_fs_hists = make_fs_histdict_from_clone(h1_data_3p1fpred_m4l)  # Predicted using FRs.
 
     n_tot = t.GetEntries()
     for evt_num in range(start_at, n_tot):
@@ -881,29 +879,166 @@ def analyze_cjlstntuple_osmethod(
             break
         t.GetEntry(evt_num)
 
-        if t.CRflag == CjlstFlag['CR3P1F'].value:
-            islep3_good = bool(np.array(t.LepisID, dtype=bool)[2])
-            islep4_good = bool(np.array(t.LepisID, dtype=bool)[3])
-            assert islep3_good ^ islep4_good  # xor.
-            idx = 2 if islep3_good else 3
-                
-            fakelep_id = list(t.LepisID)[idx]
-            fakelep_pt = list(t.LepPt)[idx]
-            fakelep_eta = list(t.LepEta)[idx]
-            wgt_3p1f = calc_wgt_3p1f_cr(
+        is_3p1f = (t.CRflag == CjlstFlag['CR3P1F'].value)
+        is_2p2f = (t.CRflag == CjlstFlag['CR2P2F'].value)
+        # Only want 2P2F or 3P1F events.
+        if not (is_3p1f or is_2p2f):
+            continue
+        # Determine final state.
+        fs = convert_to_bbf_fs(t.Z1Flav, t.Z2Flav)
+
+        # Get info on which leptons are fakes.
+        ls_isfakelep = []
+        for idx in range(4):
+            lep_pdgID = t.LepLepId[idx]
+            lep_is_tightID = bool(t.LepisID[idx])
+            lep_iso = t.LepCombRelIsoPF[idx]
+            is_tightlep = is_tight_cjlst_lep(lep_pdgID, lep_is_tightID, lep_iso)
+            ls_isfakelep.append(not is_tightlep)
+
+        m4l = t.ZZMass
+
+        # Lepton numbering: 0, 1, 2, 3
+        if is_3p1f:
+            # Make sure only 1 of the leptons is a fake.
+            assert (ls_isfakelep[2] ^ ls_isfakelep[3])  # xor.
+            assert sum(ls_isfakelep) == 1
+            # Get index of fake lep.
+            idx_of_fake = ls_isfakelep.index(True)
+            fakelep_id = t.LepLepId[idx_of_fake]
+            fakelep_pt = t.LepPt[idx_of_fake]  # No FSR.
+            fakelep_eta = t.LepEta[idx_of_fake]  # No FSR.
+
+            wgt_fr = calc_wgt_3p1f_cr(
                 fakelep_id, fakelep_pt, fakelep_eta,
                 h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
                 )
-        elif t.CRflag == CjlstFlag['CR2P2F'].value:
-            wgt = calc_wgt_2p2f_cr(
+            d_3p1f_fs_hists[fs].Fill(m4l, 1)
+            d_3p1fpred_fs_hists[fs].Fill(m4l, wgt_fr)
+            # Inclusive.
+            h1_data_3p1f_m4l.Fill(m4l, 1)
+            h1_data_3p1fpred_m4l.Fill(m4l, wgt_fr)
+        elif is_2p2f:
+            # Make sure only 1 of the leptons is a fake.
+            assert ls_isfakelep[2] and ls_isfakelep[3]
+            # try:
+            # except AssertionError:
+            #     print(f"list of fake leps: {ls_isfakelep}")
+            #     print_evt_info_cjlst(t)
+            #     import sys
+            #     sys.exit()
+            assert sum(ls_isfakelep) == 2
+            fakelep_id1, fakelep_id2 = t.LepLepId[2:]
+            fakelep_pt1, fakelep_pt2 = t.LepPt[2:]  # No FSR.
+            fakelep_eta1, fakelep_eta2 = t.LepEta[2:]  # No FSR.
+
+            wgt_fr = calc_wgt_2p2f_cr(
                 fakelep_id1, fakelep_pt1, fakelep_eta1,
                 fakelep_id2, fakelep_pt2, fakelep_eta2,
                 h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
+                in_3P1F=False,
             )
+            d_2p2f_fs_hists[fs].Fill(m4l, 1)
+            d_2p2fpred_fs_hists[fs].Fill(m4l, wgt_fr)
+            # Inclusive.
+            h1_data_2p2f_m4l.Fill(m4l, 1)
+            h1_data_2p2fpred_m4l.Fill(m4l, wgt_fr)
 
+            # Evaluate the contribution of 2P2F in the 3P1F CR.
+            wgt_2p2f_in_3p1f = calc_wgt_2p2f_cr(
+                fakelep_id1, fakelep_pt1, fakelep_eta1,
+                fakelep_id2, fakelep_pt2, fakelep_eta2,
+                h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
+                in_3P1F=True,
+            )
+            d_2p2fin3p1f_fs_hists[fs].Fill(m4l, wgt_2p2f_in_3p1f)
+            h1_data_2p2fin3p1f_m4l.Fill(m4l, wgt_2p2f_in_3p1f)
+    # End loop over events.
+    return (
+        h1_data_2p2f_m4l,
+        h1_data_3p1f_m4l,
+        h1_data_2p2fpred_m4l,
+        h1_data_3p1fpred_m4l,
+        h1_data_2p2fin3p1f_m4l,
+        d_2p2f_fs_hists,
+        d_3p1f_fs_hists,
+        d_2p2fpred_fs_hists,
+        d_3p1fpred_fs_hists,
+        d_2p2fin3p1f_fs_hists,
+        )
 
+def fillhists_osmethod_bbfntuple(
+    t,
+    infile_fakerates,
+    start_at=0, break_at=-1,
+    print_every=10000,
+    ):
+    """Fill histograms and dicts of hists with OS Method info.
 
+    Args:
+        infile_path (str):
+        infile_fakerates (str): File path to fake rates in TH1.
+        start_at (int, optional): Starting event. Defaults to 0.
+        break_at (int, optional): Break before processing this event. Defaults to -1.
+        print_every (int, optional): Print processing output per this many events. Defaults to 10000.
 
+    Raises:
+        ValueError: [description]
+    """
+    d_2p2f_fs_hists, d_3p1f_fs_hists, d_2p2fpred_fs_hists, d_3p1fpred_fs_hists, d_2p2fin3p1f_fs_hists = make_dct_hists_all_crs(
+        h1_data_2p2f_m4l,
+        h1_data_3p1f_m4l,
+        h1_data_2p2fpred_m4l,
+        h1_data_3p1fpred_m4l,
+        h1_data_2p2fin3p1f_m4l
+        )
 
+    n_tot = t.GetEntries()
+    for ct in range(n_tot):
 
-        
+        # Loop control.
+        t.GetEntry(ct)
+        if ct == break_at:
+            break
+        print_periodic_evtnum(ct, n_tot, print_every=print_every)
+
+        if t.isMCzz:
+            continue
+        # Only play with Data for now.
+        m4l = t.mass4l
+        fs = t.finalState
+        wgt_fr = t.eventWeightFR
+
+        if t.is3P1F and not t.isMCzz:
+            d_3p1f_fs_hists[fs].Fill(m4l, 1)
+            d_3p1fpred_fs_hists[fs].Fill(m4l, wgt_fr)
+            # Inclusive.
+            h1_data_3p1f_m4l.Fill(m4l, 1)
+            h1_data_3p1fpred_m4l.Fill(m4l, wgt_fr)
+
+        elif t.is2P2F and not t.isMCzz:
+            d_2p2f_fs_hists[fs].Fill(m4l, 1)
+            d_2p2fpred_fs_hists[fs].Fill(m4l, wgt_fr)
+            # Inclusive.
+            h1_data_2p2f_m4l.Fill(m4l, 1)
+            h1_data_2p2fpred_m4l.Fill(m4l, wgt_fr)
+
+            # Evaluate the contribution of 2P2F in the 3P1F CR.
+            wgt_2p2f_in_3p1f = (t.fr2 / (1 - t.fr2)) + (t.fr3 / (1 - t.fr3))
+            d_2p2fin3p1f_fs_hists[fs].Fill(m4l, wgt_2p2f_in_3p1f)
+            h1_data_2p2fin3p1f_m4l.Fill(m4l, wgt_2p2f_in_3p1f)
+        else:
+            raise ValueError(f"Event was neither 3P1F nor 2P2F.")
+    # End loop over events.
+    return (
+        h1_data_2p2f_m4l,
+        h1_data_3p1f_m4l,
+        h1_data_2p2fpred_m4l,
+        h1_data_3p1fpred_m4l,
+        h1_data_2p2fin3p1f_m4l,
+        d_2p2f_fs_hists,
+        d_3p1f_fs_hists,
+        d_2p2fpred_fs_hists,
+        d_3p1fpred_fs_hists,
+        d_2p2fin3p1f_fs_hists,
+        )

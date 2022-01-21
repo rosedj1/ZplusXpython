@@ -3,9 +3,10 @@ from collections import Counter
 from pprint import pprint
 
 from sidequests.funcs.evt_comparison import (
-    get_runlumievent_ls_tup, get_list_of_tuples)
+    get_runlumievent_ls_tup, get_list_of_tuples
+    )
 
-from Utils_Python.Utils_Files import check_overwrite
+from Utils_Python.Utils_Files import check_overwrite, open_json
 
 class FileComparer:
 
@@ -159,7 +160,8 @@ class FileRunLumiEvent:
         txt=None,
         ls_str_evtid=None,
         ls_tup_evtid=None,
-        set_tup_evtid=None
+        set_tup_evtid=None,
+        jsonpath_and_cr=('', ''),
         ):
         """Load a list of event IDs from some source of event IDs.
         
@@ -168,15 +170,36 @@ class FileRunLumiEvent:
                 Text file with event IDs as strings.
             ls_str_evtid (list of str):
                 List contains event IDs as strings.
-            
+            jsonpath_and_cr (tup):
+                Element 0 is the path (str) to json file.
+                Element 1 is the control region (str) to select. Options:
+                    '2p2f' or '3p1f'
+
+                The json file itself is a dict, of course.
+                Keys of json are event ID strings, like:
+                    '315259 : 139 : 90465649'
+                Values are subdicts:
+                    {
+                        'num_combos_2p2f': 0,
+                        'num_combos_3p1f': 1
+                        }
         """
         # Make sure only 1 source of events was given.
-        assert sum(x is not None for x in (
-                txt, ls_str_evtid, ls_tup_evtid, set_tup_evtid)
+        assert sum(
+                x is not None for x in (
+                    txt, ls_str_evtid, ls_tup_evtid, set_tup_evtid,
+                    )
                 ) == 1
         self.txt = txt
+
+        # First priority: store `self.ls_tup_evtid`.
         if ls_tup_evtid is not None:
             self.ls_tup_evtid = ls_tup_evtid
+        jsonpath = jsonpath_and_cr[0]
+        cr = jsonpath_and_cr[1].lower()
+        elif len(jsonpath) > 0:
+            assert cr in ('2p2f', '3p1f')
+            self.ls_tup_evtid = self.convert_dict_to_ls_tup(json_path, cr)
         else:
             self.ls_tup_evtid = self.get_ls_tup_evtid(
                 txt,
@@ -184,6 +207,27 @@ class FileRunLumiEvent:
                 set_tup_evtid
                 )
         
+    def convert_dict_to_ls_tup(self, json_path, cr):
+        """Return a list of 3-tuples representing event IDs.
+
+        Args:
+            json_path (str): Path to json file (dict is inside).
+            cr (str) : Control region whose event IDs to select. Options:
+                '2p2f' or '3p1f'
+        """
+        dct = open_json(json_path)
+
+        ls_tup_evtid
+        for evtid, subdct in dct.items():
+            for cr_combo_str, ct in subdct.items():
+                if cr in cr_combo_str:
+                    # Here's the trick! If there are 2 combos,
+                    # we will double the list!
+                    ls_strs = [cr_combo_str] * ct
+                    ls_tup = get_list_of_tuples(ls_strs)
+                    ls_tup_evtid.extend(ls_tup)
+        return ls_tup_evtid
+
     def get_ls_tup_evtid(self, txt, ls_str_evtid, set_tup_evtid):
         """Return a list of tuples of (Run, Lumi, Event).
 

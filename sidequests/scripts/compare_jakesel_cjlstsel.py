@@ -1,8 +1,9 @@
 """Compares event selections between BBF, CJLST, and "Jake" analyzers.
 # ============================================================================
-# Created: 2021-12-02
 # Creator: Jake Rosenzweig
 # Comment: Useful for doing event synchronization.
+# Created: 2021-12-02
+# Updated: 2022-01-20
 # ============================================================================
 """
 import sys
@@ -24,7 +25,7 @@ from Utils_Python.printing import print_header_message
 verbose = 1
 explain_skipevent = 0
 overwrite = 0
-print_n_common_evts = 0
+print_n_common_evts = 1
 smartcut_ZapassesZ1sel = 0
 
 use_analyzer_cjlst = 1
@@ -53,7 +54,6 @@ if __name__ == '__main__':
     check_overwrite(outlog_cjlst, outlog_bbf, outlog_jake,
         overwrite=overwrite)
     assert not (save_bbf_pkl and open_bbf_pkl), "Open or save pkl. Not both."
-    request_single_evt = (user_evtid is not None)
     if scan_all_evts == 0:
         if use_analyzer_cjlst:
             assert evt_start_cjlst is not None
@@ -73,7 +73,6 @@ if __name__ == '__main__':
     #--- Grab all Elisa's unique 3P1F events. ---#
     elisa_evts_3p1f_unique = frle_elisa_3p1f.analyze_evtids(frle_filippo_3p1f, event_type="unique")
     elisa_evts_2p2f_unique = frle_elisa_2p2f.analyze_evtids(frle_filippo_2p2f, event_type="unique")
-    # with open("", "w") as f:
 
     #--- Count number of common events. ---#
     if print_n_common_evts:
@@ -91,7 +90,7 @@ if __name__ == '__main__':
     tree_jake = tree_bbf.Clone()
     print("Cloned BBF tree for Jake analysis.")
 
-    # Made hash table of BBF event IDs to see if CJLST is even inside.
+    # Make hash table of BBF event IDs to see if CJLST is even inside.
     if save_bbf_pkl:
         print(f"Making look-up table of all BBF events.")
         bbf_evtid_set = {(evt.Run, evt.LumiSect, evt.Event,) for evt in tree_bbf}

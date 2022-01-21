@@ -3,6 +3,7 @@ import ROOT
 
 from sidequests.data.filepaths import infile_matteo_data2018_fromhpg
 from sidequests.classes.cjlstflag import CjlstFlag
+from sidequests.funcs.cjlst_handling import convert_to_bbf_fs
 from Utils_Python.printing import print_periodic_evtnum
 from Utils_Python.printing import pretty_print_dict
 
@@ -12,33 +13,6 @@ print_every = 10000
 
 m4l_min = 105
 m4l_max = 140
-
-def convert_to_bbf_fs(Z1Flav, Z2Flav):
-    """Return the finalState in BBF FW based on CJLST Z flavors.
-    
-    1 : 4mu
-    2 : 4e
-    3 : 2e2mu
-    4 : 2mu2e
-    """
-    Z1Flav = -1 * abs(Z1Flav)
-    Z2Flav = -1 * abs(Z2Flav)
-    if (Z1Flav == -169) and (Z2Flav == -169):
-        # 4mu.
-        return 1
-    elif (Z1Flav == -169) and (Z2Flav == -121):
-        # 2mu2e.
-        return 4
-    elif (Z1Flav == -121) and (Z2Flav == -169):
-        # 2e2mu.
-        return 3
-    elif (Z1Flav == -121) and (Z2Flav == -121):
-        # 4e.
-        return 2
-    else:
-        raise ValueError(
-            f"Flavors unknown: Z1Flav={Z1Flav}, Z2Flav={Z2Flav}"
-            )
 
 if __name__ == '__main__':
     f = ROOT.TFile.Open(infile_matteo_data2018_fromhpg, "read")

@@ -25,7 +25,7 @@ def write_tree_info_to_txt(infile, outtxt,
             keep_evt = False
             if keep_all:
                 keep_evt = True
-            elif keep_2P2F and evt.getis2P2F:
+            elif keep_2P2F and evt.is2P2F:
                 keep_evt = True
             elif keep_3P1F and evt.is3P1F:
                 keep_evt = True
@@ -117,52 +117,6 @@ def print_evt_info_bbf(evt):
                 # Branch doesn't exist.
                 pass
     print()
-
-def print_evt_info_cjlst(tree):
-    """A goofy way to print branch info for `evt` in TTree.
-    
-    TODO:
-    - [ ] Print only up to 6 decimals for all floats.
-    """
-    # d_branch = {
-    #     "LepPt" : "list",
-    #     "LepEta" : "list",
-    #     "LepLepId" : "list",
-    #     "LepisID" : "array",
-    #     "LepCombRelIsoPF" : "list",
-    #     "CRflag" : "list",
-    #     "Z1Mass" : "list",
-    #     "Z2Mass" : "list",
-    #     "ZZMass" : "list",
-    # }
-    # for branch, express_as in d_branch.items():
-    #     if express_as == "":
-    #         try:
-    #             print(f"{branch}: {getattr(evt, branch)}")
-    #         except AttributeError:
-    #             # Branch doesn't exist.
-    #             pass
-    #     elif express_as == "list":
-    #         try:
-    #             print(f"{branch}: {list(getattr(evt, branch))}")
-    #         except AttributeError:
-    #             # Branch doesn't exist.
-    #             pass
-    print_header_message("Analyzer: CJLST")
-
-    print(
-        f"tree.LepPt: {list(tree.LepPt)}\n"
-        f"tree.fsrPt: {list(tree.fsrPt)}\n"
-        f"tree.LepEta: {list(tree.LepEta)}\n"
-        f"tree.LepLepId: {list(tree.LepLepId)}\n"
-        f"tree.LepisLoose: {list(np.array(tree.LepisLoose, dtype=bool))}\n"
-        f"tree.LepisID (tight lep): {list(np.array(tree.LepisID, dtype=bool))}\n"
-        f"tree.LepCombRelIsoPF: {list(tree.LepCombRelIsoPF)}\n"
-        f"tree.CRflag: {tree.CRflag} -> {CjlstFlag(tree.CRflag).name}\n"
-        f"tree.Z1Mass: {tree.Z1Mass}\n"
-        f"tree.Z2Mass: {tree.Z2Mass}\n"
-        f"tree.ZZMass: {tree.ZZMass}\n"
-        )
 
 def find_entries_using_runlumievent(
     tree, run, lumi, event,

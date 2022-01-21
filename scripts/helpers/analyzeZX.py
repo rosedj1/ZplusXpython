@@ -321,9 +321,10 @@ def get_fakerate_and_error_mylep(
             fake_rate (float),
             fake_rate_err (float)
             )
+    NOTE: Get fake rates based on lep pT and eta WITHOUT reco!
     """
     fr, fr_err = get_fakerate_and_error(
-        mylep.lid, mylep.lpt, mylep.leta,
+        mylep.lid, mylep.lpt_NoFSR, mylep.leta_NoFSR,
         h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
         eta_bound_elec=eta_bound_elec,
         eta_bound_muon=eta_bound_muon,
@@ -344,13 +345,16 @@ def get_fakerate_and_error(
             fake_rate (float),
             fake_rate_err (float)
             )
+    
+    NOTE: Get fake rates based on lep pT and eta WITHOUT FSR!
     """
     if verbose:
         print("Retrieving fake rates.")
         # Prep info message.
         info = (
             f"  PART in REG region:\n"
-            f"    pt={lep_pt:.6f}, eta={lep_eta:.6f} SIGN BOUND gives"
+            f"    pt_NoFSR={lep_pt:.6f}, "
+            f"eta_NoFSR={lep_eta:.6f} SIGN BOUND gives"
             f" fakerate=FR +- ERR"
         )
     # Electrons.
@@ -485,6 +489,7 @@ def calc_wgt_2p2f_cr(
     h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
     eta_bound_elec=1.497, eta_bound_muon=1.2,
     verbose=False,
+    in_3P1F=False,
     ):
     """Return the weighted contribution of two fake leptons to 2P2F CR.
 
@@ -494,13 +499,20 @@ def calc_wgt_2p2f_cr(
         fakelep_eta (float): Lepton's pseudorapidity.
 
     NOTE:
-        * Specifically returns the quantity:
-                (f_1 / (1-f_1)) * (f_2 / (1-f_2)), where
-            f_1 = fake rate of lepton 1 and
-            f_2 = fake rate of lepton 2.
-            Fake rates depend on leptons' pT and eta.
+        Depending on the in_3P1F flag, this function returns different values:
+        If in_3P1F=True:
+            Returns the total predicted 2P2F weight:
+                (f_1 / (1-f_1)) * (f_2 / (1-f_2)),
+                where
+                f_1 = fake rate of lepton 1 and
+                f_2 = fake rate of lepton 2.
+                Fake rates depend on leptons' pT and eta.
+        If in_3P1F=False:
+            Returns the pred contribution TO the 3P1F region:
+            (f_1 / (1-f_1)) + (f_2 / (1-f_2))
+        FIXME:
         * Only works for DATA right now.
-            To work for ZZ, must account for previous event weight.
+            To work for ZZ or other MC, must account for event weight.
     """
     fr1, fr1_err = get_fakerate_and_error(
         lep_id=fakelep_id1,
@@ -526,7 +538,10 @@ def calc_wgt_2p2f_cr(
         eta_bound_muon=eta_bound_muon,
         verbose=verbose,
         )
-    return (fr1 / (1-fr1)) * (fr2 / (1-fr2))
+    if in_3P1F:
+        return (fr1 / (1-fr1)) + (fr2 / (1-fr2))
+    else:
+        return (fr1 / (1-fr1)) * (fr2 / (1-fr2))
 
 def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi=59700, kinem_ls=['']):
     """Analyze each event in sample `Nickname` and create histograms.

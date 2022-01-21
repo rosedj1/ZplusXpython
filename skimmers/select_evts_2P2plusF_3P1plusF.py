@@ -2,7 +2,7 @@
 ==============================================================================
 Author: Jake Rosenzweig
 Created: 2021-11-30
-Updated: 2022-01-12
+Updated: 2022-01-20
 Notes:
     This code selects 2P2+F and 3P1+F reducible background events.
     It considers events with >4 leptons and properly handles all possible
@@ -80,13 +80,12 @@ allow_ge4tightleps = 1
 fill_hists = 1
 hadd_files = 0
 
-# infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZLL_CR/Data_2018_NoDuplicates.root"
 infile_FR_wz_removed = fakerates_WZremoved
 
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
 # Base names below will have name of data type appended ("Data", "ZZ").
-outfile_base_root = "rootfiles/test/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_test02.root"
-outfile_base_json = "json/test/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_test02_counter.json"
+outfile_base_root = "rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs.root"
+outfile_base_json = "json/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs_counter.json"
 ##############################################
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
