@@ -60,8 +60,8 @@ from Utils_Python.Commands import shell_cmd
 #########################
 # Files to analyze.
 d_nicknames_files = {
-    "Data" : infile_filippo_data_2018_fromhpg,
-    # "ZZ" : mc_2018_zz_hpg,
+    # "Data" : infile_filippo_data_2018_fromhpg,
+    "ZZ" : mc_2018_zz_hpg,
 }
 
 int_lumi = 59830

@@ -18,7 +18,10 @@ from classes.mylepton import (
 from sidequests.funcs.cjlst_handling import (
     is_tight_cjlst_lep, convert_to_bbf_fs, print_evt_info_cjlst
     )
-from sidequests.containers.dicts_th1 import make_dct_hists_all_crs
+from sidequests.containers.dicts_th1 import (
+    make_dct_hists_all_crs,
+    make_dct_hists_all_crs_data
+    )
 from sidequests.containers.hists_th1 import (
     h1_data_3p1f_m4l,
     h1_data_2p2f_m4l,
@@ -29,6 +32,8 @@ from sidequests.containers.hists_th1 import (
     h1_data_n3p1f_combos,
     h1_zz_2p2f_m4l,
     h1_zz_3p1f_m4l,
+    h1_zz_2p2fpred_m4l,
+    h1_zz_3p1fpred_m4l,
     h1_zz_n2p2f_combos,
     h1_zz_n3p1f_combos,
     )
@@ -44,6 +49,7 @@ from constants.analysis_params import (
     xs_dct_jake, n_sumgenweights_dataset_dct_jake
     )
 from constants.finalstates import dct_finalstates
+
 
 # from scipy.special import binom
 
@@ -856,10 +862,26 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
 def fillhists_osmethod_cjlstntuple(
     t,
     infile_fakerates,
+    m4l_window=(70, 870),
     start_at=0, break_at=-1,
     print_every=10000,
+    use_first_quartet=False
     ):
-    """Select OS Method events in CJLST NTuple and fill hists."""
+    """Select OS Method events in CJLST NTuple and fill hists.
+    
+    Args:
+        m4l_window (2-tup, optional):
+            (m4l_min, m4l_max) in GeV.
+            Default is (70, 870).
+        use_first_quartet (bool, optional):
+            Doesn't do anything but needed since sister function
+            (fillhists_osmethod_bbfntuple) has it has an argument.
+            Default is False.
+
+    TODO:
+        [ ] Combine this function and the sister bbf function.
+            Factor out the code before and after event loop.
+    """
     d_2p2f_fs_hists, d_3p1f_fs_hists, d_2p2fpred_fs_hists, d_3p1fpred_fs_hists, d_2p2fin3p1f_fs_hists = make_dct_hists_all_crs(
         h1_data_2p2f_m4l,
         h1_data_3p1f_m4l,
@@ -884,6 +906,13 @@ def fillhists_osmethod_cjlstntuple(
         # Only want 2P2F or 3P1F events.
         if not (is_3p1f or is_2p2f):
             continue
+
+        m4l = t.ZZMass
+        m4l_min = m4l_window[0]
+        m4l_max = m4l_window[1]
+        if (m4l < m4l_min) or (m4l > m4l_max):
+            continue
+
         # Determine final state.
         fs = convert_to_bbf_fs(t.Z1Flav, t.Z2Flav)
 
@@ -895,8 +924,6 @@ def fillhists_osmethod_cjlstntuple(
             lep_iso = t.LepCombRelIsoPF[idx]
             is_tightlep = is_tight_cjlst_lep(lep_pdgID, lep_is_tightID, lep_iso)
             ls_isfakelep.append(not is_tightlep)
-
-        m4l = t.ZZMass
 
         # Lepton numbering: 0, 1, 2, 3
         if is_3p1f:
@@ -919,14 +946,8 @@ def fillhists_osmethod_cjlstntuple(
             h1_data_3p1f_m4l.Fill(m4l, 1)
             h1_data_3p1fpred_m4l.Fill(m4l, wgt_fr)
         elif is_2p2f:
-            # Make sure only 1 of the leptons is a fake.
+            # Make sure that leps 2 and 3 are fake.
             assert ls_isfakelep[2] and ls_isfakelep[3]
-            # try:
-            # except AssertionError:
-            #     print(f"list of fake leps: {ls_isfakelep}")
-            #     print_evt_info_cjlst(t)
-            #     import sys
-            #     sys.exit()
             assert sum(ls_isfakelep) == 2
             fakelep_id1, fakelep_id2 = t.LepLepId[2:]
             fakelep_pt1, fakelep_pt2 = t.LepPt[2:]  # No FSR.
@@ -954,6 +975,7 @@ def fillhists_osmethod_cjlstntuple(
             d_2p2fin3p1f_fs_hists[fs].Fill(m4l, wgt_2p2f_in_3p1f)
             h1_data_2p2fin3p1f_m4l.Fill(m4l, wgt_2p2f_in_3p1f)
     # End loop over events.
+    print(f"Mass window: {m4l_min} < ZZMass < {m4l_max}")
     return (
         h1_data_2p2f_m4l,
         h1_data_3p1f_m4l,
@@ -969,29 +991,50 @@ def fillhists_osmethod_cjlstntuple(
 
 def fillhists_osmethod_bbfntuple(
     t,
+    name,
     infile_fakerates,
+    m4l_window=(70, 870),
     start_at=0, break_at=-1,
     print_every=10000,
+    use_first_quartet=False
     ):
     """Fill histograms and dicts of hists with OS Method info.
 
     Args:
+        name (str):
+            Nickname of sample.
+            Options: "Data", "ZZ", "DY", "TT", "WZ".
         infile_path (str):
         infile_fakerates (str): File path to fake rates in TH1.
         start_at (int, optional): Starting event. Defaults to 0.
         break_at (int, optional): Break before processing this event. Defaults to -1.
         print_every (int, optional): Print processing output per this many events. Defaults to 10000.
+        use_first_quartet (bool, optional): 
+            There can be multiple lepton quartets per event.
+            CJLST typically keeps only one quartet per event.
+            Set this bool to True to keep only the first quartet per event.
+            Default is False.
 
     Raises:
         ValueError: [description]
     """
-    d_2p2f_fs_hists, d_3p1f_fs_hists, d_2p2fpred_fs_hists, d_3p1fpred_fs_hists, d_2p2fin3p1f_fs_hists = make_dct_hists_all_crs(
+    d_data_2p2f_fs_hists, d_data_3p1f_fs_hists, d_data_2p2fpred_fs_hists, d_data_3p1fpred_fs_hists, d_data_2p2fin3p1f_fs_hists = make_dct_hists_all_crs_data(
         h1_data_2p2f_m4l,
         h1_data_3p1f_m4l,
         h1_data_2p2fpred_m4l,
         h1_data_3p1fpred_m4l,
         h1_data_2p2fin3p1f_m4l
         )
+
+    d_zz_2p2f_fs_hists, d_zz_3p1f_fs_hists, d_zz_2p2fpred_fs_hists, d_zz_3p1fpred_fs_hists = make_dct_hists_all_crs(
+        h1_zz_2p2f_m4l,
+        h1_zz_3p1f_m4l,
+        h1_zz_2p2fpred_m4l,
+        h1_zz_3p1fpred_m4l,
+        )
+
+    if use_first_quartet:
+        set_evtid_proc = set()
 
     n_tot = t.GetEntries()
     for ct in range(n_tot):
@@ -1002,43 +1045,75 @@ def fillhists_osmethod_bbfntuple(
             break
         print_periodic_evtnum(ct, n_tot, print_every=print_every)
 
-        if t.isMCzz:
-            continue
-        # Only play with Data for now.
         m4l = t.mass4l
+        m4l_min = m4l_window[0]
+        m4l_max = m4l_window[1]
+        if (m4l < m4l_min) or (m4l > m4l_max):
+            continue
+
+        evtid = f"{t.Run} : {t.LumiSect} : {t.Event}"
+        if use_first_quartet:
+            # Skip event if we have already seen this evtID.
+            if evtid in set_evtid_proc:
+                continue
+        # New event so add it to set.
+        set_evtid_proc.add(evtid)
+
         fs = t.finalState
         wgt_fr = t.eventWeightFR
 
-        if t.is3P1F and not t.isMCzz:
-            d_3p1f_fs_hists[fs].Fill(m4l, 1)
-            d_3p1fpred_fs_hists[fs].Fill(m4l, wgt_fr)
-            # Inclusive.
-            h1_data_3p1f_m4l.Fill(m4l, 1)
-            h1_data_3p1fpred_m4l.Fill(m4l, wgt_fr)
+        if t.is3P1F:
+            if t.isData:
+                d_data_3p1f_fs_hists[fs].Fill(m4l, 1)
+                d_data_3p1fpred_fs_hists[fs].Fill(m4l, wgt_fr)
+                # Inclusive.
+                h1_data_3p1f_m4l.Fill(m4l, 1)
+                h1_data_3p1fpred_m4l.Fill(m4l, wgt_fr)
+            elif t.isMCzz:
+                # n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[name])
+                # evt_weight_calcd = get_evt_weight(
+                #     xs_dct=xs_dct_jake, Nickname=name, lumi=int_lumi, event=tree,
+                #     n_dataset_tot=n_dataset_tot, orig_evt_weight=t.eventWeight
+                #     )
 
-        elif t.is2P2F and not t.isMCzz:
-            d_2p2f_fs_hists[fs].Fill(m4l, 1)
-            d_2p2fpred_fs_hists[fs].Fill(m4l, wgt_fr)
-            # Inclusive.
-            h1_data_2p2f_m4l.Fill(m4l, 1)
-            h1_data_2p2fpred_m4l.Fill(m4l, wgt_fr)
+                # By final state.
+                d_zz_3p1fpred_fs_hists[fs].Fill(m4l, wgt_fr)
+                # Inclusive.
+                h1_zz_3p1fpred_m4l.Fill(m4l, wgt_fr)
 
-            # Evaluate the contribution of 2P2F in the 3P1F CR.
-            wgt_2p2f_in_3p1f = (t.fr2 / (1 - t.fr2)) + (t.fr3 / (1 - t.fr3))
-            d_2p2fin3p1f_fs_hists[fs].Fill(m4l, wgt_2p2f_in_3p1f)
-            h1_data_2p2fin3p1f_m4l.Fill(m4l, wgt_2p2f_in_3p1f)
+        elif t.is2P2F:
+            if t.isData:
+                d_data_2p2f_fs_hists[fs].Fill(m4l, 1)
+                d_data_2p2fpred_fs_hists[fs].Fill(m4l, wgt_fr)
+                # Inclusive.
+                h1_data_2p2f_m4l.Fill(m4l, 1)
+                h1_data_2p2fpred_m4l.Fill(m4l, wgt_fr)
+
+                # Contribution of 2P2F in the 3P1F CR.
+                wgt_2p2f_in_3p1f = (t.fr2 / (1 - t.fr2)) + (t.fr3 / (1 - t.fr3))
+                d_data_2p2fin3p1f_fs_hists[fs].Fill(m4l, wgt_2p2f_in_3p1f)
+                h1_data_2p2fin3p1f_m4l.Fill(m4l, wgt_2p2f_in_3p1f)
+            elif t.isMCzz:
+                d_zz_2p2fpred_fs_hists[fs].Fill(m4l, wgt_fr)
+                # Inclusive.
+                h1_zz_2p2fpred_m4l.Fill(m4l, wgt_fr)
         else:
             raise ValueError(f"Event was neither 3P1F nor 2P2F.")
     # End loop over events.
+    print(f"Mass window: {m4l_min} < mass4l < {m4l_max}")
     return (
         h1_data_2p2f_m4l,
         h1_data_3p1f_m4l,
         h1_data_2p2fpred_m4l,
         h1_data_3p1fpred_m4l,
         h1_data_2p2fin3p1f_m4l,
-        d_2p2f_fs_hists,
-        d_3p1f_fs_hists,
-        d_2p2fpred_fs_hists,
-        d_3p1fpred_fs_hists,
-        d_2p2fin3p1f_fs_hists,
+        d_data_2p2f_fs_hists,
+        d_data_3p1f_fs_hists,
+        d_data_2p2fpred_fs_hists,
+        d_data_3p1fpred_fs_hists,
+        d_data_2p2fin3p1f_fs_hists,
+        h1_zz_2p2fpred_m4l,
+        h1_zz_3p1fpred_m4l,
+        d_zz_3p1fpred_fs_hists,
+        d_zz_2p2fpred_fs_hists,
         )
