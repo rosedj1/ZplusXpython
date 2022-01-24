@@ -83,6 +83,9 @@ n_sumgenweights_dataset_dct_vukasin = {
     'Data'       : 1,  # Can be anything.
 }
 
+n_sumgenweights_dataset_dct_filippo = n_sumgenweights_dataset_dct_jake.copy()
+n_sumgenweights_dataset_dct_filippo['ZZ'] = 86951072.0
+
 #--- OLD 2018 DATA (not fully processed) ---#
 n_totevts_dataset_dct_OLD = {
     # 'Nickname' : n_evts in MC file. Obtained from `crab report -d <dir>`.

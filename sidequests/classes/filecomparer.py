@@ -195,11 +195,11 @@ class FileRunLumiEvent:
         # First priority: store `self.ls_tup_evtid`.
         if ls_tup_evtid is not None:
             self.ls_tup_evtid = ls_tup_evtid
-        jsonpath = jsonpath_and_cr[0]
-        cr = jsonpath_and_cr[1].lower()
-        elif len(jsonpath) > 0:
-            assert cr in ('2p2f', '3p1f')
-            self.ls_tup_evtid = self.convert_dict_to_ls_tup(json_path, cr)
+        # elif len(jsonpath) > 0:
+        #     jsonpath = jsonpath_and_cr[0]
+        #     cr = jsonpath_and_cr[1].lower()
+        #     assert cr in ('2p2f', '3p1f')
+        #     self.ls_tup_evtid = self.convert_dict_to_ls_tup(json_path, cr)
         else:
             self.ls_tup_evtid = self.get_ls_tup_evtid(
                 txt,
@@ -209,6 +209,8 @@ class FileRunLumiEvent:
         
     def convert_dict_to_ls_tup(self, json_path, cr):
         """Return a list of 3-tuples representing event IDs.
+
+        FIXME: Needs to be tested.
 
         Args:
             json_path (str): Path to json file (dict is inside).

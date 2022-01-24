@@ -2,7 +2,7 @@
 ==============================================================================
 Author: Jake Rosenzweig
 Created: 2021-11-30
-Updated: 2022-01-20
+Updated: 2022-01-24
 Notes:
     This code selects 2P2+F and 3P1+F reducible background events.
     It considers events with >4 leptons and properly handles all possible
@@ -49,11 +49,17 @@ from sidequests.funcs.evt_loops import (
     )
 from sidequests.data.filepaths import (
     infile_filippo_data_2018_fromhpg,
+    infile_filippo_zz_2018_fromhpg,
     mc_2018_zz_hpg,
     fakerates_WZremoved
     )
 from Utils_Python.Utils_Files import check_overwrite
 from Utils_Python.Commands import shell_cmd
+from constants.analysis_params import (
+    n_sumgenweights_dataset_dct_jake,
+    n_sumgenweights_dataset_dct_filippo,
+    xs_dct_jake
+    )
 
 #########################
 #--- User Parameters ---#
@@ -61,13 +67,17 @@ from Utils_Python.Commands import shell_cmd
 # Files to analyze.
 d_nicknames_files = {
     # "Data" : infile_filippo_data_2018_fromhpg,
-    "ZZ" : mc_2018_zz_hpg,
+    # "ZZ" : mc_2018_zz_hpg,
+    "ZZ" : infile_filippo_zz_2018_fromhpg,
 }
+
+genwgts_dct = n_sumgenweights_dataset_dct_filippo
+xs_dct = xs_dct_jake
 
 int_lumi = 59830
 year = 2018
 
-start_at_evt = 0
+start_at_evt = 10000000
 break_at_evt = -1  # Use -1 to run over all events.
 print_every = 1000000
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
@@ -75,7 +85,7 @@ smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 explain_skipevent = 0
 keep_only_mass4lgt0 = 0
 recalc_mass4l_vals = 1
-allow_ge4tightleps = 1
+allow_ge4tightleps = 0
 
 fill_hists = 1
 hadd_files = 0
@@ -83,9 +93,8 @@ hadd_files = 0
 infile_FR_wz_removed = fakerates_WZremoved
 
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
-# Base names below will have name of data type appended ("Data", "ZZ").
-outfile_base_root = "rootfiles/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs.root"
-outfile_base_json = "json/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs_counter.json"
+# Produces a root file with TTree and hists, and a json file with evtID info.
+outfile_basename = "cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs_filippoZZ"
 ##############################################
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -103,6 +112,10 @@ if __name__ == '__main__':
     # name = args.name
     overwrite = args.overwrite
     verbose = args.verbose
+
+    # Base names below will have name of data type appended ("Data", "ZZ").
+    outfile_base_root = f"rootfiles/{outfile_basename}.root"
+    outfile_base_json = f"json/{outfile_basename}_counter.json"
 
     if hadd_files:
         # Store the hadded file at the same place as input files.
@@ -139,6 +152,8 @@ if __name__ == '__main__':
         evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             tree,
             infile_fakerates=infile_FR_wz_removed,
+            genwgts_dct=genwgts_dct,
+            xs_dct=xs_dct,
             outfile_root=outfile_root,
             outfile_json=outfile_json,
             name=name,

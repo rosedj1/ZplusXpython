@@ -50,7 +50,6 @@ from constants.analysis_params import (
     )
 from constants.finalstates import dct_finalstates
 
-
 # from scipy.special import binom
 
 def find_combos_2tight2loose(mylep_ls):
@@ -59,7 +58,7 @@ def find_combos_2tight2loose(mylep_ls):
     Example:
         Suppose you have 5 leptons:
             mu-    mu+    e-     e+     e2+
-            pass   pass   fail   fail   fail
+            pass   pass   fail   fail   fail (tight selection)
         There are 2 different 4l combinations that MAY give a 2P2F event:
             2P2Fa = mu-  mu+  e-   e+
             2P2Fb = mu-  mu+  e-   e2+
@@ -104,6 +103,56 @@ def find_combos_3tight1loose(mylep_ls):
             fourlep_tup = triplet + tuple([lep])
             myleps_combos_3tight1loose.append(fourlep_tup)
     return myleps_combos_3tight1loose
+
+def find_combos_4tight(mylep_ls):
+    """Return a list of all possible 4-tuples of 4tight MyLeptons.
+    
+    FIXME: Finish function.
+
+    Args:
+        mylep_ls (list): Contains MyLepton objects.
+    """
+    assert len(mylep_ls) >= 4
+    myleps_combos_4loose = []
+    raise RuntimeError("Finish this section of code")
+    # Make all possible triplets of tight leptons:
+    triple_tight_leps = find_all_triplets_leps_tight(mylep_ls)
+    # Join each triplet with each loose lepton:
+    for triplet in triple_tight_leps:
+        for lep in mylep_ls:
+            if not lep.is_loose:
+                continue
+            fourlep_tup = triplet + tuple([lep])
+            myleps_combos_4loose.append(fourlep_tup)
+    return myleps_combos_4loose
+
+def find_all_quartets_leps_tight(mylep_ls, debug=False):
+    """Return a list of all possible 4-tup of tight MyLeptons.
+    
+    FIXME: Finish function.
+    """
+    raise RuntimeError("Finish this section of code")
+    tight_leps = [tlep for tlep in mylep_ls if tlep.is_tight]
+    triple_ls_tight = []
+    for ndx1, mylep1 in enumerate(tight_leps[:-2]):
+        if debug: print(f"For loop 1: ndx1={ndx1}")
+        start_i2 = ndx1 + 1
+        for ndx2, mylep2 in enumerate(tight_leps[start_i2:-1], start_i2):
+            if debug: print(f"For loop 2: ndx2={ndx2}")
+            start_i3 = ndx2 + 1
+            for ndx3, mylep3 in enumerate(tight_leps[start_i3:], start_i3):
+                if debug: print(f"For loop 3: ndx3={ndx3}")
+                lep_tup = (mylep1, mylep2, mylep3)
+                if debug: print(f"Found good triple: ({ndx1, ndx2, ndx3})")
+                triple_ls_tight.append(lep_tup)
+    n_tight_leps = len(tight_leps)
+    try:
+        assert len(triple_ls_tight) == int(binom(n_tight_leps, 3))
+    except ModuleNotFoundError:
+        pass
+    except NameError:
+        pass
+    return triple_ls_tight
 
 def find_all_triplets_leps_tight(mylep_ls, debug=False):
     """Return a list of all possible 3-tup of tight MyLeptons."""
@@ -170,7 +219,10 @@ def make_evt_info_d():
         # "n_evts_eq4_leps",
         # "n_evts_ne4_leps",
         "n_evts_lt4_leps",
-        "n_evts_not2or3tightleps",
+        "n_evts_lt2tightleps",
+        "n_evts_gt3tightleps",
+        # "n_evts_not2or3tightleps",
+        "n_zerogoodZZcands",
         "n_evts_nosubevtspassingsel",
         "n_evts_fail_zzcand",
         # "n_evts_ge4_leps",
@@ -371,6 +423,8 @@ def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None
 def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     tree,
     infile_fakerates,
+    genwgts_dct,
+    xs_dct,
     outfile_root=None, outfile_json=None,
     name="", int_lumi=59830,
     start_at_evt=0, break_at_evt=-1,
@@ -558,22 +612,25 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         n_tight_leps = get_n_tight_myleps(mylep_ls)
         n_loose_leps = get_n_loose_myleps(mylep_ls)
 
-        if allow_ge4tightleps:
-            # Require exactly 2 or 3 leptons passing tight selection.
-            if (n_tight_leps < 2) or (n_tight_leps > 3):
-                evt_info_d["n_evts_not2or3tightleps"] += 1
+        if n_tight_leps < 2:
+            evt_info_d["n_evts_lt2tightleps"] += 1
+            if explain_skipevent:
+                msg = f"  Contains {n_tight_leps} (< 2) tight leps."
+                print_skipevent_msg(msg, evt_num, run, lumi, event)
+            continue
+
+        if not allow_ge4tightleps:
+            if n_tight_leps > 3:
+                evt_info_d["n_evts_gt3tightleps"] += 1
                 if explain_skipevent:
-                    msg = (
-                        f"  Doesn't contain 2 or 3 tight leps "
-                        f"(contains {n_tight_leps} tight leps)."
-                        )
+                    msg = f"  Contains {n_tight_leps} (> 3) tight leps."
                     print_skipevent_msg(msg, evt_num, run, lumi, event)
                 if verbose:
                     for lep in mylep_ls:
                         lep.print_info()
                 continue
         # Guaranteed to have at least 4 leptons per event.
-        # At least 2 leptons pass tight selection.
+        # At least 2 tight leptons.
         # The remaining leptons must be loose.
 
         # Make all lepton quartets (i.e. make all subevents).
@@ -602,7 +659,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             fourlep_combos = find_combos_3tight1loose(mylep_ls)
         else:
             raise ValueError(err_msg)
-     
+        print(f"Event {evt_num}")
+        break
         # Analyze each lepton quartet (subevent).
         n_subevts_2p2f = 0
         n_subevts_3p1f = 0
@@ -616,6 +674,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                     run=run, lumi=lumi, event=event, entry=evt_num
                     )
             if len(ls_zzcand) == 0:
+                evt_info_d["n_zerogoodZZcands"] += 1
                 # No good ZZ candidate found.
                 continue
 
@@ -638,9 +697,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             # then the SAME EVENT will be stored multiple times in the TTree.
             # The difference for each entry (subevent) will be the weight.
 
-            n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[name])
+            n_dataset_tot = float(genwgts_dct[name])
             evt_weight_calcd = get_evt_weight(
-                xs_dct=xs_dct_jake, Nickname=name, lumi=int_lumi, event=tree,
+                xs_dct=xs_dct, Nickname=name, lumi=int_lumi, event=tree,
                 n_dataset_tot=n_dataset_tot, orig_evt_weight=tree.eventWeight
                 )
             

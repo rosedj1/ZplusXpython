@@ -6,11 +6,12 @@ main_dir = "/blue/avery/rosedj1/ZplusXpython/sidequests/findmissingevents_compar
 infile_jake_tree = "/blue/avery/rosedj1/ZplusXpython/data/ZLL_CR_FRapplied/new_data2018/cr_ZLL.root"
 # ^Contains all the passedZXCRSelection events as in:
 # /fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates.root
-filippo_file = "store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/fullstats/filippo/rootfiles/Data_2018_03Nov.root"
 # infile_filippo_data_2018_fromlxp = f"root://gator.rc.ufl.edu//{filippo_file}"    # Doesn't work.
 # infile_filippo_data_2018_fromlxp = f"root://cmsxrootd.fnal.gov//{filippo_file}"  # Doesn't work.
 infile_filippo_data_2018_fromlxp = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/data_from_HPG/Data_2018_03Nov.root"
-infile_filippo_data_2018_fromhpg = f"/cmsuf/data/{filippo_file}"
+infile_filippo_data_2018_fromhpg = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/fullstats/filippo/Data_2018_03Nov.root"
+infile_filippo_zz_2018_fromlxp = "/eos/user/f/ferrico/www/Jake/ZZTo4L_M125_2018_skimmed.root"
+infile_filippo_zz_2018_fromhpg = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/filippo/skimmedbranches/ZZTo4L_M125_2018_skimmed.root"
 
 mc_2018_basedir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/skimmedbranches/"
 mc_2018_dy_hpg = os.path.join(mc_2018_basedir, "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root")

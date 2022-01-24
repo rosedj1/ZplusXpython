@@ -20,9 +20,9 @@ void skim_useless_branches() {
    */
   // TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon.root";
   // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon_skimmed.root";
-  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
-  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/skimmedbranches/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
-  TString intree = "Ana/passedEvents";
+  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/filippo/ZZTo4L_M125_2018_skimmed.root";
+  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/filippo/skimmedbranches/ZZTo4L_M125_2018_skimmed.root";
+  TString intree = "passedEvents";
   unsigned int n_evts_to_keep = -1;  // Use -1 for "all".
   bool verbose = true;
 
