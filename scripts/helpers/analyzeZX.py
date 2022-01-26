@@ -133,7 +133,8 @@ def get_evt_weight(
     lumi,
     event,
     n_dataset_tot,
-    orig_evt_weight):
+    orig_evt_weight
+    ):
     """
     Return the event weight of Data (1) or MC based on L_int collected.
 

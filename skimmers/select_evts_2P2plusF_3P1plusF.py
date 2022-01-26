@@ -92,7 +92,8 @@ hadd_files = 0
 
 infile_FR_wz_removed = fakerates_WZremoved
 
-outdir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/"
+outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/"
+outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
 outfile_basename = "cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs_filippoZZ"
 ##############################################
@@ -114,8 +115,8 @@ if __name__ == '__main__':
     verbose = args.verbose
 
     # Base names below will have name of data type appended ("Data", "ZZ").
-    outfile_base_root = f"rootfiles/{outfile_basename}.root"
-    outfile_base_json = f"json/{outfile_basename}_counter.json"
+    outfile_base_root = f"{outfile_basename}.root"
+    outfile_base_json = f"{outfile_basename}_counter.json"
 
     if hadd_files:
         # Store the hadded file at the same place as input files.
@@ -124,7 +125,7 @@ if __name__ == '__main__':
                         ".root",
                         f"_{year}_{all_names}.root"
                         )
-        outfile_hadd = os.path.join(outdir, new_filename)
+        outfile_hadd = os.path.join(outdir_root, new_filename)
         check_overwrite(outfile_hadd, overwrite=overwrite)
 
     ls_all_outfiles = []
@@ -133,8 +134,8 @@ if __name__ == '__main__':
         ending = f"{year}_{name}"
         new_base_json = outfile_base_json.replace(".json", f"_{ending}.json")
         new_base_root = outfile_base_root.replace(".root", f"_{ending}.root")
-        outfile_json = os.path.join(outdir, new_base_json)
-        outfile_root = os.path.join(outdir, new_base_root)
+        outfile_root = os.path.join(outdir_root, new_base_root)
+        outfile_json = os.path.join(outdir_json, new_base_json)
         
         # If the given root file path is an absolute path, make sure dir exists.
         if "/" in outfile_root:

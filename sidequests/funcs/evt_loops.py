@@ -112,9 +112,9 @@ def find_combos_4tight(mylep_ls):
     Args:
         mylep_ls (list): Contains MyLepton objects.
     """
+    raise RuntimeError("Finish this function!")
     assert len(mylep_ls) >= 4
     myleps_combos_4loose = []
-    raise RuntimeError("Finish this section of code")
     # Make all possible triplets of tight leptons:
     triple_tight_leps = find_all_triplets_leps_tight(mylep_ls)
     # Join each triplet with each loose lepton:
@@ -131,7 +131,7 @@ def find_all_quartets_leps_tight(mylep_ls, debug=False):
     
     FIXME: Finish function.
     """
-    raise RuntimeError("Finish this section of code")
+    raise RuntimeError("Finish this function!")
     tight_leps = [tlep for tlep in mylep_ls if tlep.is_tight]
     triple_ls_tight = []
     for ndx1, mylep1 in enumerate(tight_leps[:-2]):

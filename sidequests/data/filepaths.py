@@ -13,7 +13,7 @@ infile_filippo_data_2018_fromhpg = "/cmsuf/data/store/user/t2/users/rosedj1/Samp
 infile_filippo_zz_2018_fromlxp = "/eos/user/f/ferrico/www/Jake/ZZTo4L_M125_2018_skimmed.root"
 infile_filippo_zz_2018_fromhpg = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/filippo/skimmedbranches/ZZTo4L_M125_2018_skimmed.root"
 
-mc_2018_basedir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/fullstats/skimmedbranches/"
+mc_2018_basedir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/skimmedbranches/"
 mc_2018_dy_hpg = os.path.join(mc_2018_basedir, "DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root")
 mc_2018_tt_hpg = os.path.join(mc_2018_basedir, "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_2018.root")
 mc_2018_wz_hpg = os.path.join(mc_2018_basedir, "WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_realistic_v15_ext1-v2_2018.root")

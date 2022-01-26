@@ -1,13 +1,134 @@
 import os
 from collections import Counter
 from pprint import pprint
-
-from sidequests.funcs.evt_comparison import (
-    get_runlumievent_ls_tup, get_list_of_tuples
-    )
-
+from ROOT import TFile
+# Package imports.
 from Utils_Python.Utils_Files import check_overwrite, open_json
+from Utils_Python.printing import print_periodic_evtnum
 
+def get_list_of_tuples(evt_ls):
+    """
+    Return a list of 3-tuples from a list of strings `evt_ls`:
+
+    [
+        (Run1, LumiSect1, Event1),
+        (Run2, LumiSect2, Event2),
+        ...
+    ]
+
+    NOTE: Elements of tuples are int.
+    """
+    new_evt_ls = []
+    for line in evt_ls:
+        # Grab the first three entries: Run, Lumi, Event.
+        tup = tuple([int(num) for num in line.split(":")[:3]])
+        new_evt_ls.extend([tup])
+    return new_evt_ls
+
+def get_runlumievent_ls_tup(txt):
+    """Return a list of tuples of (Run, Lumi, Event) from a txt.
+
+    Args:
+        txt (str): Path to txt file that contains Run, Lumi Event like:
+                   'Run : Lumi : Event'
+                   NOTE: Will strip newlines and whitespace from the ends.
+
+    NOTE: Tuple elements are int.
+    """
+    return get_list_of_tuples(get_list_of_lines(txt))
+
+def write_tree_info_to_txt(
+    infile, outtxt,
+    m4l_lim=(70, 1000),
+    keep_2P2F=True, keep_3P1F=True, keep_all=False,
+    fs=5,
+    path_to_tree="passedEvents", print_every=500000
+    ):
+    """Write info from TFile `infile` from TTree 'passedEvents' to `outtxt`.
+
+    Info which gets written:
+    Run : LumiSect : Event
+
+    Args:
+        fs (int): 4-lep final state (branch = finalState).
+            1 = 4mu
+            2 = 4e
+            3 = 2e2mu
+            4 = 2mu2e
+            5 = all
+    """
+    tfile = TFile.Open(infile)
+    tree = tfile.Get(path_to_tree)
+    n_tot = tree.GetEntries()
+    with open(outtxt, "w") as f:
+        f.write("# Run : LumiSect : Event\n")
+        for ct, evt in enumerate(tree):
+            print_periodic_evtnum(ct, n_tot, print_every=print_every)
+            m4l = evt.mass4l
+            m4l_min = m4l_lim[0]
+            m4l_max = m4l_lim[1]
+            if (m4l < m4l_min) or (m4l > m4l_max):
+                continue
+            good_fs = True if fs == evt.finalState or fs == 5 else False
+            if not good_fs:
+                continue
+            keep_evt = False
+            if keep_all:
+                keep_evt = True
+            elif keep_2P2F and evt.is2P2F:
+                keep_evt = True
+            elif keep_3P1F and evt.is3P1F:
+                keep_evt = True
+            if keep_evt:
+                f.write(f"{evt.Run} : {evt.LumiSect} : {evt.Event}\n")
+    print(f"TTree info written to:\n{outtxt}")
+
+def write_lstup_info_to_txt(ls_tup, outtxt, print_every=500000):
+    """Write event ID info from list of tuples `ls_tup` to `outtxt`.
+
+    Example info which gets written:
+    # Run : LumiSect : Event
+    315690 : 467 : 285311430
+    316239 : 157 : 192988698
+    ...
+
+    NOTE: Tuple (really a 3-tuple) elements should be ints.
+    """
+    with open(outtxt, "w") as f:
+        f.write("# Run : LumiSect : Event\n")  
+        for tup in ls_tup:  
+            run, lumi, event = tup 
+            f.write(f"{run} : {lumi} : {event}\n") 
+        print(f"TTree info written to:\n{outtxt}")
+
+def get_list_of_lines(evt_ls_txt):
+    """Return a list of the lines from `evt_ls_txt` with comments removed.
+    
+    The lines are checked to start with a digit to avoid comments (#).
+    Trailing newlines ('\\n') and whitespaces on both ends are stripped.
+    """
+    ls_lines = []
+    with open(evt_ls_txt, "r") as f:
+        for line in f.readlines():
+            clean_line = line.rstrip('\n').rstrip().lstrip()
+            if not clean_line[0].isdigit():
+                continue
+            ls_lines.extend([clean_line])
+    return ls_lines
+        # return [line.rstrip('\n').rstrip() for line in f.readlines() if line[0].isdigit()]
+
+def get_list_of_entries(txt):
+    """Return a list of entries (int) from a txt file."""
+    ls_entries = []
+    with open(txt, "r") as f:
+        lines = f.readlines()
+        for l in lines:
+            if "Index" in l:
+                str_num = l.split(": ")[1]
+                entry = int(str_num.rstrip('\n'))
+                ls_entries.extend([entry])
+    return ls_entries
+    
 class FileComparer:
 
     def __init__(self, txt_file1, txt_file2, control_reg="", verbose=False):
@@ -297,6 +418,9 @@ class FileRunLumiEvent:
         if self.get_num_duplicates() == 0:
             print("No duplicates found.")
         else:
+            raise RuntimeError(
+                f"There is a counting error. Fix and validate this function."
+                )
             # FIXME: There may be a counting error here...
             counter = Counter(self.ls_tup_evtid)
             if "str" in as_type.lower():
