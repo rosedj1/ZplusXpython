@@ -631,7 +631,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 continue
         # Guaranteed to have at least 4 leptons per event.
         # At least 2 tight leptons.
-        # The remaining leptons must be loose.
+        # The remaining leptons should be loose.
 
         # Make all lepton quartets (i.e. make all subevents).
         evt_is_2p2plusf = False
@@ -659,8 +659,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             fourlep_combos = find_combos_3tight1loose(mylep_ls)
         else:
             raise ValueError(err_msg)
-        print(f"Event {evt_num}")
-        break
+        
         # Analyze each lepton quartet (subevent).
         n_subevts_2p2f = 0
         n_subevts_3p1f = 0

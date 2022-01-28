@@ -109,9 +109,12 @@ def find_runlumievent_using_entry(tree, entry, fw="bbf"):
     return tup_evt_id
 
 def analyze_single_evt(
-    tree, run, lumi, event, entry=None, fw="bbf", which="all",
+    tree, run=None, lumi=None, event=None, entry=None,
+    fw="bbf", which="all",
     evt_start=0, evt_end=-1, print_every=10000,
-    infile_FR_wz_removed=None,
+    infile_fakerates=None,
+    genwgts_dct=None,
+    xs_dct=None,
     explain_skipevent=True,
     verbose=True
     ):
@@ -131,9 +134,14 @@ def analyze_single_evt(
             Options: "first", anything else collects all such events.
         evt_start : int
     """
-    if entry is None:
+    know_evtid = all(x is not None for x in (run, lumi, event))
+    know_entry = entry is not None
+    if (not know_entry) and know_evtid:
         # Specific entry (row in TTree) was not specified.
         # Use Run, Lumi, Event to find all, entries.
+        assert all(x is not None for x in (run, lumi, event))
+        if evt_end == -1:
+            evt_end = tree.GetEntries()
         ls_entries = find_entries_using_runlumievent(
                 tree, run, lumi, event,
                 evt_start=evt_start,
@@ -141,12 +149,16 @@ def analyze_single_evt(
                 print_every=print_every,
                 which=which, fw=fw
                 )
-    else:
+    elif know_entry and (not know_evtid):
         # We know the entry, but not the Run, Lumi, Event.
         run, lumi, event = find_runlumievent_using_entry(
             tree=tree, entry=entry, fw=fw
             )
         ls_entries = [entry]
+    elif know_entry and know_evtid:
+        ls_entries = [entry]
+    else:
+        raise ValueError(f"Must specify either `entry` or `run, lumi, event`")
 
     for entry in ls_entries:
         print(
@@ -161,7 +173,9 @@ def analyze_single_evt(
             print_header_message("ANALYZER: Jake")
             evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 tree,
-                infile_FR_wz_removed=infile_FR_wz_removed,
+                infile_fakerates=infile_fakerates,
+                genwgts_dct=genwgts_dct,
+                xs_dct=xs_dct,
                 outfile_root=None, outfile_json=None,
                 name="Data", int_lumi=59830,
                 start_at_evt=entry, break_at_evt=entry+1,
@@ -169,7 +183,9 @@ def analyze_single_evt(
                 explain_skipevent=explain_skipevent,
                 verbose=verbose,
                 print_every=1, smartcut_ZapassesZ1sel=False,
-                overwrite=False, keep_only_mass4lgt0=False
+                overwrite=False, keep_only_mass4lgt0=False,
+                recalc_mass4l_vals=False,
+                allow_ge4tightleps=False,
                 )
             # store_evt = True
         elif fw == "cjlst":

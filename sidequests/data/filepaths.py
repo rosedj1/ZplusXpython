@@ -19,6 +19,8 @@ mc_2018_tt_hpg = os.path.join(mc_2018_basedir, "TTTo2L2Nu_TuneCP5_13TeV-powheg-p
 mc_2018_wz_hpg = os.path.join(mc_2018_basedir, "WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_realistic_v15_ext1-v2_2018.root")
 mc_2018_zz_hpg = os.path.join(mc_2018_basedir, "ZZTo4L_TuneCP5_13TeV_powheg_pythia8_2018.root")
 
+dir_redbkgskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/redbkgskim"
+data_2018_jakeredbkgskim = os.path.join(dir_redbkgskim, "cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs_2018_Data.root")
 ####################
 #--- Fake Rates ---#
 ####################

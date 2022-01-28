@@ -40,7 +40,7 @@ def get_runlumievent_ls_tup(txt):
 def write_tree_info_to_txt(
     infile, outtxt,
     m4l_lim=(70, 1000),
-    keep_2P2F=True, keep_3P1F=True, keep_all=False,
+    keep_2P2F=True, keep_3P1F=True,
     fs=5,
     path_to_tree="passedEvents", print_every=500000
     ):
@@ -73,9 +73,7 @@ def write_tree_info_to_txt(
             if not good_fs:
                 continue
             keep_evt = False
-            if keep_all:
-                keep_evt = True
-            elif keep_2P2F and evt.is2P2F:
+            if keep_2P2F and evt.is2P2F:
                 keep_evt = True
             elif keep_3P1F and evt.is3P1F:
                 keep_evt = True
@@ -128,7 +126,7 @@ def get_list_of_entries(txt):
                 entry = int(str_num.rstrip('\n'))
                 ls_entries.extend([entry])
     return ls_entries
-    
+
 class FileComparer:
 
     def __init__(self, txt_file1, txt_file2, control_reg="", verbose=False):
@@ -441,6 +439,9 @@ class FileRunLumiEvent:
             other (FileRunLumiEvent): Dude whose events will be compared.
             event_type (str): Choose between 'common' or 'unique'.
             print_evts (bool, optional): Default is False.
+
+        NOTE:
+            Duplicates are removed before evtIds are compared.
         """
         this_set = set(self.get_ls_evtids_nodups())
         other_set = set(other.get_ls_evtids_nodups())

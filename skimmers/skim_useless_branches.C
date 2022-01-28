@@ -1,6 +1,9 @@
 /**
  * PURPOSE: Copy a TTree to a new root file, but only keep certain branches.
  * NOTES: User should add/remove branches in vector branches in script.
+ * This code doesn't seem to work with files that are too large.
+ * Probably a problem with memory when opening a very large TTree.
+ * It couldn't skim a 773 GB Drell-Yan MC file.
  * AUTHOR: Jake Rosenzweig, jake.rose@cern.ch
  * CREATED: 2021-11-12
  * UPDATED: 2022-01-22
@@ -20,9 +23,9 @@ void skim_useless_branches() {
    */
   // TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon.root";
   // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon_skimmed.root";
-  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/filippo/ZZTo4L_M125_2018_skimmed.root";
-  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/filippo/skimmedbranches/ZZTo4L_M125_2018_skimmed.root";
-  TString intree = "passedEvents";
+  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
+  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/skimmedbranches/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
+  TString intree = "Ana/passedEvents";
   unsigned int n_evts_to_keep = -1;  // Use -1 for "all".
   bool verbose = true;
 
@@ -133,6 +136,7 @@ void skim_useless_branches() {
     "D_bkg_kin_vtx_BS",
     "D_bkg",
     "D_VBF",
+
     // "is2P2F",
     // "is3P1F",
     // "isData",
@@ -156,7 +160,7 @@ void skim_useless_branches() {
   // cout << "Saving " << n_evts_to_keep << "(" << n_evts_to_keep/tree->GetEntries() << ")" << " entries." << endl;
 
   // Turn off all branches, then manually turn on the ones to keep.
-  tree->SetBranchStatus("*",0);//1);
+  tree->SetBranchStatus("*", 0);
   if (verbose) cout << "Saving branches:" << endl;
   for (auto & branch : branches) {
     if (verbose) cout << "  " << branch << endl;
@@ -164,7 +168,8 @@ void skim_useless_branches() {
   }
 
   TFile *tf_out = new TFile(outfile, "RECREATE");
-  TTree *newtree = tree->CloneTree(n_evts_to_keep);
+  // TTree *newtree = tree->CloneTree(n_evts_to_keep);
+  TTree *newtree = tree->CloneTree(n_evts_to_keep, "fast");
 
   newtree->Write();
   cout << "New TTree saved to file:\n" << outfile << endl;

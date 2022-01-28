@@ -2,7 +2,7 @@
 ==============================================================================
 Author: Jake Rosenzweig
 Created: 2021-11-30
-Updated: 2022-01-24
+Updated: 2022-01-27
 Notes:
     This code selects 2P2+F and 3P1+F reducible background events.
     It considers events with >4 leptons and properly handles all possible
@@ -11,18 +11,17 @@ Notes:
     The input files for this script should be root files produced from the
     BBF HZZ Analyzer.
 
-    In effect this is an updated event selection that bypasses the bool:
-        passedZXCRSelection.
+    In effect this is an updated event selection that bypasses the branches:
+        - passedZXCRSelection
+        - nZXCRFailedLeptons
 
-    User can 
-    
     This code makes a json file which stores the Run:Lumi:Event of all
     events which pass 3P1F or 2P2F event selection. It also creates a TH2
     of per-event 3P1F 4-lep quartets vs. per-event 2P2F 4-lep quartets and
     writes the hist in a root file. You can draw the TH2 with:
         `draw_th2_plots.py`
     
-    User should review parameters located just after the imports.
+    User should review the parameters located just after the imports.
 
     New branches added to TTree:
     - is2P2F        (int)
@@ -31,9 +30,9 @@ Notes:
     - fr2           (float)
     - fr3           (float)
     - eventWeightFR (float)
+        NOTE: 
         For 3P1F: event.eventWeight * (fr / (1-fr))
         For 2P2F: event.eventWeight * (fr2 / (1-fr2)) * (fr3 / (1-fr3))
-        NOTE: 
             Data returns events with old_calculated_weight = 1.
             ZZ has NTuple eventWeight scaled by:
                 k_qqZZ_qcd_M * k_qqZZ_ewk * xs * LUMI_INT / sum_weights
@@ -67,17 +66,18 @@ from constants.analysis_params import (
 # Files to analyze.
 d_nicknames_files = {
     # "Data" : infile_filippo_data_2018_fromhpg,
-    # "ZZ" : mc_2018_zz_hpg,
-    "ZZ" : infile_filippo_zz_2018_fromhpg,
+    "ZZ" : mc_2018_zz_hpg,
+    # "ZZ" : infile_filippo_zz_2018_fromhpg,
 }
 
-genwgts_dct = n_sumgenweights_dataset_dct_filippo
+# genwgts_dct = n_sumgenweights_dataset_dct_filippo
+genwgts_dct = n_sumgenweights_dataset_dct_jake
 xs_dct = xs_dct_jake
 
 int_lumi = 59830
 year = 2018
 
-start_at_evt = 10000000
+start_at_evt = 0
 break_at_evt = -1  # Use -1 to run over all events.
 print_every = 1000000
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
@@ -95,7 +95,7 @@ infile_FR_wz_removed = fakerates_WZremoved
 outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/"
 outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
-outfile_basename = "cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs_filippoZZ"
+outfile_basename = "cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs"
 ##############################################
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
