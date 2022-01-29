@@ -228,12 +228,12 @@ class ZZPair:
         else:
             return ZZPair(zb, za, self.kin_discrim)
 
-    def print_info(self):
+    def print_info(self, name=""):
         """Print info about both Z bosons in this ZZ candidate."""
         header = "@" * 67
         print(
             f"{header}\n"
-            f"Info about ZZ candidate #{self.ndx_in_zzpair_ls}\n"
+            f"Info about ZZ candidate #{self.ndx_in_zzpair_ls}: {name}\n"
             f"{header}\n"
             f"  m(4l): {self.get_m4l():.9f}\n"
             f"  final state: {self.get_finalstate()}\n"

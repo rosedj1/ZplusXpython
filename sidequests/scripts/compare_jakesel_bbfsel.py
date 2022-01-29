@@ -1,7 +1,7 @@
-"""Compare event selections between BBF and "Jake" analyzers.
+"""Compare event selections between BBF and "Jake" analyzers and print info.
 # ============================================================================
 # Created: 2021-12-16
-# Updated: 2022-01-26
+# Updated: 2022-01-28
 # Creator: Jake Rosenzweig
 # Comment: Useful for doing event synchronization.
 # ============================================================================
@@ -16,7 +16,7 @@ from sidequests.classes.filecomparer import (
 from Utils_Python.Utils_Files import (
     open_json, save_to_pkl, open_pkl, check_overwrite
     )
-from Utils_Python.printing import print_periodic_evtnum
+from Utils_Python.printing import print_periodic_evtnum, print_header_message
 from sidequests.data.filepaths import infile_filippo_data_2018_fromhpg
 from sidequests.funcs.evt_comparison import (
     print_evt_info_bbf, analyze_single_evt, find_runlumievent_using_entry
@@ -34,28 +34,30 @@ from constants.analysis_params import (
 
 infile_fakerates = fakerates_WZremoved
 
-analyze_using = "jake"  # Choose between: "jake" or "bbf".
+analyze_using = "bbf"  # Choose between: "jake" or "bbf".
 which = "first"
 start_at = 0
 end_at = -1
 
 # Filippo's unique 3P1F 4mu events.
 # They all have at least 4 tight leptons!
-    # (322492, 778, 1346201480),
-    # (321961, 189, 343183869),
-    # (321909, 32, 57978416),
-    # (321396, 930, 1447135355),
-    # (325022, 162, 228256467),
-    # (317320, 504, 706020777),
-    # (315689, 604, 672709805),
-    # (315713, 819, 996429494),
-    # (316758, 674, 941538912),
-    # (325022, 1263, 1789168728),
-    # (316766, 1907, 2626778761),
-    # (317661, 556, 813675880),
-    # (319449, 364, 498050124),
+ls_tup_unique_fili = [
+    (322492, 778, 1346201480),
+    (321961, 189, 343183869),
+    (321909, 32, 57978416),
+    (321396, 930, 1447135355),
+    (325022, 162, 228256467),
+    (317320, 504, 706020777),
+    (315689, 604, 672709805),
+    (315713, 819, 996429494),
+    (316758, 674, 941538912),
+    (325022, 1263, 1789168728),
+    (316766, 1907, 2626778761),
+    (317661, 556, 813675880),
+    (319449, 364, 498050124),
+    ]
 
-ls_tup_unique = [
+ls_tup_unique_jake = [
     # Jake's unique 3P1F 4mu events.
     (321887, 450, 722204060),
     (315689, 342, 398232246),
@@ -67,6 +69,9 @@ ls_tup_unique = [
     (322348, 827, 1498597313),
     (321434, 39, 65055154)
     ]
+
+# CHOOSE A LIST FROM ABOVE TO USE!
+ls_tup_unique = ls_tup_unique_fili
 
 # Use Jake's analyzer on Filippo's unique events to see why Jake's FW failed.
 f = TFile.Open(infile_filippo_data_2018_fromhpg, "read")
@@ -83,16 +88,19 @@ for evt_num in range(start_at, end_at):
     tup_evtid = find_runlumievent_using_entry(tree, evt_num, fw="bbf")
     if tup_evtid in ls_tup_unique:
         run, lumi, event = tup_evtid
-        analyze_single_evt(
-            tree, run=run, lumi=lumi, event=event, entry=evt_num,
-            fw=analyze_using, which=which,
-            evt_start=0, evt_end=-1, print_every=500000,
-            infile_fakerates=infile_fakerates,
-            genwgts_dct=n_sumgenweights_dataset_dct_jake,
-            xs_dct=xs_dct_jake,
-            explain_skipevent=True,
-            verbose=True
-            )
+        print(run, lumi, event, evt_num)
+        # UNCOMMENT BELOW.
+        # analyze_single_evt(
+        #     tree, run=run, lumi=lumi, event=event, entry=evt_num,
+        #     fw=analyze_using, which=which,
+        #     evt_start=0, evt_end=-1, print_every=500000,
+        #     infile_fakerates=infile_fakerates,
+        #     genwgts_dct=n_sumgenweights_dataset_dct_jake,
+        #     xs_dct=xs_dct_jake,
+        #     explain_skipevent=True,
+        #     verbose=True
+        #     )
+        # UNCOMMENT ABOVE.
     
 # # inpkl_bbf_2p2f  = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/bbf_evtids_2p2f.pkl"
 # # inpkl_bbf_3p1f  = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/bbf_evtids_3p1f.pkl"

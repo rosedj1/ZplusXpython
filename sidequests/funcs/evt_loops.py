@@ -798,7 +798,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                     f"               new_weight = {new_weight:.6f}\n"
                     f"            new_weight_up = {new_weight_up:.6f}"
                 )
-                zzcand.print_info()
+                zzcand.print_info(name="SELECTED")
 
             if keep_only_mass4lgt0:
                 if tree.mass4l <= 0:

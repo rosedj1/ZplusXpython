@@ -1,7 +1,7 @@
 """
 ------------------------------------------------------------------------------
 PURPOSE: Prepares a template and uses the HZZ Analyzer on a single root file
- Make a single root file from specific data events, using Run:LumiSect:Event.
+Make a single root file from specific data events, using Run:LumiSect:Event.
 SYNTAX:  python3 <this_script>.py
 NOTE:    Before running script, do:
             ```
