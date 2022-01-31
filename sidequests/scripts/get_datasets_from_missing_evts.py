@@ -11,25 +11,25 @@ NOTE:
       TODO: Add a try/except block to catch the error.
 AUTHOR:  Jake Rosenzweig
 CREATED: 2021-10-18
-UPDATED: 2021-10-27
+UPDATED: 2022-01-31
 """
 import sys
 from pprint import pprint
 from Utils_Python.Utils_Files import save_to_json, check_overwrite
 from Utils_Python.printing import print_header_message
 from sidequests.data.datasets import dataset_tup_2018
-from sidequests.classes.filemanager import DataSetFinder
+from sidequests.classes.datasetfinder import DataSetFinder
 
-infile_txt_elisa_unique_3p1f       = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_3P1F_listOfEvents_unique.txt"
-infile_txt_elisa_unique_2p2f       = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_2P2F_listOfEvents_unique.txt"
-infile_txt_elisa_commonwithherself = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_2P2F_3P1F_listOfEvents_unique_commontobothCRs.txt"
+# infile_txt_elisa_unique_3p1f       = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_3P1F_listOfEvents_unique.txt"
+infile_txt_elisa_unique_3p1f       = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakehas_butnotfilippo_data2018_3p1f.txt"
+# infile_txt_elisa_unique_2p2f       = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_2P2F_listOfEvents_unique.txt"
+# infile_txt_elisa_commonwithherself = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_2P2F_3P1F_listOfEvents_unique_commontobothCRs.txt"
 
-outfile_json_3p1f = "../data/json/elisa_unique_evts_id_rootfile_3p1f.json"
-outfile_json_2p2f = "../data/json/elisa_unique_evts_id_rootfile_2p2f.json"
-outfile_json_elisa_commonwithherself = "../data/json/elisa_unique_2p2f_3p1f_commontobothCRs_evts_id_rootfile.json"
+outfile_json_3p1f = "../data/json/jakehas_butnotfilippo_data2018_3p1f.json"
+# outfile_json_2p2f = "../data/json/elisa_unique_evts_id_rootfile_2p2f.json"
+# outfile_json_elisa_commonwithherself = "../data/json/elisa_unique_2p2f_3p1f_commontobothCRs_evts_id_rootfile.json"
 
 overwrite = 0
-
 evt_start = 1  # Event 1 is the first event.
 evt_stop = -1  # Includes this last event. Use `-1` for all.
 
@@ -141,7 +141,6 @@ def write2json_evtid2rootfile_dct(infile_txt, outfile_json, dataset_tup, evt_sta
     save_to_json(dct, outfile_json, sort_keys=False, overwrite=True)
 
 if __name__ == "__main__":
-    # write2json_evtid2rootfile_dct(infile_txt=infile_txt_elisa_unique_3p1f, outfile_json=outfile_json_3p1f, dataset_tup=dataset_tup_2018, evt_start=evt_start, evt_stop=evt_stop, overwrite=overwrite)
+    write2json_evtid2rootfile_dct(infile_txt=infile_txt_elisa_unique_3p1f, outfile_json=outfile_json_3p1f, dataset_tup=dataset_tup_2018, evt_start=evt_start, evt_stop=evt_stop, overwrite=overwrite)
     # write2json_evtid2rootfile_dct(infile_txt=infile_txt_elisa_unique_2p2f, outfile_json=outfile_json_2p2f, dataset_tup=dataset_tup_2018, evt_start=evt_start, evt_stop=evt_stop, overwrite=overwrite)
-    
-    write2json_evtid2rootfile_dct(infile_txt=infile_txt_elisa_commonwithherself, outfile_json=outfile_json_elisa_commonwithherself, dataset_tup=dataset_tup_2018, evt_start=evt_start, evt_stop=evt_stop, overwrite=overwrite)
+    # write2json_evtid2rootfile_dct(infile_txt=infile_txt_elisa_commonwithherself, outfile_json=outfile_json_elisa_commonwithherself, dataset_tup=dataset_tup_2018, evt_start=evt_start, evt_stop=evt_stop, overwrite=overwrite)
