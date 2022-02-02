@@ -10,11 +10,11 @@ NOTE:    Before running script, do:
             # In the ZplusXpython dir, do:
             source setup_lxplus.sh  # Or setup_hpg.sh.
             ```
-    - FIXME: If you want to use this file on multiple root files at once, use:
+    - If you want to use this file on multiple root files at once, look into:
       sidequests/scripts/run_HZZAna_singleevent_in_bkg.sh
 AUTHOR:  Jake Rosenzweig
 CREATED: 2021-10-20
-UPDATED: 2022-02-01
+UPDATED: 2022-02-02
 ------------------------------------------------------------------------------
 """
 import os
@@ -28,29 +28,23 @@ from sidequests.scripts.get_datasets_from_missing_evts import make_evtid2rootfil
 from sidequests.data.datasets import dataset_tup_2018
 
 overwrite = 0
-verbose = 1  # BBF Analyzer will print verbosely into '.out' file.
+verbose = 1  # BBF Analyzer will print verbosely into an '.out' file.
 
 ls_str_evt_ids = [
     #=== Below are 8/9 of Jake's unique 3P1F 4mu events which the BBF Ana with
     #=== the RedBkg fix now selects.
-    # "315689:342:398232246",
+    "315689:342:398232246",
     # "322599:224:359072495",
     # "316766:179:208365005",
-    # "319524:885:1310553109",
+    "319524:885:1310553109",
     # "317291:636:878537435",
     # "322348:827:1498597313",
     # "321434:39:65055154",
-
-    #=== Updated Jake's Ana to look at events with >=4 tight leptons.
-    #=== Now Jake grabbed these 3 unique 3P1F 4mu events.
-    #=== Would the updated BBF Ana also have selected them?
-    # "321010:33:54826308",
-    "316218:760:1057128632",
-    "324980:1481:2730022725",
+    # "319991:777:1213672625"
 ]
 
 # Will be appended with evtID info.
-outfile_rootname = "jakehas_butnotfilippo_data2018_3p1f"
+outfile_rootname = "jakehas_butnotfilippo_3p1f"
 
 input_template = "/afs/cern.ch/work/d/drosenzw/zplusx/CMSSW_10_6_12/src/UFHZZAnalysisRun2/UFHZZ4LAna/python/templateData_102X_Legacy18_2l_cfg_template.py"
 outdir_template = "/afs/cern.ch/work/d/drosenzw/zplusx/CMSSW_10_6_12/src/UFHZZAnalysisRun2/UFHZZ4LAna/python/template_copies/"
