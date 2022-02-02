@@ -113,7 +113,6 @@ class MyZboson:
         their_abs_dist = abs(other_z.get_distance_from_PDG_mass())
         i_am_closer = ((my_abs_dist - their_abs_dist) < 0)
         return True if i_am_closer else False
-
 # End of MyZboson.
 
 def makes_valid_zcand(lep1, lep2):

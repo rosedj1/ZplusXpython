@@ -1,3 +1,4 @@
+import warnings
 from ROOT import TFile
 import numpy as np
 from array import array
@@ -126,34 +127,6 @@ def find_combos_4tight(mylep_ls):
             myleps_combos_4loose.append(fourlep_tup)
     return myleps_combos_4loose
 
-def find_all_quartets_leps_tight(mylep_ls, debug=False):
-    """Return a list of all possible 4-tup of tight MyLeptons.
-    
-    FIXME: Finish function.
-    """
-    raise RuntimeError("Finish this function!")
-    tight_leps = [tlep for tlep in mylep_ls if tlep.is_tight]
-    triple_ls_tight = []
-    for ndx1, mylep1 in enumerate(tight_leps[:-2]):
-        if debug: print(f"For loop 1: ndx1={ndx1}")
-        start_i2 = ndx1 + 1
-        for ndx2, mylep2 in enumerate(tight_leps[start_i2:-1], start_i2):
-            if debug: print(f"For loop 2: ndx2={ndx2}")
-            start_i3 = ndx2 + 1
-            for ndx3, mylep3 in enumerate(tight_leps[start_i3:], start_i3):
-                if debug: print(f"For loop 3: ndx3={ndx3}")
-                lep_tup = (mylep1, mylep2, mylep3)
-                if debug: print(f"Found good triple: ({ndx1, ndx2, ndx3})")
-                triple_ls_tight.append(lep_tup)
-    n_tight_leps = len(tight_leps)
-    try:
-        assert len(triple_ls_tight) == int(binom(n_tight_leps, 3))
-    except ModuleNotFoundError:
-        pass
-    except NameError:
-        pass
-    return triple_ls_tight
-
 def find_all_triplets_leps_tight(mylep_ls, debug=False):
     """Return a list of all possible 3-tup of tight MyLeptons."""
     tight_leps = [tlep for tlep in mylep_ls if tlep.is_tight]
@@ -240,7 +213,7 @@ def make_evt_info_d():
         "n_good_3p1f_evts",
         "n_tot_good_2p2f_combos",
         "n_tot_good_3p1f_combos",
-        "n_quartets_skip_mass4l_le0",
+        "n_evts_skip_mass4l_le0",
         "n_quartets_skip_lep_Hindex_mismatch"
     )
     return {s : 0 for s in tup}
@@ -433,8 +406,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     smartcut_ZapassesZ1sel=False,
     overwrite=False,
     keep_only_mass4lgt0=False,
+    match_lep_Hindex=False,
     recalc_mass4l_vals=False,
-    allow_ge4tightleps=False,
+    allow_ge4tightleps=True,
     skip_passedFullSelection=True,
     ):
     """Apply RedBkg "subevent" event selection to all events in tree.
@@ -473,21 +447,26 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             This is useful when you need to use the values that are already
             stored in the BBF NTuple.
             Default is False.
+        match_lep_Hindex (bool, optional):
+            If True, then only keep the quartets whose selected lepton indices
+            exactly match those found in vector tree.lep_Hindex.
+            Good for synchronizing with the BBF Analyzer.
+            Default is False.
         recalc_mass4l_vals (bool, optional):
-            If True, recalculate mass4l of selected lepton quartet.
+            If True, recalculate mass4l of selected lepton quartet and
+            corresponding massZ1 and massZ2 values.
         allow_ge4tightleps (bool, optional):
             If True, keep lepton quartets which satisfy 2P2F/3P1F selections,
             even if 4 or more tight leptons are present in event.
-            Default behavior is to only look at events in which there are
-            exactly 2 or 3 tight leptons.
+            Default is True.
             NOTE:
                 Filippo made the good point that we may be killing events too
                 quickly if we throw events away with >=4 tight leptons!
                 For example, what if we have:
-                    mu+     mu-     mu+T    mu-L    e+T
+                    mu+     mu-     mu+      mu-    e+
                     (tight) (tight) (tight) (loose) (tight)
                 There are 4 tight leptons, but they can't make a signal
-                candidate. Therefore the 4 tight selection is made too early.
+                candidate. Therefore the 4 tight cut is made too early.
     """
     if fill_hists:
         # Prep histograms.
@@ -527,6 +506,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     
     # Make pointers to store new values. 
     ptr_finalState = np.array([0], dtype=int)
+    ptr_nZXCRFailedLeptons = np.array([0], dtype=int)
     ptr_is2P2F = np.array([0], dtype=int)  # Close enough to bool lol.
     ptr_is3P1F = np.array([0], dtype=int)
     ptr_isData = np.array([0], dtype=int)
@@ -542,6 +522,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     ptr_eventWeightFR_up = array('f', [0.])
     ptr_lep_RedBkgindex = array('i', [0, 0, 0, 0])
     ptr_mass4l = array('f', [0.])
+    ptr_massZ1 = array('f', [0.])
+    ptr_massZ2 = array('f', [0.])
     # ptr_mass4l_vtxFSR_BS = array('f', [0.])
     # ptr_eventWeight = array('f', [0.])
 
@@ -552,7 +534,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         new_tree = tree.CloneTree(0)  # Clone 0 events.
 
         # Make new corresponding branches in the TTree.
-        new_tree.Branch("finalState", ptr_finalState, "finalState/I")
         new_tree.Branch("is2P2F", ptr_is2P2F, "is2P2F/I")
         new_tree.Branch("is3P1F", ptr_is3P1F, "is3P1F/I")
         new_tree.Branch("isData", ptr_isData, "isData/I")
@@ -573,15 +554,13 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             "lep_RedBkgindex[4]/I"
             )
 
+        # Modify existing values of branches.
+        new_tree.SetBranchAddress("finalState", ptr_finalState)
+        new_tree.SetBranchAddress("nZXCRFailedLeptons", ptr_nZXCRFailedLeptons)
         if recalc_mass4l_vals:
-            # Modify existing values of branches.
             new_tree.SetBranchAddress("mass4l", ptr_mass4l)
-            # new_tree.SetBranchAddress("mass4l_vtxFSR_BS", ptr_mass4l_vtxFSR_BS)
-
-        if not keep_only_mass4lgt0:
-            # Allow new lepton quartets to be stored.
-            # Need to update finalState branch.
-            new_tree.SetBranchAddress("finalState", ptr_finalState)
+            new_tree.SetBranchAddress("massZ1", ptr_massZ1)
+            new_tree.SetBranchAddress("massZ2", ptr_massZ2)
 
     n_tot = tree.GetEntries()
     print(
@@ -605,6 +584,32 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         lumi = tree.LumiSect
         event = tree.Event
         evt_id = f"{run} : {lumi} : {event}"
+        
+        ###################################
+        #=== Initial event selections. ===#
+        ###################################
+        try:
+            if not tree.passedTrig:
+                continue
+        except AttributeError:
+            # Branch 'passedTrig' doesn't exist.
+            warnings.warn(
+                f"Branch passedTrig probably doesn't exist!\n"
+                f"Ignoring passedTrig==1 criterion."
+                )
+
+        if skip_passedFullSelection and tree.passedFullSelection:
+            if explain_skipevent:
+                print_skipevent_msg(
+                    "passedFullSelection == 1", evt_num, run, lumi, event
+                    )
+            evt_info_d["n_evts_passedFullSelection"] += 1
+            continue
+
+        if keep_only_mass4lgt0:
+            if tree.mass4l <= 0:
+                evt_info_d["n_evts_skip_mass4l_le0"] += 1
+                continue
 
         # Check the number of leptons in this event.
         n_tot_leps = len(tree.lepFSR_pt)
@@ -617,14 +622,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             evt_info_d["n_evts_lt4_leps"] += 1
             continue
             
-        if skip_passedFullSelection and tree.passedFullSelection:
-            if explain_skipevent:
-                print_skipevent_msg(
-                    "passedFullSelection == 1", evt_num, run, lumi, event
-                    )
-            evt_info_d["n_evts_passedFullSelection"] += 1
-            continue
-        
         # Initialize ALL leptons (possibly >=4 leptons).
         mylep_ls = make_filled_mylep_ls(tree)
         n_tight_leps = get_n_tight_myleps(mylep_ls)
@@ -651,7 +648,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         # At least 2 tight leptons.
         # The remaining leptons should be loose.
 
-        # Make all lepton quartets (i.e. make all subevents).
+        #############################################################
+        #=== Make all lepton quartets (i.e. make all subevents). ===#
+        #############################################################
         evt_is_2p2plusf = False
         evt_is_3p1plusf = False
         err_msg = (
@@ -677,7 +676,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             fourlep_combos = find_combos_3tight1loose(mylep_ls)
         elif allow_ge4tightleps and n_tight_leps >= 4:
             print(
-                f"[WARNING] Found {n_tight_leps} tight leptons, "
+                f"  [WARNING] Found {n_tight_leps} tight leptons, "
                 f"but may assign quartets as 3P1F if found!"
                 )
             evt_is_3p1plusf = True
@@ -685,9 +684,14 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         else:
             raise ValueError(err_msg)
         
-        # Analyze each lepton quartet (subevent).
+        #################################################
+        #=== Analyze each lepton quartet (subevent). ===#
+        #################################################
         n_subevts_2p2f = 0
         n_subevts_3p1f = 0
+        if verbose:
+            print(f"  Found {len(fourlep_combos)} quartets.")
+            
         for fourlep_tup in fourlep_combos:
             # Check which four-lep combos pass ZZ selections.
             # Get the better ZZ cand from a single lepton quartet.
@@ -709,18 +713,17 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             subevt_passes_sel_3p1f = evt_is_3p1plusf
 
             if subevt_passes_sel_2p2f:
+                nZXCRFailedLeptons = 2
                 n_subevts_2p2f += 1
                 evt_info_d["n_tot_good_2p2f_combos"] += 1
             elif subevt_passes_sel_3p1f:
+                nZXCRFailedLeptons = 1
                 n_subevts_3p1f += 1
                 evt_info_d["n_tot_good_3p1f_combos"] += 1
             else:
                 raise ValueError("SHOULD NEVER TRIGGER.")
-            #--- TODO: Will need to update event weight here using FRs.
-            # Since there may be multiple subevents in a single event,
-            # then the SAME EVENT will be stored multiple times in the TTree.
-            # The difference for each entry (subevent) will be the weight.
 
+            # Event weight calculation.
             n_dataset_tot = float(genwgts_dct[name])
             evt_weight_calcd = get_evt_weight(
                 xs_dct=xs_dct, Nickname=name, lumi=int_lumi, event=tree,
@@ -825,11 +828,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 )
                 zzcand.print_info(name="SELECTED")
 
-            if keep_only_mass4lgt0:
-                if tree.mass4l <= 0:
-                    evt_info_d["n_quartets_skip_mass4l_le0"] += 1
-                    continue
-
+            if match_lep_Hindex:
                 # Make sure mass4l vars in TTree come from same leps
                 # as the leps that built the ZZ candidate I selected.
                 lep_Hindex_ls = list(tree.lep_Hindex)
@@ -847,6 +846,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 mylep2_fromz2.ndx_lepvec,
                 ]
             ptr_finalState[0] = dct_finalstates_str2int[zzcand.get_finalstate()]
+            ptr_nZXCRFailedLeptons[0] = nZXCRFailedLeptons
             ptr_is2P2F[0] = subevt_passes_sel_2p2f
             ptr_is3P1F[0] = subevt_passes_sel_3p1f
             ptr_isData[0] = isData
@@ -868,9 +868,12 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             if recalc_mass4l_vals:
                 # Getting an IndexError since there is a discrepancy in the length
                 # of vectors, like `lep_pt` and `vtxLepFSR_BS_pt`.
-                ptr_mass4l[0] = calc_mass4l_from_idcs(
-                    tree, lep_idcs, kind="lepFSR"
-                    )
+                ptr_massZ1[0] = zzcand.z_fir.get_mass()
+                ptr_massZ2[0] = zzcand.z_sec.get_mass()
+                ptr_mass4l[0] = zzcand.get_m4l()
+                # ptr_mass4l[0] = calc_mass4l_from_idcs(
+                #     tree, lep_idcs, kind="lepFSR"
+                #     )
                 # ptr_mass4l_vtxFSR_BS[0] = calc_mass4l_from_idcs(
                 #     tree, lep_idcs, kind="vtxLepFSR_BS"
                 #     )
@@ -895,14 +898,12 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             n_combos = n_subevts_2p2f
             evt_info_d["n_good_2p2f_evts"] += 1
             assert n_subevts_3p1f == 0
-
         if evt_is_3p1plusf:
             evt_type_msg = "3P1+F"
             cr = "3p1f"
             n_combos = n_subevts_3p1f
             evt_info_d["n_good_3p1f_evts"] += 1
             assert n_subevts_2p2f == 0
-        #===========================#
 
         if verbose:
             print(

@@ -1,11 +1,13 @@
-from ROOT import TFile
+import os
 import numpy as np
+from ROOT import TFile
 
 from Utils_Python.printing import print_periodic_evtnum, print_header_message
 from sidequests.classes.cjlstflag import CjlstFlag
 from sidequests.funcs.evt_loops import (
     evt_loop_evtsel_2p2plusf3p1plusf_subevents
     )
+from constants.finalstates import dct_finalstates_int2str
 
 def print_evt_info_bbf(evt):
     """A goofy way to print branch info for `evt` in TTree.
@@ -237,3 +239,79 @@ def get_control_region(evt):
         return "2P2F"
     else:
         return f"[WARNING] Could not assign number of tight leps ({s}) to a CR!"
+
+def write_tree_evtID_to_txt(
+    infile,
+    outtxt,
+    framework="jake",
+    m4l_lim=(70, 1000),
+    keep_2P2F=True,
+    keep_3P1F=True,
+    fs=5,
+    path_to_tree="passedEvents",
+    print_every=500000,
+    ):
+    """Write evtIDs from TTree 'passedEvents' in TFile `infile` to `outtxt`.
+
+    Info which gets written:
+    Run : LumiSect : Event
+
+    NOTE:
+        - Does not use the bool `passedZXCRSelection`.
+    Args:
+        fs (int): 4-lep final state (branch = finalState).
+            1 = 4mu
+            2 = 4e
+            3 = 2e2mu
+            4 = 2mu2e
+            5 = all
+    """
+    m4l_min = m4l_lim[0]
+    m4l_max = m4l_lim[1]
+
+    tfile = TFile.Open(infile)
+    tree = tfile.Get(path_to_tree)
+    n_tot = tree.GetEntries()
+
+    outtxt_dir = os.path.dirname(outtxt)
+    outtxt_basename_noext = os.path.basename(outtxt).split(".")[0]
+
+    if keep_2P2F:
+        outtxt_basename_noext += "_2P2F"
+    if keep_3P1F:
+        outtxt_basename_noext += "_3P1F"
+    outtxt_basename_noext += f"_{dct_finalstates_int2str[fs]}"
+    outtxt_basename_noext += f"_{m4l_min}masswindow{m4l_max}.txt"
+
+    outtxt_fullname = os.path.join(
+        outtxt_dir,
+        outtxt_basename_noext
+        )
+
+    with open(outtxt_fullname, "w") as f:
+        f.write("# Run : LumiSect : Event\n")
+        for ct, evt in enumerate(tree):
+            print_periodic_evtnum(ct, n_tot, print_every=print_every)
+            m4l = evt.mass4l
+            if evt.finalState not in (1, 2, 3, 4):
+                continue
+            if (m4l < m4l_min) or (m4l > m4l_max):
+                continue
+            good_fs = True if fs == evt.finalState or fs == 5 else False
+            if not good_fs:
+                continue
+            keep_evt = False
+
+            if framework.lower() == "jake":
+                if keep_2P2F and evt.is2P2F:
+                    keep_evt = True
+                elif keep_3P1F and evt.is3P1F:
+                    keep_evt = True
+            elif framework.lower() == "bbf":
+                if keep_2P2F and (evt.nZXCRFailedLeptons == 2):
+                    keep_evt = True
+                elif keep_3P1F and (evt.nZXCRFailedLeptons == 1):
+                    keep_evt = True
+            if keep_evt:
+                f.write(f"{evt.Run} : {evt.LumiSect} : {evt.Event}\n")
+    print(f"TTree info written to:\n{outtxt_fullname}")

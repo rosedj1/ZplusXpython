@@ -31,6 +31,22 @@ Notes:
     - fr2           (float)
     - fr3           (float)
     - eventWeightFR (float)
+
+is2P2F
+is3P1F
+isData
+isMCzz
+fr2_down
+fr2
+fr2_up
+fr3_down
+fr3
+fr3_up
+eventWeightFR_down
+eventWeightFR
+eventWeightFR_up
+            "lep_RedBkgindex
+
         NOTE: 
         For 3P1F: event.eventWeight * (fr / (1-fr))
         For 2P2F: event.eventWeight * (fr2 / (1-fr2)) * (fr3 / (1-fr3))
@@ -85,8 +101,10 @@ smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 
 explain_skipevent = 0
 keep_only_mass4lgt0 = 0
+match_lep_Hindex = 0  # Only keep quartets that perfectly match lep_Hindex.
 recalc_mass4l_vals = 1
-allow_ge4tightleps = 1
+allow_ge4tightleps = 1  # To sync with BBF Ana, set to True.
+skip_passedFullSelection = 1  # To sync with BBF Ana, set to True.
 
 fill_hists = 1
 hadd_files = 0
@@ -96,8 +114,8 @@ infile_FR_wz_removed = fakerates_WZremoved
 outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/"
 outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
-outfile_basename = "data2018_2P2plusF_3P1plusF_syncwithfilippo_ge4tightleps_skippassfullsel"
-##############################################
+outfile_basename = "data2018_2P2plusF_3P1plusF_syncwithfilippo_updatedmZvals"
+#=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # parser.add_argument('-i', '--infile',          type=str, dest="infile", help="input root file")
@@ -169,10 +187,11 @@ if __name__ == '__main__':
             smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
             overwrite=overwrite,
             keep_only_mass4lgt0=keep_only_mass4lgt0,
+            match_lep_Hindex=match_lep_Hindex,
             recalc_mass4l_vals=recalc_mass4l_vals,
-            allow_ge4tightleps=allow_ge4tightleps
+            allow_ge4tightleps=allow_ge4tightleps,
+            skip_passedFullSelection=skip_passedFullSelection,
             )
-        
         ls_all_outfiles.append(outfile_root)
 
     # End loop over analyzer.

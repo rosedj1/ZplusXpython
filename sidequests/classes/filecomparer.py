@@ -38,70 +38,6 @@ def get_runlumievent_ls_tup(txt):
     """
     return get_list_of_tuples(get_list_of_lines(txt))
 
-def write_tree_info_to_txt(
-    infile,
-    outtxt,
-    m4l_lim=(70, 1000),
-    keep_2P2F=True,
-    keep_3P1F=True,
-    fs=5,
-    path_to_tree="passedEvents",
-    print_every=500000
-    ):
-    """Write info from TFile `infile` from TTree 'passedEvents' to `outtxt`.
-
-    Info which gets written:
-    Run : LumiSect : Event
-
-    Args:
-        fs (int): 4-lep final state (branch = finalState).
-            1 = 4mu
-            2 = 4e
-            3 = 2e2mu
-            4 = 2mu2e
-            5 = all
-    """
-    m4l_min = m4l_lim[0]
-    m4l_max = m4l_lim[1]
-
-    tfile = TFile.Open(infile)
-    tree = tfile.Get(path_to_tree)
-    n_tot = tree.GetEntries()
-
-    outtxt_dir = os.path.dirname(outtxt)
-    outtxt_basename_noext = os.path.basename(outtxt).split(".")[0]
-
-    if keep_2P2F:
-        outtxt_basename_noext += "_2P2F"
-    if keep_3P1F:
-        outtxt_basename_noext += "_3P1F"
-    outtxt_basename_noext += f"_{dct_finalstates_int2str[fs]}"
-    outtxt_basename_noext += f"_{m4l_min}masswindow{m4l_max}.txt"
-
-    outtxt_fullname = os.path.join(
-        outtxt_dir,
-        outtxt_basename_noext
-    )
-
-    with open(outtxt_fullname, "w") as f:
-        f.write("# Run : LumiSect : Event\n")
-        for ct, evt in enumerate(tree):
-            print_periodic_evtnum(ct, n_tot, print_every=print_every)
-            m4l = evt.mass4l
-            if (m4l < m4l_min) or (m4l > m4l_max):
-                continue
-            good_fs = True if fs == evt.finalState or fs == 5 else False
-            if not good_fs:
-                continue
-            keep_evt = False
-            if keep_2P2F and evt.is2P2F:
-                keep_evt = True
-            elif keep_3P1F and evt.is3P1F:
-                keep_evt = True
-            if keep_evt:
-                f.write(f"{evt.Run} : {evt.LumiSect} : {evt.Event}\n")
-    print(f"TTree info written to:\n{outtxt_fullname}")
-
 def write_lstup_info_to_txt(ls_tup, outtxt, print_every=500000):
     """Write event ID info from list of tuples `ls_tup` to `outtxt`.
 
@@ -494,7 +430,11 @@ class FileRunLumiEvent:
             basename = "...the original list you used."
         else:
             basename = os.path.basename(self.txt)
-        print(f"Found {n_evts} {event_type} events in:\n{basename}")
+        msg = f"Found {n_evts} {event_type} events in:\n{basename}"
+        if event_type == 'common':
+            msg = msg.replace("events in", "events between")
+            msg += f"\nand\n{os.path.basename(other.txt)}"
+        print(msg)
         if print_evts:
             print(set_evt_combine)
         return list(set_evt_combine)
