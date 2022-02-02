@@ -2,7 +2,7 @@
 ==============================================================================
 Author: Jake Rosenzweig
 Created: 2021-11-30
-Updated: 2022-01-27
+Updated: 2022-02-01
 Notes:
     This code selects 2P2+F and 3P1+F reducible background events.
     It considers events with >4 leptons and properly handles all possible
@@ -24,6 +24,7 @@ Notes:
     User should review the parameters located just after the imports.
 
     New branches added to TTree:
+        TODO: Update this list of new branches.
     - is2P2F        (int)
     - is3P1F        (int)
     - isMCzz        (int)
@@ -65,8 +66,8 @@ from constants.analysis_params import (
 #########################
 # Files to analyze.
 d_nicknames_files = {
-    # "Data" : infile_filippo_data_2018_fromhpg,
-    "ZZ" : mc_2018_zz_hpg,
+    "Data" : infile_filippo_data_2018_fromhpg,
+    # "ZZ" : mc_2018_zz_hpg,
     # "ZZ" : infile_filippo_zz_2018_fromhpg,
 }
 
@@ -85,17 +86,17 @@ smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 explain_skipevent = 0
 keep_only_mass4lgt0 = 0
 recalc_mass4l_vals = 1
-allow_ge4tightleps = 0
+allow_ge4tightleps = 1
 
 fill_hists = 1
 hadd_files = 0
 
 infile_FR_wz_removed = fakerates_WZremoved
 
-outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/"
+outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/"
 outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
-outfile_basename = "cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs"
+outfile_basename = "data2018_2P2plusF_3P1plusF_syncwithfilippo_ge4tightleps_skippassfullsel"
 ##############################################
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

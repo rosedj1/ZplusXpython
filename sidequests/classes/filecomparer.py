@@ -5,6 +5,7 @@ from ROOT import TFile
 # Package imports.
 from Utils_Python.Utils_Files import check_overwrite, open_json
 from Utils_Python.printing import print_periodic_evtnum
+from constants.finalstates import dct_finalstates_int2str
 
 def get_list_of_tuples(evt_ls):
     """
@@ -38,11 +39,14 @@ def get_runlumievent_ls_tup(txt):
     return get_list_of_tuples(get_list_of_lines(txt))
 
 def write_tree_info_to_txt(
-    infile, outtxt,
+    infile,
+    outtxt,
     m4l_lim=(70, 1000),
-    keep_2P2F=True, keep_3P1F=True,
+    keep_2P2F=True,
+    keep_3P1F=True,
     fs=5,
-    path_to_tree="passedEvents", print_every=500000
+    path_to_tree="passedEvents",
+    print_every=500000
     ):
     """Write info from TFile `infile` from TTree 'passedEvents' to `outtxt`.
 
@@ -57,16 +61,33 @@ def write_tree_info_to_txt(
             4 = 2mu2e
             5 = all
     """
+    m4l_min = m4l_lim[0]
+    m4l_max = m4l_lim[1]
+
     tfile = TFile.Open(infile)
     tree = tfile.Get(path_to_tree)
     n_tot = tree.GetEntries()
-    with open(outtxt, "w") as f:
+
+    outtxt_dir = os.path.dirname(outtxt)
+    outtxt_basename_noext = os.path.basename(outtxt).split(".")[0]
+
+    if keep_2P2F:
+        outtxt_basename_noext += "_2P2F"
+    if keep_3P1F:
+        outtxt_basename_noext += "_3P1F"
+    outtxt_basename_noext += f"_{dct_finalstates_int2str[fs]}"
+    outtxt_basename_noext += f"_{m4l_min}masswindow{m4l_max}.txt"
+
+    outtxt_fullname = os.path.join(
+        outtxt_dir,
+        outtxt_basename_noext
+    )
+
+    with open(outtxt_fullname, "w") as f:
         f.write("# Run : LumiSect : Event\n")
         for ct, evt in enumerate(tree):
             print_periodic_evtnum(ct, n_tot, print_every=print_every)
             m4l = evt.mass4l
-            m4l_min = m4l_lim[0]
-            m4l_max = m4l_lim[1]
             if (m4l < m4l_min) or (m4l > m4l_max):
                 continue
             good_fs = True if fs == evt.finalState or fs == 5 else False
@@ -79,7 +100,7 @@ def write_tree_info_to_txt(
                 keep_evt = True
             if keep_evt:
                 f.write(f"{evt.Run} : {evt.LumiSect} : {evt.Event}\n")
-    print(f"TTree info written to:\n{outtxt}")
+    print(f"TTree info written to:\n{outtxt_fullname}")
 
 def write_lstup_info_to_txt(ls_tup, outtxt, print_every=500000):
     """Write event ID info from list of tuples `ls_tup` to `outtxt`.
@@ -126,6 +147,10 @@ def get_list_of_entries(txt):
                 entry = int(str_num.rstrip('\n'))
                 ls_entries.extend([entry])
     return ls_entries
+
+def evtID_as_str(evtID):
+    """Return `evtID` as a str: 'Run : Lumi : Event'."""
+    return f"{evtID[0]} : {evtID[1]} : {evtID[2]}"
 
 class FileComparer:
 
@@ -397,6 +422,16 @@ class FileRunLumiEvent:
             else:
                 print("No duplicates found.")
         return n_dups
+
+    def get_duplicate_counter(self):
+        """Return a counter of ((evtID_tup): n_times_appeared).
+        
+        Duplicate events have identical Run : Lumi : Event numbers.
+        """
+        if self.get_num_duplicates() == 0:
+            return Counter()
+        else:
+            return Counter(self.ls_tup_evtid)
     
     def get_tot_num_entries(self):
         """Return the number of 3-tuples within `self.ls_tup_evtid`."""
@@ -413,25 +448,27 @@ class FileRunLumiEvent:
             as_type (str): Way to display the printed info.
                 Can choose: 'int' or 'str'.
         """
-        if self.get_num_duplicates() == 0:
+        counter = self.get_duplicate_counter()
+        if len(counter.keys()) == 0:
             print("No duplicates found.")
         else:
-            raise RuntimeError(
-                f"There is a counting error. Fix and validate this function."
-                )
-            # FIXME: There may be a counting error here...
-            counter = Counter(self.ls_tup_evtid)
-            if "str" in as_type.lower():
-                dup_ls = [self.as_str(k) for k,v in counter.items() if v > 1]
-            else:
-                dup_ls = [k for k,v in counter.items() if v > 1]
-            print("Duplicate events:")
-            pprint(dup_ls)
+            print(f"{'Duplicate Event ID':^26} --- Total Appearances")
+            for evtID, n_times in counter.items():
+                if n_times > 1:
+                    if "str" == as_type.lower():
+                        evtID = evtID_as_str(evtID)
+                    # Represent the tuple as a string in order to print it.
+                    print(f"{evtID.__repr__():<26} --- {n_times:^17}")
 
-    def as_str(self, key_tup):
-        """Return `key_tup` as a str: 'Run : Lumi : Event'."""
-        return f"{key_tup[0]} : {key_tup[1]} : {key_tup[2]}"
-    
+        # The below works but it's less sexy.
+        # ls_tup_evtid_cp = self.ls_tup_evtid.copy()
+        # for unique_evt in self.get_ls_evtids_nodups():
+        #     ls_tup_evtid_cp.remove(unique_evt)
+        # # Anything left is a duplicate.
+        # assert len(ls_tup_evtid_cp) == self.get_num_duplicates()
+        # print(f"Number of duplicates found: {len(ls_tup_evtid_cp)}")
+        # pprint(ls_tup_evtid_cp)
+
     def analyze_evtids(self, other, event_type, print_evts=False):
         """Return list of 3-tuple evtIds common to both FileRunLumiEvents.
         

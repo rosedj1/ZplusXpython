@@ -121,6 +121,7 @@ def analyze_single_evt(
     infile_fakerates=None,
     genwgts_dct=None,
     xs_dct=None,
+    allow_ge4tightleps=False,
     explain_skipevent=True,
     verbose=True
     ):
@@ -133,12 +134,23 @@ def analyze_single_evt(
     Args:
         entry (int):
             Row in TTree.
-        fw : str
+        fw (str):
             Which framework to use: "bbf", "cjlst", "jake"
-        which : str
+        which (str):
             Which instance of the event you want to select.
             Options: "first", anything else collects all such events.
-        evt_start : int
+        evt_start (int):
+        allow_ge4tightleps (bool):
+            If True, then Jake's Analyzer will look for 3P1F quartets even
+            when an event has >=4 tight leptons.
+            NOTE:
+                Filippo made the good point that we may be killing events too
+                quickly if we throw events away with >=4 tight leptons!
+                For example, what if we have:
+                    mu+     mu-     mu+T    mu-L    e+T
+                    (tight) (tight) (tight) (loose) (tight)
+                There are 4 tight leptons, but they can't make a signal
+                candidate. Therefore the 4 tight selection is made too early.
     """
     know_evtid = all(x is not None for x in (run, lumi, event))
     know_entry = entry is not None
@@ -191,7 +203,7 @@ def analyze_single_evt(
                 print_every=1, smartcut_ZapassesZ1sel=False,
                 overwrite=False, keep_only_mass4lgt0=False,
                 recalc_mass4l_vals=False,
-                allow_ge4tightleps=False,
+                allow_ge4tightleps=allow_ge4tightleps,
                 )
             # store_evt = True
         elif fw == "cjlst":

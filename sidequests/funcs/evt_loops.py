@@ -48,7 +48,7 @@ from scripts.helpers.analyzeZX import (
 from constants.analysis_params import (
     xs_dct_jake, n_sumgenweights_dataset_dct_jake
     )
-from constants.finalstates import dct_finalstates
+from constants.finalstates import dct_finalstates_str2int
 
 # from scipy.special import binom
 
@@ -226,7 +226,7 @@ def make_evt_info_d():
         "n_evts_nosubevtspassingsel",
         "n_evts_fail_zzcand",
         # "n_evts_ge4_leps",
-        # "n_evts_passedFullSelection",
+        "n_evts_passedFullSelection",
         # "n_evts_passedZXCRSelection",
         # "n_evts_lt2tightleps",
         # "n_evts_lt1looselep",
@@ -435,6 +435,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     keep_only_mass4lgt0=False,
     recalc_mass4l_vals=False,
     allow_ge4tightleps=False,
+    skip_passedFullSelection=True,
     ):
     """Apply RedBkg "subevent" event selection to all events in tree.
 
@@ -473,12 +474,20 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             stored in the BBF NTuple.
             Default is False.
         recalc_mass4l_vals (bool, optional):
-            If True, recalculate mass4l values using selected lepton quartet.
+            If True, recalculate mass4l of selected lepton quartet.
         allow_ge4tightleps (bool, optional):
             If True, keep lepton quartets which satisfy 2P2F/3P1F selections,
             even if 4 or more tight leptons are present in event.
             Default behavior is to only look at events in which there are
             exactly 2 or 3 tight leptons.
+            NOTE:
+                Filippo made the good point that we may be killing events too
+                quickly if we throw events away with >=4 tight leptons!
+                For example, what if we have:
+                    mu+     mu-     mu+T    mu-L    e+T
+                    (tight) (tight) (tight) (loose) (tight)
+                There are 4 tight leptons, but they can't make a signal
+                candidate. Therefore the 4 tight selection is made too early.
     """
     if fill_hists:
         # Prep histograms.
@@ -603,10 +612,19 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
 
         # Ensure at least 4 leptons in event:
         if n_tot_leps < 4:
-            if verbose: print_skipevent_msg("n_leps < 4", evt_num, run, lumi, event)
+            if explain_skipevent:
+                print_skipevent_msg("n_leps < 4", evt_num, run, lumi, event)
             evt_info_d["n_evts_lt4_leps"] += 1
             continue
             
+        if skip_passedFullSelection and tree.passedFullSelection:
+            if explain_skipevent:
+                print_skipevent_msg(
+                    "passedFullSelection == 1", evt_num, run, lumi, event
+                    )
+            evt_info_d["n_evts_passedFullSelection"] += 1
+            continue
+        
         # Initialize ALL leptons (possibly >=4 leptons).
         mylep_ls = make_filled_mylep_ls(tree)
         n_tight_leps = get_n_tight_myleps(mylep_ls)
@@ -655,6 +673,13 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 for lep in mylep_ls:
                     lep.print_info()
                 raise RuntimeError
+            evt_is_3p1plusf = True
+            fourlep_combos = find_combos_3tight1loose(mylep_ls)
+        elif allow_ge4tightleps and n_tight_leps >= 4:
+            print(
+                f"[WARNING] Found {n_tight_leps} tight leptons, "
+                f"but may assign quartets as 3P1F if found!"
+                )
             evt_is_3p1plusf = True
             fourlep_combos = find_combos_3tight1loose(mylep_ls)
         else:
@@ -821,7 +846,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 mylep1_fromz2.ndx_lepvec,
                 mylep2_fromz2.ndx_lepvec,
                 ]
-            ptr_finalState[0] = dct_finalstates[zzcand.get_finalstate()]
+            ptr_finalState[0] = dct_finalstates_str2int[zzcand.get_finalstate()]
             ptr_is2P2F[0] = subevt_passes_sel_2p2f
             ptr_is3P1F[0] = subevt_passes_sel_3p1f
             ptr_isData[0] = isData

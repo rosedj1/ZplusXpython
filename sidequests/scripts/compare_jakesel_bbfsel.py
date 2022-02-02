@@ -1,4 +1,4 @@
-"""Compare event selections between BBF and "Jake" analyzers and print info.
+"""Print info when Compare event selections between BBF and "Jake" analyzers and print info.
 # ============================================================================
 # Created: 2021-12-16
 # Updated: 2022-01-28
@@ -34,10 +34,11 @@ from constants.analysis_params import (
 
 infile_fakerates = fakerates_WZremoved
 
-analyze_using = "bbf"  # Choose between: "jake" or "bbf".
-which = "first"
-start_at = 0
-end_at = -1
+analyze_using = "jake"  # Choose between: "jake" or "bbf".
+allow_ge4tightleps = 1
+
+start_at = 95615
+end_at = start_at + 1
 
 # Filippo's unique 3P1F 4mu events.
 # They all have at least 4 tight leptons!
@@ -59,19 +60,23 @@ ls_tup_unique_fili = [
 
 ls_tup_unique_jake = [
     # Jake's unique 3P1F 4mu events.
-    (321887, 450, 722204060),
-    (315689, 342, 398232246),
-    (319991, 777, 1213672625),
-    (322599, 224, 359072495),
-    (316766, 179, 208365005),
-    (319524, 885, 1310553109),
-    (317291, 636, 878537435),
-    (322348, 827, 1498597313),
-    (321434, 39, 65055154)
+    # (321887, 450, 722204060),
+    # (315689, 342, 398232246),
+    # (319991, 777, 1213672625),
+    # (322599, 224, 359072495),
+    # (316766, 179, 208365005),
+    # (319524, 885, 1310553109),
+    # (317291, 636, 878537435),
+    # (322348, 827, 1498597313),
+    # (321434, 39, 65055154)
+
+    (321010, 33, 54826308),
+    (316218, 760, 1057128632),
+    (324980, 1481, 2730022725),
     ]
 
 # CHOOSE A LIST FROM ABOVE TO USE!
-ls_tup_unique = ls_tup_unique_fili
+ls_tup_unique = ls_tup_unique_jake
 
 # Use Jake's analyzer on Filippo's unique events to see why Jake's FW failed.
 f = TFile.Open(infile_filippo_data_2018_fromhpg, "read")
@@ -88,19 +93,17 @@ for evt_num in range(start_at, end_at):
     tup_evtid = find_runlumievent_using_entry(tree, evt_num, fw="bbf")
     if tup_evtid in ls_tup_unique:
         run, lumi, event = tup_evtid
-        print(run, lumi, event, evt_num)
-        # UNCOMMENT BELOW.
-        # analyze_single_evt(
-        #     tree, run=run, lumi=lumi, event=event, entry=evt_num,
-        #     fw=analyze_using, which=which,
-        #     evt_start=0, evt_end=-1, print_every=500000,
-        #     infile_fakerates=infile_fakerates,
-        #     genwgts_dct=n_sumgenweights_dataset_dct_jake,
-        #     xs_dct=xs_dct_jake,
-        #     explain_skipevent=True,
-        #     verbose=True
-        #     )
-        # UNCOMMENT ABOVE.
+        analyze_single_evt(
+            tree, run=run, lumi=lumi, event=event, entry=evt_num,
+            fw=analyze_using, which="first",
+            evt_start=0, evt_end=-1, print_every=500000,
+            infile_fakerates=infile_fakerates,
+            genwgts_dct=n_sumgenweights_dataset_dct_jake,
+            xs_dct=xs_dct_jake,
+            allow_ge4tightleps=allow_ge4tightleps,
+            explain_skipevent=True,
+            verbose=True
+            )
     
 # # inpkl_bbf_2p2f  = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/bbf_evtids_2p2f.pkl"
 # # inpkl_bbf_3p1f  = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/bbf_evtids_3p1f.pkl"
