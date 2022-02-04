@@ -1,7 +1,7 @@
-"""Print info when Compare event selections between BBF and "Jake" analyzers and print info.
+"""Print info comparing event selections between BBF and "Jake" analyzers.
 # ============================================================================
 # Created: 2021-12-16
-# Updated: 2022-01-28
+# Updated: 2022-02-03
 # Creator: Jake Rosenzweig
 # Comment: Useful for doing event synchronization.
 # ============================================================================

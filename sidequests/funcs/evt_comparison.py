@@ -3,6 +3,7 @@ import numpy as np
 from ROOT import TFile
 
 from Utils_Python.printing import print_periodic_evtnum, print_header_message
+from Utils_Python.Utils_Files import check_overwrite
 from sidequests.classes.cjlstflag import CjlstFlag
 from sidequests.funcs.evt_loops import (
     evt_loop_evtsel_2p2plusf3p1plusf_subevents
@@ -242,7 +243,7 @@ def get_control_region(evt):
 
 def write_tree_evtID_to_txt(
     infile,
-    outtxt,
+    outtxt_basename,
     framework="jake",
     m4l_lim=(70, 1000),
     keep_2P2F=True,
@@ -250,6 +251,7 @@ def write_tree_evtID_to_txt(
     fs=5,
     path_to_tree="passedEvents",
     print_every=500000,
+    overwrite=False,
     ):
     """Write evtIDs from TTree 'passedEvents' in TFile `infile` to `outtxt`.
 
@@ -257,7 +259,10 @@ def write_tree_evtID_to_txt(
     Run : LumiSect : Event
 
     NOTE:
-        - Does not use the bool `passedZXCRSelection`.
+        - Select events passed on 2P2F/3P1F control regions, final state, and
+        mass4l cuts.
+        - If framework == "bbf", also requires passedZXCRSelection == 1.
+
     Args:
         fs (int): 4-lep final state (branch = finalState).
             1 = 4mu
@@ -273,8 +278,8 @@ def write_tree_evtID_to_txt(
     tree = tfile.Get(path_to_tree)
     n_tot = tree.GetEntries()
 
-    outtxt_dir = os.path.dirname(outtxt)
-    outtxt_basename_noext = os.path.basename(outtxt).split(".")[0]
+    outtxt_dir = os.path.dirname(outtxt_basename)
+    outtxt_basename_noext = os.path.basename(outtxt_basename).split(".")[0]
 
     if keep_2P2F:
         outtxt_basename_noext += "_2P2F"
@@ -287,6 +292,7 @@ def write_tree_evtID_to_txt(
         outtxt_dir,
         outtxt_basename_noext
         )
+    check_overwrite(outtxt_fullname, overwrite=overwrite)
 
     with open(outtxt_fullname, "w") as f:
         f.write("# Run : LumiSect : Event\n")
@@ -308,6 +314,8 @@ def write_tree_evtID_to_txt(
                 elif keep_3P1F and evt.is3P1F:
                     keep_evt = True
             elif framework.lower() == "bbf":
+                if not evt.passedZXCRSelection:
+                    continue
                 if keep_2P2F and (evt.nZXCRFailedLeptons == 2):
                     keep_evt = True
                 elif keep_3P1F and (evt.nZXCRFailedLeptons == 1):

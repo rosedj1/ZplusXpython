@@ -436,5 +436,5 @@ class FileRunLumiEvent:
             msg += f"\nand\n{os.path.basename(other.txt)}"
         print(msg)
         if print_evts:
-            print(set_evt_combine)
+            pprint(set_evt_combine)
         return list(set_evt_combine)

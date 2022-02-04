@@ -10,11 +10,12 @@ from Utils_Python.printing import print_header_message
 # intxt_evtIds_fili = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/txt/data2018_filippo_evtids_3p1f_4mu_105masswindow140.txt"
 # intxt_evtIDs_jake = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/txt/data2018_2P2plusF_3P1plusF_syncwithfilippo_updatedmZvals_3P1F_4mu_105masswindow140.txt"
 
-ls_infiles_fili = glob("/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/txt/data2018_filippo_evtids_*.txt")
+# ls_infiles_fili = glob("/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/txt/data2018_filippo_evtids_*.txt")
+ls_infiles_fili = glob("/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/txt/data2018_filippo_evtids_passedZXCRSelection_*.txt")
 ls_infiles_jake = glob("/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/txt/data2018_2P2plusF_3P1plusF_syncwithfilippo_updatedmZvals*.txt")
 
-tup_finalstates = ("4e", "4mu", "2e2mu", "2mu2e",)
-tup_cr = ("2p2f", "3p1f")
+tup_finalstates = ("2e2mu",)#("4e", "4mu", "2e2mu", "2mu2e",)
+tup_cr = ("3p1f",)#, "2p2f")
 
 print("Found files:")
 pprint(ls_infiles_fili)
@@ -22,6 +23,7 @@ pprint(ls_infiles_jake)
 
 for cr in tup_cr:
     for fs in tup_finalstates:
+
         print_header_message(f"{cr.upper()} {fs}")
         ls_fili = [name for name in ls_infiles_fili if fs in name.lower() and cr in name.lower()]
         ls_jake = [name for name in ls_infiles_jake if fs in name.lower() and cr in name.lower()]
@@ -36,12 +38,23 @@ for cr in tup_cr:
         # For counting Jake's file.
         _ = frle_fil.analyze_evtids(frle_jake_withquartets, event_type="common")
         _ = frle_fil.analyze_evtids(frle_jake_withquartets, event_type="unique")
-        _ = frle_jake_withquartets.analyze_evtids(frle_fil, event_type="unique")
+        _ = frle_jake_withquartets.analyze_evtids(frle_fil, event_type="unique", print_evts=True)
 
-# framework = "bbf"
-# tup_finalstates = (1,)# 2, 3, 4)
-# write_tree_only = 1  # After writing the txt files, exit.
-# m4l_lim = (105, 140)
+# Jake's unique 3P1F 2e2mu events. Run fixed BBF Ana on them.
+(316059, 14, 15898611),
+(316219, 264, 409283510),
+(316457, 94, 125536823),
+(317340, 324, 426788720),
+(317527, 1358, 1946914127),
+(317661, 207, 269169251),
+(322106, 92, 99772200),
+(322322, 279, 526122160),
+(323525, 527, 912578885),
+(324021, 393, 670180256),
+(324021, 465, 809016366),
+(324980, 2052, 3682667760),
+(325022, 951, 1439539354)
+
 
 # # For collecting 3P1F/2P2F events in Filippo's file.
 # finalState = 3
@@ -79,33 +92,3 @@ for cr in tup_cr:
 #                         lumisect = evt.LumiSect 
 #                         event = evt.Event 
 #                         ls_tup_fil.extend([(run, lumisect, event,)])
-
-# BBF Ana with RedBkg fix selects these events (and possibly more).
-# addto = [
-#     (321887, 450, 722204060),
-#     (315689, 342, 398232246),
-#     (319991, 777, 1213672625),
-#     (322599, 224, 359072495),
-#     (316766, 179, 208365005),
-#     (319524, 885, 1310553109),
-#     (317291, 636, 878537435),
-#     (322348, 827, 1498597313),
-#     (321434, 39, 65055154),
-#     ]
-
-# Jake's Ana can look into events with >=4 tight leptons and selects these:
-# check_jake_has_these = [
-#     (322492, 778, 1346201480),
-#     (321961, 189, 343183869),
-#     (321909, 32, 57978416),
-#     (321396, 930, 1447135355),
-#     (325022, 162, 228256467),
-#     (317320, 504, 706020777),
-#     (315689, 604, 672709805),
-#     (315713, 819, 996429494),
-#     (316758, 674, 941538912),
-#     (325022, 1263, 1789168728),
-#     (316766, 1907, 2626778761),
-#     (317661, 556, 813675880),
-#     (319449, 364, 498050124),
-#     ]
