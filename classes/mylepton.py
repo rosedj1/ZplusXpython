@@ -7,7 +7,15 @@ class MyLepton:
                  lid, ltightId, lRelIsoNoFSR,
                  lpt_NoFSR, leta_NoFSR, lphi_NoFSR, lmass_NoFSR,
                  ndx_lepvec=None):
-        """When built, this MyLepton will determine if it's tight or loose."""
+        """When built, this MyLepton will determine if it's tight or loose.
+        
+        NOTE:
+            Here, "tight" and "loose" are EXclusive!
+            So in this code, either a lepton is tight OR it's loose.
+            Compare this to previous literature which says that if a lepton is
+            tight, then it also satisfies loose selections!
+            Not the case here.
+        """
         self.lpt = lpt
         self.leta = leta
         self.lphi = lphi
@@ -23,9 +31,6 @@ class MyLepton:
 
         self.ndx_lepvec = ndx_lepvec  # Index of lepton in vectors like lep_pt.
         
-        # NOTE: Here, "tight" and "loose" are exclusive!
-        # Compare this to previous literature which says that if a lepton is
-        # tight, then it also satisfies loose selections! Not the case here.
         self.is_loose = False
         self.is_tight = False
         if self.passes_tightlep_selection():
