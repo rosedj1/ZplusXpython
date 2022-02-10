@@ -966,9 +966,9 @@ def evt_loop_evtsel_WCF(
     ):
     """Select RedBkg wrong charge/flavor events.
 
-    Select events with:
-        - Z1 is made from OSSF leptons.
-        - Z2 can be built from a pair of leptons that are:
+    Select events in which:
+        - Z1 is built from OSSF leptons.
+        - Z2 is built from a pair of leptons that are, either:
             * SSSF: same sign, same flavor => e.g. [mu^+, mu^+], [e^-, e^-]
             * OSOF: opp. sign, opp. flavor => e.g. [mu^+, e^-]
         - When an event has >4 leptons, then multiple combinations

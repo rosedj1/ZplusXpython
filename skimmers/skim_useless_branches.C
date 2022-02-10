@@ -4,9 +4,10 @@
  * This code doesn't seem to work with files that are too large.
  * Probably a problem with memory when opening a very large TTree.
  * It couldn't skim a 773 GB Drell-Yan MC file.
+ * FIXED! Simply do: t->CloneTree(-1, "fast")
  * AUTHOR: Jake Rosenzweig, jake.rose@cern.ch
  * CREATED: 2021-11-12
- * UPDATED: 2022-01-22
+ * UPDATED: 2022-02-09
  */
 
 #include <iostream>
@@ -23,8 +24,10 @@ void skim_useless_branches() {
    */
   // TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon.root";
   // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon_skimmed.root";
-  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
-  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/skimmedbranches/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
+  // TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
+  // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/skimmedbranches/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
+  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/DoubleMuon-UL2017_MiniAODv2.root";
+  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/skimmedbranches/DoubleMuon-UL2017_MiniAODv2.root";
   TString intree = "Ana/passedEvents";
   unsigned int n_evts_to_keep = -1;  // Use -1 for "all".
   bool verbose = true;
@@ -32,26 +35,46 @@ void skim_useless_branches() {
   // Branches to keep.
   vector<TString> branches{
     "Run",
+    "LumiSect",
+    "Event",
+    "passedFullSelection",
+    "passedZ1LSelection",
+    "passedZXCRSelection",
+    "passedTrig",
+    "nZXCRFailedLeptons",
+    "finalState",
+    "eventWeight",
+    "k_qqZZ_qcd_M",
+    "k_qqZZ_ewk",
+    "lep_Hindex",
+    "lep_id",
+    "lep_pt",
+    "lep_eta",
+    "lep_phi",
+    "lep_mass",
+    "lepFSR_pt",
+    "lepFSR_eta",
+    "lepFSR_phi",
+    "lepFSR_mass",
+    "lep_RelIsoNoFSR",
+    "lep_tightId",
+    "met",
+    "massZ1",
+    "massZ2",
+    "mass4l",
+  };
+
+  /*
+  vector<TString> branches{
+    "Run",
     "Event",
     "LumiSect",
     "nVtx",
     "nInt",
-    "PV_x",
-    "PV_y",
-    "PV_z",
-    "BS_x",
-    "BS_y",
-    "BS_z",
-    "BS_xErr",
-    "BS_yErr",
-    "BS_zErr",
-    "BeamWidth_x",
-    "BeamWidth_y",
-    "BeamWidth_xErr",
-    "BeamWidth_yErr",
     "finalState",
     "passedFullSelection",
     "passedZXCRSelection",
+    "passedTrig"
     "nZXCRFailedLeptons",
     "genWeight",
     "k_ggZZ",
@@ -86,13 +109,6 @@ void skim_useless_branches() {
     "vtxLepFSR_eta",
     "vtxLepFSR_phi",
     "vtxLepFSR_mass",
-    "commonPV_x",
-    "commonPV_y",
-    "commonPV_z",
-    "commonBS_x",
-    "commonBS_y",
-    "commonBS_z",
-    "lep_pt_genFromReco",
     "lep_id",
     "lep_pt",
     "lep_pterr",
@@ -129,14 +145,12 @@ void skim_useless_branches() {
     "mass4lREFIT_vtx",
     "mass4lErrREFIT_vtx",
     "massZ1",
-    "massH_vtx_chi2_BS",
     "massZ2",
     "met",
     "D_bkg_kin",
     "D_bkg_kin_vtx_BS",
     "D_bkg",
     "D_VBF",
-
     // "is2P2F",
     // "is3P1F",
     // "isData",
@@ -152,6 +166,7 @@ void skim_useless_branches() {
     // "eventWeightFR_up",
     // "lep_RedBkgindex",
   };
+  */
 
   TFile *tf = new TFile(infile, "READ");
   TTree *tree = (TTree*)tf->Get(intree);

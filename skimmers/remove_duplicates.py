@@ -1,21 +1,22 @@
 """Write a new root file with a copy of a TTree without duplicates.
-==============================================================================
-Syntax:  python this_script.py
-Author:  Jake Rosenzweig
-Created: 2021-Oct
-Updated: 2021-11-12
-==============================================================================
+# ==============================================================================
+# Syntax:  python this_script.py
+# Author:  Jake Rosenzweig
+# Created: 2021-Oct
+# Updated: 2022-02-09
+# Comment:
+#   This script is faster than the C++ version!
+#   Can submit to SLURM using: skimmers/remove_duplicates.sbatch
+# ==============================================================================
 """
-import sys
 from ROOT import TFile
-# sys.path.append("/blue/avery/rosedj1/")
 from Utils_Python.Utils_Files import check_overwrite
 
-infile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/hadded_SingleMuon_MuonEG.root"
-outfile =  infile.replace(".root", "_nodups_whileloop.root") #"/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates_comparesetwithstrandtup_deleteme.root"
+infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/MuonEG-UL2017_MiniAODv2.root"
+outfile =  infile.replace(".root", "_nodups.root") #"/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates_comparesetwithstrandtup_deleteme.root"
 path_to_tree = "Ana/passedEvents"
-start_at_evt = 61677860  # First event is indexed at 0.
-overwrite = 0
+start_at_evt = 0  # First event is indexed at 0.
+overwrite = 1
 verbose = 1
 
 def make_prefilled_event_set(tree, start_at_evt, verbose=False):
@@ -74,7 +75,7 @@ def eliminate_duplicates(tree, start_at_evt=0, verbose=False):
     n_tot = tree.GetEntries()
     num_duplicates = 0
     ct = start_at_evt
-    # tree.GetEntry() returns num_bytes (> 0 when the entry exists).
+    #=== tree.GetEntry() returns num_bytes (> 0 when the entry exists).
     while tree.GetEntry(ct):
         if verbose:
             if (ct % 100000) == 0:
@@ -92,7 +93,6 @@ def eliminate_duplicates(tree, start_at_evt=0, verbose=False):
             newtree.Fill()
             unique_event_set.add(key)
         ct += 1
-        if ct == 10: break
         
     if verbose:
         print(
@@ -114,9 +114,10 @@ def main(infile, path_to_tree, outfile, start_at_evt=0, overwrite=False):
     """
     f = TFile(infile)
     old_tree = f.Get(path_to_tree)
-    print(f"File opened:\n{infile}")
+    print(f"Input file opened:\n{infile}")
 
     check_overwrite(outfile, overwrite=overwrite)
+    print(f"Creating new file:\n{outfile}")
     newfile = TFile(outfile, "recreate")
 
     newtree = eliminate_duplicates(old_tree, start_at_evt=start_at_evt, verbose=verbose)

@@ -17,7 +17,7 @@ This repo contains scripts to:
 
 1. Combine files (using `hadd`) of the same process (e.g., MuonEG runs A-D) with:
    - `hadders/haddfiles_on_slurm.ipynb` (submits `hadd` jobs to SLURM)
-   - **NOTE:** If you get an error like the one below
+      - **NOTE:** If you get an error like the one below
    then first get rid of unncessary branches using
    `skimmers/skim_useless_branches.C`; then resume `hadd`ing.
 
@@ -25,24 +25,19 @@ This repo contains scripts to:
    Error in <TBufferFile::WriteByteCount>: bytecount too large (more than 1073741822)
    ```
    
-1. Select Z+L events with:
-   - `skimmers/apply_redbkg_evt_selection_vxbs.C`
-   - Apply the skimmer to multiple samples with:
-      - `skimmers/skim_ZL_ZLL_4P_CR.sh`
+1. Remove duplicate events (same `Run:Lumi:Event`) with one of:
+   - `skimmers/remove_duplicates.py`
+   - `skimmers/remove_duplicates_Filippo.C`
+   - **NOTE:** The Python script may be faster than the C++ one:
 
-1. Select "OS Method" events (2P2F and 3P1F) with:
-   - `skimmers/select_evts_2P2plusF_3P1plusF.py`
-      
-1. Combine data files into a single file (e.g. `Data2018_Duplicates.root`) using `hadd`.
-   - You can probably do it locally, but if the files are still large, use:
-      - `hadders/haddfiles_on_slurm.ipynb`
-
-<!-- 1. Remove duplicate events with:
-   - `skimmers/remove_duplicates.py` -->
+      | Script | user time | sys time |  TOTAL time |
+      | ---    | ---       | ---      | --- |
+      | Python | 19m50.211s | 0m30.203s | **20m20.413s** |
+      | C++    | 21m22.529s | 0m21.924s | 21m44.453s | 
    
-<!-- 1. [OPTIONAL] Combine Data files into a single file (e.g. `Data_*_NoDuplicates.root`).
-   - May not be possible due to memory issues! May get `'bytecount too large'` error. 
-   - Work around: skim these big files, hadd together, and THEN remove duplicates. -->
+1. Combine Data files into a single file (e.g. `Data2018_NoDuplicates.root`).
+   - If you get the `'bytecount too large'` error, consider first trimming
+   branches, then `hadd` together, and THEN remove duplicates.
 
 ---
 
@@ -122,6 +117,11 @@ ratio (fake rate) in bins of pT(lep3).
 - Uses `MC_composition.py` to call `PartOrigin()`.
    -  Checks the type of fake procedure (checking the ID of the parent).
 
+<!-- 1. Select Z+L events with:
+   - `skimmers/apply_redbkg_evt_selection_vxbs.C`
+   - Apply the skimmer to multiple samples with:
+      - `skimmers/skim_ZL_ZLL_4P_CR.sh` -->
+
 ---
 
 ## WZ Removal
@@ -152,7 +152,18 @@ skimmers/skim_ZLL_addbranches.py
 ## Estimate Non-ZZ Contribution
 
 Use Data and Monte Carlo ZZ->4l (irreducible background) to estimate the
-non-ZZ contribution:
+non-ZZ contribution.
+Choose a framework to work with:
+
+- Vukasin's Framework.
+- Jake's Framework.
+
+### Jake's Framework
+
+Select "OS Method" events (2P2F and 3P1F) with:
+   - `skimmers/select_evts_2P2plusF_3P1plusF.py`
+
+### Vukasin's Framework
 
 ```bash
 python main_estimateZX_ntuples.py

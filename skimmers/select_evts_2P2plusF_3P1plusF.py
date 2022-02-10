@@ -82,7 +82,12 @@ from constants.analysis_params import (
 #########################
 # Files to analyze.
 d_nicknames_files = {
-    "Data" : infile_filippo_data_2018_fromhpg,
+    # "Data" : infile_filippo_data_2018_fromhpg,
+
+    # TESTING BELOW
+    "Data" : "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/fullstats/TRASH/MuonEG_skimmed_test.root",
+    # TESTING ABOVE
+
     # "ZZ" : mc_2018_zz_hpg,
     # "ZZ" : infile_filippo_zz_2018_fromhpg,
 }
@@ -96,7 +101,7 @@ year = 2018
 
 start_at_evt = 0
 break_at_evt = -1  # Use -1 to run over all events.
-print_every = 1000000
+print_every = 100000
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 
 explain_skipevent = 0
@@ -114,7 +119,7 @@ infile_FR_wz_removed = fakerates_WZremoved
 outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/"
 outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
-outfile_basename = "data2018_2P2plusF_3P1plusF_syncwithfilippo_updatedmZvals"
+outfile_basename = "data2018_2P2plusF_3P1plusF_syncwithfilippo_updatedmZvals_testdelete01"
 #=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

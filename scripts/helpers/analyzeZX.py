@@ -6,17 +6,18 @@ This code selects events from Data/MC samples which pass either Z+L or Z+LL
 control regions (CR), separating them by CRs.
 
 The following histograms are produced:
-- 
+- TODO
 
 - Fake rates (the number of leptons which )
 
-NOTE:
-- Recommended MC samples: WZ, ZZ, ttbar, DY
+Use with MC samples:
+    WZ, ttbar, DY (reducible backgrounds)
 
 Syntax to run: `python <this_script>.py`
 Author: Jake Rosenzweig
 Original code: Vukasin Milosevic
-Updated: 2021-08-17
+Created: 2021-Mar-ish
+Updated: 2022-02-09
 """
 import os
 import sys
@@ -151,6 +152,8 @@ def get_evt_weight(
     lumi : float
         Integrated luminosity (pb^{-1}).
     event : TTree event
+        The event object from which you can extract kinematics.
+        E.g., event.lep_pt
     n_dataset_tot : int
         The total number of events in the MC data set which you processed.
         Do: `crab report -d <dir>`.
@@ -826,8 +829,15 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
         # Use the L_int and xs to determine n_expected and event weights.
         # n_dataset_tot = floa[Nickname])
         n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[Nickname])
-        weight = get_evt_weight(xs_dct_jake, Nickname, lumi, event, n_dataset_tot, wgt_from_ntuple=wgt_from_ntuple)
-
+        weight = get_evt_weight(
+                    xs_dct_jake,
+                    Nickname,
+                    lumi,
+                    event,
+                    n_dataset_tot,
+                    orig_evt_weight=event.eventWeight
+                    )
+    
         #######################################
         #--- CR: Z+L for fake rate studies ---#
         #######################################
@@ -860,11 +870,12 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
             etaL3 = lep_3.Eta()
             phiL3 = lep_3.Phi()
             
-            lep_matchedR03_PdgId = event.lep_matchedR03_PdgId
-            lep_matchedR03_MomId = event.lep_matchedR03_MomId
-            lep_matchedR03_MomMomId = event.lep_matchedR03_MomMomId
             lep_id = event.lep_id
             lep_Hindex = event.lep_Hindex
+            if study_particle_origins:
+                lep_matchedR03_PdgId = event.lep_matchedR03_PdgId
+                lep_matchedR03_MomId = event.lep_matchedR03_MomId
+                lep_matchedR03_MomMomId = event.lep_matchedR03_MomMomId
 
             TestVar=False
             FillVar=0.
@@ -895,7 +906,8 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
             # Sort lep3 if electron.
             if ((abs(idL3) == 11) and (math.fabs(etaL3) < 1.497) and TestVar):
                 h1D_FRel_EB_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_d], Hist_fakes[barrel_endcap_region.EB_d], Hist_BDfakes[barrel_endcap_region.EB_d], Hist_conv[barrel_endcap_region.EB_d],False)
+                if study_particle_origins:
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_d], Hist_fakes[barrel_endcap_region.EB_d], Hist_BDfakes[barrel_endcap_region.EB_d], Hist_conv[barrel_endcap_region.EB_d],False)
                 # h1D_Z1L_e1_0eta1p497_pT.Fill(lep_1.Pt(), weight)
                 # h1D_Z1L_e1_0eta1p497_eta.Fill(lep_1.Eta(), weight)
                 # h1D_Z1L_e2_0eta1p497_pT.Fill(lep_2.Pt(), weight)
@@ -904,7 +916,8 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
                 # h1D_Z1L_e3_0eta1p497_eta.Fill(lep_3.Eta(), weight)
                 n_electron_barrel += 1
                 if (lep_tight and TestVar):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_n], Hist_fakes[barrel_endcap_region.EB_n],Hist_BDfakes[barrel_endcap_region.EB_n],Hist_conv[barrel_endcap_region.EB_n],False)
+                    if study_particle_origins:
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_n], Hist_fakes[barrel_endcap_region.EB_n],Hist_BDfakes[barrel_endcap_region.EB_n],Hist_conv[barrel_endcap_region.EB_n],False)
                     h1D_FRel_EB.Fill(FillVar, weight)
                     n_electron_barrel_passtight += 1
                     # h1D_Z1L_e1_0eta1p497_pT.Fill(lep_1.Pt(), weight)
@@ -916,7 +929,8 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
 
             if ((abs(idL3) == 11) and (math.fabs(etaL3) > 1.497) and TestVar):
                 h1D_FRel_EE_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_d], Hist_fakes[barrel_endcap_region.EE_d],Hist_BDfakes[barrel_endcap_region.EE_d], Hist_conv[barrel_endcap_region.EE_d],False)
+                if study_particle_origins:
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_d], Hist_fakes[barrel_endcap_region.EE_d],Hist_BDfakes[barrel_endcap_region.EE_d], Hist_conv[barrel_endcap_region.EE_d],False)
                 n_electron_endcap += 1
                 # h1D_Z1L_e1_0eta1p497_pT.Fill(lep_1.Pt(), weight)
                 # h1D_Z1L_e1_0eta1p497_eta.Fill(lep_1.Eta(), weight)
@@ -926,29 +940,34 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
                 # h1D_Z1L_e3_0eta1p497_eta.Fill(lep_3.Eta(), weight)
                 
                 if lep_tight and TestVar:
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_n], Hist_fakes[barrel_endcap_region.EE_n], Hist_BDfakes[barrel_endcap_region.EE_n], Hist_conv[barrel_endcap_region.EE_n],False)
+                    if study_particle_origins:
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_n], Hist_fakes[barrel_endcap_region.EE_n], Hist_BDfakes[barrel_endcap_region.EE_n], Hist_conv[barrel_endcap_region.EE_n],False)
                     h1D_FRel_EE.Fill(FillVar, weight)
                     n_electron_endcap_passtight += 1 
 
             # Sort lep3 if muon.
             if ((abs(idL3) == 13) and (math.fabs(etaL3) < 1.2) and TestVar):
                 h1D_FRmu_EB_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_d], Hist_fakes[barrel_endcap_region.MB_d], Hist_BDfakes[barrel_endcap_region.MB_d], Hist_conv[barrel_endcap_region.MB_d],False)
+                if study_particle_origins:
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_d], Hist_fakes[barrel_endcap_region.MB_d], Hist_BDfakes[barrel_endcap_region.MB_d], Hist_conv[barrel_endcap_region.MB_d],False)
                 n_muon_barrel += 1
                 
                 if (lep_tight and (lep_iso < 0.35) and TestVar):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_n], Hist_fakes[barrel_endcap_region.MB_n],Hist_BDfakes[barrel_endcap_region.MB_n], Hist_conv[barrel_endcap_region.MB_n],False)
+                    if study_particle_origins:
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_n], Hist_fakes[barrel_endcap_region.MB_n],Hist_BDfakes[barrel_endcap_region.MB_n], Hist_conv[barrel_endcap_region.MB_n],False)
                     h1D_FRmu_EB.Fill(FillVar, weight)
                     n_muon_barrel_passtight += 1
 
             if ((abs(idL3) == 13) and (math.fabs(etaL3) > 1.2) and TestVar):
                 h1D_FRmu_EE_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_d], Hist_fakes[barrel_endcap_region.ME_d],Hist_BDfakes[barrel_endcap_region.ME_d], Hist_conv[barrel_endcap_region.ME_d],False)
+                if study_particle_origins:
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_d], Hist_fakes[barrel_endcap_region.ME_d],Hist_BDfakes[barrel_endcap_region.ME_d], Hist_conv[barrel_endcap_region.ME_d],False)
                 n_muon_endcap += 1
                 
                 if (lep_tight and (lep_iso < 0.35) and TestVar):
                     #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[ME_n], Hist_fakes[ME_n],Hist_BDfakes[ME_n], Hist_conv[ME_n],false)
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_n], Hist_fakes[barrel_endcap_region.ME_n],Hist_BDfakes[barrel_endcap_region.ME_n], Hist_conv[barrel_endcap_region.ME_n],False)
+                    if study_particle_origins:
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_n], Hist_fakes[barrel_endcap_region.ME_n],Hist_BDfakes[barrel_endcap_region.ME_n], Hist_conv[barrel_endcap_region.ME_n],False)
                     h1D_FRmu_EE.Fill(FillVar, weight)
                     n_muon_endcap_passtight += 1
 
@@ -1141,7 +1160,10 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
     h1D_FRmu_EE_n.SetName("Data_FRmu_EE") 
     h1D_FRmu_EE_n.Write()
     
-    print("...Storing kinematic histograms in '.root' file.\n")
+    print(
+        f"...Storing kinematic histograms in root file:\n"
+        f"{outfile_path}"
+        )
     for h in hist_dct.values():
         h.Write()
     
