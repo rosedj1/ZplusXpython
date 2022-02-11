@@ -4,7 +4,7 @@ Apply WZ-removed fake rates to 3P1F and 2P2F control regions (CRs).
 Syntax to run: `python <this_script>.py`
 Author: Jake Rosenzweig
 Original logic from: Vukasin Melosevic
-Updated: 2021-07-23
+Updated: 2022-02-10
 """
 import ROOT
 import math
@@ -108,7 +108,7 @@ def estimateZX(FakeRateFile, tree, Nickname, outfile_dir, suffix="",
     if isData:
         n_dataset_tot = n_evts_tree
     else:
-        n_dataset_tot = float(n_sumgenweights_dataset_dct[Nickname])
+        n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[Nickname])
     # lNEvents = setNEvents(Nickname)
 
     for iEvt, event in enumerate(tree):
@@ -132,8 +132,13 @@ def estimateZX(FakeRateFile, tree, Nickname, outfile_dir, suffix="",
         #     if (Nickname=="ZZ"):
         #         weight *= 1.256*lumi*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
         weight = get_evt_weight(
-            isData=isData, xs_dct_jake=xs_dct_jake, Nickname=Nickname, lumi=lumi,
-            event=event, n_dataset_tot=n_dataset_tot, wgt_from_ntuple=wgt_from_ntuple)
+                    xs_dct=xs_dct_jake,
+                    Nickname=Nickname,
+                    lumi=lumi,
+                    event=event,
+                    n_dataset_tot=n_dataset_tot,
+                    orig_evt_weight=event.eventWeight
+                    )
         
         if event.passedZXCRSelection:
             lep_tight = []

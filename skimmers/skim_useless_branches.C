@@ -7,7 +7,7 @@
  * FIXED! Simply do: t->CloneTree(-1, "fast")
  * AUTHOR: Jake Rosenzweig, jake.rose@cern.ch
  * CREATED: 2021-11-12
- * UPDATED: 2022-02-09
+ * UPDATED: 2022-02-10
  */
 
 #include <iostream>
@@ -26,8 +26,8 @@ void skim_useless_branches() {
   // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon_skimmed.root";
   // TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
   // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/skimmedbranches/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
-  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/DoubleMuon-UL2017_MiniAODv2.root";
-  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/skimmedbranches/DoubleMuon-UL2017_MiniAODv2.root";
+  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_realistic_v15_ext1-v2_2018.root";
+  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/skimmedbranches/veryfewbranches/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_realistic_v15_ext1-v2_2018.root";
   TString intree = "Ana/passedEvents";
   unsigned int n_evts_to_keep = -1;  // Use -1 for "all".
   bool verbose = true;
@@ -73,6 +73,7 @@ void skim_useless_branches() {
     "nInt",
     "finalState",
     "passedFullSelection",
+    "passedZ1LSelection",
     "passedZXCRSelection",
     "passedTrig"
     "nZXCRFailedLeptons",
@@ -151,6 +152,7 @@ void skim_useless_branches() {
     "D_bkg_kin_vtx_BS",
     "D_bkg",
     "D_VBF",
+    
     // "is2P2F",
     // "is3P1F",
     // "isData",

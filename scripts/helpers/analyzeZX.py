@@ -820,7 +820,7 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
     n_muon_endcap = 0
     n_muon_endcap_passtight = 0
     for iEvt, event in enumerate(fTemplateTree):
-        if (iEvt % 50000 == 0):
+        if (iEvt % 1000000 == 0):
             print (f"Processing event: {iEvt}/{nentries}")
         # if iEvt == max_events:
         #     break

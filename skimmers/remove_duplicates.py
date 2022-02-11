@@ -12,19 +12,20 @@
 from ROOT import TFile
 from Utils_Python.Utils_Files import check_overwrite
 
-infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/MuonEG-UL2017_MiniAODv2.root"
-outfile =  infile.replace(".root", "_nodups.root") #"/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates_comparesetwithstrandtup_deleteme.root"
-path_to_tree = "Ana/passedEvents"
-start_at_evt = 0  # First event is indexed at 0.
-overwrite = 1
+infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/skimmedbranches/veryfewbranches/Data_UL2017_MiniAODv2_SingleMuonAndDoubleEGmissingonejob.root"
+outfile =  infile.replace(".root", "_noDuplicates.root") #"/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates_comparesetwithstrandtup_deleteme.root"
+path_to_tree = "passedEvents"
+start_at = 0  # First event is indexed at 0.
+end_at = 10  # Use -1 to process all events.
+overwrite = 0
 verbose = 1
 
-def make_prefilled_event_set(tree, start_at_evt, verbose=False):
-    """Return a set of 3-tuples from entry0 -> `start_at_evt` (exclusive).
+def make_prefilled_event_set(tree, start_at, end_at, verbose=False):
+    """Return a set of 3-tuples from entry0 -> `start_at` (exclusive).
 
     Args:
         tree (ROOT.TTree): Contains events indexed by (Run, Lumi, Event).
-        start_at_evt (int): Which entry of TTree to begin checking for
+        start_at (int): Which entry of TTree to begin checking for
             duplicates.
         verbose (bool, optional): Print debug info. Defaults to False.
 
@@ -34,13 +35,14 @@ def make_prefilled_event_set(tree, start_at_evt, verbose=False):
     if verbose:
         print(
             f"Prefilling eventID set within entry range:\n"
-            f"0 -> {start_at_evt} (exclusive)"
+            f"0 -> {start_at} (exclusive)"
             )
     prefilled_set = set()
-    for ct in range(0, start_at_evt):
+    # for ct in range(0, start_at):
+    for ct in range(start_at, end_at):
         if (ct % 10000) == 0:
             if verbose:
-                print(f"{ct}/{start_at_evt}, (progress: {(ct/start_at_evt * 100):.1f}%).")
+                print(f"{ct}/{start_at}, (progress: {(ct/start_at * 100):.1f}%).")
         tree.GetEntry(ct)
         key = (tree.Run, tree.LumiSect, tree.Event, )
         prefilled_set.add(key)
@@ -48,7 +50,7 @@ def make_prefilled_event_set(tree, start_at_evt, verbose=False):
         print("Prefilling set done.")
     return prefilled_set
 
-def eliminate_duplicates(tree, start_at_evt=0, verbose=False):
+def eliminate_duplicates(tree, start_at=0, end_at=-1, verbose=False):
     """Return a new TTree that contains no duplicates within `tree`.
 
     A duplicate is any entry with exactly the same Run, Lumi, Event number.
@@ -56,27 +58,29 @@ def eliminate_duplicates(tree, start_at_evt=0, verbose=False):
     NOTE:
       - You must open up a new TFile BEFORE calling this function.
         This function creates a new TTree which must live in a new TFile.
-      - You can start looking for duplicates at entry `start_at_evt`.
-        In this case, the TTree is cloned from event 0 up to `start_at_evt`
+      - You can start looking for duplicates at entry `start_at`.
+        In this case, the TTree is cloned from event 0 up to `start_at`
         without looking for duplicates. However, these eventIDs
         (Run, LumiSect, Event) are stored in `unique_event_set`.
 
     Args:
         tree (ROOT.TTree): Tree to be cloned and trimmed.
     """
-    if start_at_evt == 0:
+    if end_at > 0:
+        assert end_at > start_at
+
+    if start_at == 0:
         unique_event_set = set()
         newtree = tree.CloneTree(0)  # Clone 0 entries.
     else:
-        unique_event_set = make_prefilled_event_set(tree, start_at_evt, verbose=verbose)
-        newtree = tree.CloneTree(start_at_evt)
+        unique_event_set = make_prefilled_event_set(tree, start_at, end_at, verbose=verbose)
+        newtree = tree.CloneTree(start_at)
     print(f"TTree cloned with {newtree.GetEntries()} entries.")
 
     n_tot = tree.GetEntries()
     num_duplicates = 0
-    ct = start_at_evt
-    #=== tree.GetEntry() returns num_bytes (> 0 when the entry exists).
-    while tree.GetEntry(ct):
+    ct = start_at
+    for ct in range(start_at, end_at):
         if verbose:
             if (ct % 100000) == 0:
                 print(
@@ -93,15 +97,22 @@ def eliminate_duplicates(tree, start_at_evt=0, verbose=False):
             newtree.Fill()
             unique_event_set.add(key)
         ct += 1
+        if ct == end_at:
+            break
         
     if verbose:
         print(
             f"Number of duplicates found: {num_duplicates}, "
             f"({num_duplicates/n_tot * 100:.1f}% of original entries)"
             )
+
     return newtree
 
-def main(infile, path_to_tree, outfile, start_at_evt=0, overwrite=False):
+def main(
+    infile, path_to_tree, outfile,
+    start_at=0, end_at=-1,
+    overwrite=False
+    ):
     """Write a new root file with a cloned TTree, but with no duplicates.
     
     The duplicates are indexed by: (Run, LumiSect, Event).
@@ -120,11 +131,13 @@ def main(infile, path_to_tree, outfile, start_at_evt=0, overwrite=False):
     print(f"Creating new file:\n{outfile}")
     newfile = TFile(outfile, "recreate")
 
-    newtree = eliminate_duplicates(old_tree, start_at_evt=start_at_evt, verbose=verbose)
+    newtree = eliminate_duplicates(
+                old_tree, start_at=start_at, end_at=end_at, verbose=verbose
+                )
 
     newtree.Write()
     print(f"New TTree written to file:\n{outfile}")
     newfile.Close()
 
 if __name__ == '__main__':
-    main(infile, path_to_tree, outfile, start_at_evt=start_at_evt, overwrite=overwrite)
+    main(infile, path_to_tree, outfile, start_at=start_at, end_at=end_at, overwrite=overwrite)
