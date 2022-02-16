@@ -23,7 +23,6 @@ outdir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2017/fulls
 suffix_to_outfile = "-UL2017_MiniAODv2_skiperffunc_err"
 
 year = 2017
-hadd_runs_together = True
 
 #################
 #=== 2017 UL ===#

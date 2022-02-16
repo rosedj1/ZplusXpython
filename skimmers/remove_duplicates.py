@@ -10,17 +10,19 @@
 # ==============================================================================
 """
 from ROOT import TFile
+import sys
+sys.path.append("/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/")
 from Utils_Python.Utils_Files import check_overwrite
 
-infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/skimmedbranches/veryfewbranches/Data_UL2017_MiniAODv2_SingleMuonAndDoubleEGmissingonejob.root"
+infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/skimmedbranches/fewbranches/Data_2017_UL_MiniAODv2.root"
 outfile =  infile.replace(".root", "_noDuplicates.root") #"/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates_comparesetwithstrandtup_deleteme.root"
 path_to_tree = "passedEvents"
-start_at = 0  # First event is indexed at 0.
-end_at = 10  # Use -1 to process all events.
-overwrite = 0
+start_at = 25798047  # First event is indexed at 0.
+end_at = -1  # Use -1 to process all events.
+overwrite = 1
 verbose = 1
 
-def make_prefilled_event_set(tree, start_at, end_at, verbose=False):
+def make_prefilled_event_set(tree, start_at, verbose=False):
     """Return a set of 3-tuples from entry0 -> `start_at` (exclusive).
 
     Args:
@@ -32,22 +34,25 @@ def make_prefilled_event_set(tree, start_at, end_at, verbose=False):
     Returns:
         set: A set of 3-tuples.
     """
+    end_at = start_at - 1
     if verbose:
         print(
             f"Prefilling eventID set within entry range:\n"
-            f"0 -> {start_at} (exclusive)"
+            f"0 -> {end_at} (inclusive)"
             )
     prefilled_set = set()
-    # for ct in range(0, start_at):
-    for ct in range(start_at, end_at):
-        if (ct % 10000) == 0:
+    for ct in range(0, start_at):
+        print_every = round(end_at / 10.0)
+        if (ct % print_every) == 0:
             if verbose:
-                print(f"{ct}/{start_at}, (progress: {(ct/start_at * 100):.1f}%).")
+                print(f"{ct}/{(end_at)}, (progress: {(ct/end_at * 100):.1f}%).")
         tree.GetEntry(ct)
         key = (tree.Run, tree.LumiSect, tree.Event, )
         prefilled_set.add(key)
     if verbose:
-        print("Prefilling set done.")
+        print(f"Prefilling set done.")
+    err_msg = f"Duplicate found before entry=`start_at`={start_at}!"
+    assert len(prefilled_set) == start_at, err_msg
     return prefilled_set
 
 def eliminate_duplicates(tree, start_at=0, end_at=-1, verbose=False):
@@ -73,13 +78,15 @@ def eliminate_duplicates(tree, start_at=0, end_at=-1, verbose=False):
         unique_event_set = set()
         newtree = tree.CloneTree(0)  # Clone 0 entries.
     else:
-        unique_event_set = make_prefilled_event_set(tree, start_at, end_at, verbose=verbose)
+        unique_event_set = make_prefilled_event_set(tree, start_at=start_at, verbose=verbose)
         newtree = tree.CloneTree(start_at)
     print(f"TTree cloned with {newtree.GetEntries()} entries.")
 
     n_tot = tree.GetEntries()
     num_duplicates = 0
     ct = start_at
+    if end_at == -1:
+        end_at = tree.GetEntries()
     for ct in range(start_at, end_at):
         if verbose:
             if (ct % 100000) == 0:
@@ -88,6 +95,7 @@ def eliminate_duplicates(tree, start_at=0, end_at=-1, verbose=False):
                     f"Duplicates found = {num_duplicates}"
                     )
 
+        tree.GetEntry(ct)
         key = (tree.Run, tree.LumiSect, tree.Event, )
 
         if key in unique_event_set:

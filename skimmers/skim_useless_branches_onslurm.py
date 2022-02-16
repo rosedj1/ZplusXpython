@@ -1,8 +1,10 @@
 """Submit SLURM jobs which remove TTree branches from xBF NTuples.
 ==============================================================================
 Syntax: python <this_script>.py
-Notes: Check the "User Parameters" section.
-    * 
+Notes:
+    * Check the "User Parameters" section.
+    * Check the branches to be saved in your `cpp_skim_template`.
+    * One SLURM job is submitted per root file.
 Author: Jake Rosenzweig
 Created: 2022-02-15
 Updated: 
@@ -18,18 +20,19 @@ from Utils_Python.Utils_Files import replace_value
 #=== Begin User Parameters. ===#
 cpp_skim_template = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/skim_useless_branches_template.C"
 
-indir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2017/fullstats/"
+indir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats"
 ls_rootfiles = [
     "DoubleEG_2017_MiniAODv2.root",
-    # "DoubleMuon_2017_MiniAODv2_skiperffunc_err.root",
+    "DoubleMuon_2017_MiniAODv2_missing2LumiSect.root",
     "MuonEG_2017_MiniAODv2.root",
-    # "SingleElectron_2017_MiniAODv2.root",
-    # "SingleMuon_2017_MiniAODv2_skiperffunc_err.root",
+    "SingleElectron_2017_MiniAODv2.root",
+    "SingleMuon_2017_MiniAODv2_missing1LumiSect.root",
 ]
 path_to_tree = "Ana/passedEvents"
 n_evts = -1  # Use -1 to process all events.
+mem = 8  # GB to request on SLURM.
 
-outdir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2017/fullstats/skimmedbranches/fewbranches/"
+outdir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/skimmedbranches/fewbranches"
 #=== End User Parameters. ===#
 
 def skim_on_slurm():
@@ -56,7 +59,7 @@ def skim_on_slurm():
                             time="08:00:00",
                             acct="avery",
                             burst=False,
-                            mem=(64, "gb"),
+                            mem=(mem, "gb"),
                             partition="bigmem", #"hpg2-compute",
                             nodes=1)
         new_skim_file_funcname = os.path.basename(new_skim_file).split(".")[0]

@@ -16,10 +16,10 @@ import os
 sys.path.append('/cmsuf/data/store/user/t2/users/rosedj1/')
 from HiggsMassMeasurement.Utils_Python.SlurmManager import SLURMSubmitter
 
-indir_t2 = "/cmsuf/data/store/user/drosenzw/UFHZZAnalysisRun2/UL/Data2017/skim2L/"
+indir_t2 = "/cmsuf/data/store/user/drosenzw/UFHZZAnalysisRun2/UL/Data2017/skim2L_UL/"
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2017/fullstats/"
 # Use empty string if you don't want suffix:
-suffix_to_outfile = "-UL2017_MiniAODv2_skiperffunc_err"
+suffix_to_outfile = "_MiniAODv2_missing1LumiSect"
 
 year = 2017
 
@@ -30,9 +30,8 @@ datasets = [
     # "DoubleEG",
     # "MuonEG",
     # "SingleElectron",
-    #=== The below are missing a few jobs.
-    "SingleMuon",
-    "DoubleMuon",
+    "SingleMuon",  # Wouldn't process 1 LumiSect.
+    # "DoubleMuon",  # Wouldn't process 2 LumiSects.
 ]
 
 ##############

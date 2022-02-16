@@ -16,7 +16,8 @@ This repo contains scripts to:
 1. Use the UFHZZ4LAnalyzer to skim the MiniAOD files (Data or MC).
 
 1. Combine files (using `hadd`) of the same process (e.g., MuonEG runs A-D) with:
-   - `hadders/haddfiles_on_slurm.py` (submits `hadd` jobs to SLURM)
+   - `scripts/hadders/haddfiles_on_slurm_step01_runstogether.py`
+      - Submits `hadd` jobs to SLURM.
       - **NOTE:** If you get an error like the one below
    then first get rid of extraneous branches using
    `skimmers/skim_useless_branches.C`; then resume `hadd`ing.
@@ -25,6 +26,11 @@ This repo contains scripts to:
    Error in <TBufferFile::WriteByteCount>: bytecount too large (more than 1073741822)
    ```
    
+1. Skim any extraneous branches to reduce file size:
+   - `skimmers/skim_useless_branches_onslurm.py`
+   - **NOTE:** Make sure you keep the branches you want in the skimmer template:
+      - `skimmers/skim_useless_branches_template.C`
+
 1. Remove duplicate events (same `Run:Lumi:Event`) with one of:
    - `skimmers/remove_duplicates.py`
    - `skimmers/remove_duplicates_Filippo.C`

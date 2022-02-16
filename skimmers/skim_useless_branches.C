@@ -152,7 +152,9 @@ void skim_useless_branches() {
     "D_bkg_kin_vtx_BS",
     "D_bkg",
     "D_VBF",
+    "EventCat",
     
+    // New branches that will be added for RedBkg studies.
     // "is2P2F",
     // "is3P1F",
     // "isData",
@@ -167,7 +169,6 @@ void skim_useless_branches() {
     // "eventWeightFR",
     // "eventWeightFR_up",
     // "lep_RedBkgindex",
-  };
 
   TFile *tf = new TFile(infile, "READ");
   TTree *tree = (TTree*)tf->Get(intree);

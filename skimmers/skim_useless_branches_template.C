@@ -6,8 +6,8 @@
  * It couldn't skim a 773 GB Drell-Yan MC file.
  * FIXED! Simply do: t->CloneTree(-1, "fast")
  * AUTHOR: Jake Rosenzweig, jake.rose@cern.ch
- * CREATED: 2021-11-12
- * UPDATED: 2022-02-10
+ * CREATED: 2022-02-15
+ * UPDATED: 2022-02-16
  */
 
 #include <iostream>
@@ -152,7 +152,9 @@ void FUNC_NAME() {
     "D_bkg_kin_vtx_BS",
     "D_bkg",
     "D_VBF",
+    "EventCat",
     
+    // New branches that will be added for RedBkg studies.
     // "is2P2F",
     // "is3P1F",
     // "isData",
