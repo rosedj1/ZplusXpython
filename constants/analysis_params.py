@@ -5,13 +5,6 @@
 
 MZ_PDG = 91.1876  # GeV
 
-LUMI_INT_2016 = -1  # pb^{-1}
-LUMI_INT_2017 = -1  # pb^{-1}
-LUMI_INT_2018_Jake_OLD = 57750  # pb^{-1}, PARTIALLY-PROCESSED 2018 DATA.
-LUMI_INT_2018_Jake = 58474  # pb^{-1}, PARTIALLY-PROCESSED 2018 DATA.
-LUMI_INT_2018_Vukasin = 59700  # pb^{-1}
-LUMI_INT_2018_TWiki = 59740  # pb^{-1}, from Ref [1].
-
 xs_dct_jake = {
     # Cross section vals obtained from [2] and [3].
     ###################################
@@ -46,6 +39,32 @@ xs_dct_vukasin = {
     'WZ-ext1-v2' : 4.9, #MCM=1.965,  # Elisa used this WZ sample.
     'ZZ'   : 1.256
 }
+
+LUMI_INT_2016 = -1  # pb^{-1}
+LUMI_INT_2017 = -1  # pb^{-1}
+
+#===============#
+#=== 2018 UL ===#
+#===============#
+n_sumgenweights_dataset_dct_UL_jake = {
+    # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
+    'DY10'       : -1,  # Not yet analyzed.
+    'DY50'       : 0.0,
+    'TT'         : 0.0,
+    'WZ'         : 0.0,
+    'WZ-ext1-v2' : 0.0,
+    'WZ_vukasin' : 0,
+    'ZZ'         : 0.0,
+    'Data'       : 1,  # Can be anything.
+}
+
+#===================#
+#=== 2018 RERECO ===#
+#===================#
+LUMI_INT_2018_Jake_OLD = 57750  # pb^{-1}, PARTIALLY-PROCESSED 2018 DATA.
+LUMI_INT_2018_Jake = 58474  # pb^{-1}, PARTIALLY-PROCESSED 2018 DATA.
+LUMI_INT_2018_Vukasin = 59700  # pb^{-1}
+LUMI_INT_2018_TWiki = 59740  # pb^{-1}, from Ref [1].
 
 n_totevts_dataset_dct = {
     # 'Nickname' : n_evts in MC file. Obtained from `crab report -d <dir>`.
