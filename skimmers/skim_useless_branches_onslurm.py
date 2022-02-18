@@ -22,7 +22,7 @@ cpp_skim_template = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimme
 
 indir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats"
 ls_rootfiles = [
-    "DoubleEG_2017_MiniAODv2.root",
+    # "DoubleEG_2017_MiniAODv2.root",
     "DoubleMuon_2017_MiniAODv2_missing2LumiSect.root",
     "MuonEG_2017_MiniAODv2.root",
     "SingleElectron_2017_MiniAODv2.root",

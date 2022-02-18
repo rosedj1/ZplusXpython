@@ -14,7 +14,7 @@ import sys
 sys.path.append("/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/")
 from Utils_Python.Utils_Files import check_overwrite
 
-infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/skimmedbranches/fewbranches/Data_2017_UL_MiniAODv2.root"
+infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/skimmedbranches/fewbranches/Data_2017_UL_MiniAODv2_skim2L.root"
 outfile =  infile.replace(".root", "_noDuplicates.root") #"/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates_comparesetwithstrandtup_deleteme.root"
 path_to_tree = "passedEvents"
 start_at = 25798047  # First event is indexed at 0.

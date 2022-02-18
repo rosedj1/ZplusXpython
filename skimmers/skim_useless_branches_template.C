@@ -153,6 +153,9 @@ void FUNC_NAME() {
     "D_bkg",
     "D_VBF",
     "EventCat",
+    "lep_matchedR03_PdgId",
+    "lep_matchedR03_MomId",
+    "lep_matchedR03_MomMomId",
     
     // New branches that will be added for RedBkg studies.
     // "is2P2F",

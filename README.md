@@ -31,6 +31,10 @@ This repo contains scripts to:
    - **NOTE:** Make sure you keep the branches you want in the skimmer template:
       - `skimmers/skim_useless_branches_template.C`
 
+1. Now `hadd` together the "AllRun" files with:
+   - `scripts/hadders/haddfiles_on_slurm_step02_datasetstogether.py`
+      - Submits the one `hadd` job to SLURM.
+
 1. Remove duplicate events (same `Run:Lumi:Event`) with one of:
    - `skimmers/remove_duplicates.py`
    - `skimmers/remove_duplicates_Filippo.C`
@@ -73,9 +77,7 @@ The cross section is in the 'Generator Parameters' column to the right.
 
 Put cross sections in `constants/analysis_params.py`.
 
-### L_int for Data
-
-Go to `lxplus` and do:
+### Retrieve Integrated Lumi (L_int) for Data
 
 ```bash
 crab report -d <crab_dir>

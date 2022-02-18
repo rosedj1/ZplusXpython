@@ -42,6 +42,7 @@ xs_dct_vukasin = {
 
 LUMI_INT_2016 = -1  # pb^{-1}
 LUMI_INT_2017 = -1  # pb^{-1}
+LUMI_INT_2017_UL_Jake = -1  # pb^{-1}, PARTIALLY-PROCESSED 2018 DATA.
 
 #===============#
 #=== 2018 UL ===#
