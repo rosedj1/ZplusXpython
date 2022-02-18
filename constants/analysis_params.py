@@ -40,9 +40,9 @@ xs_dct_vukasin = {
     'ZZ'   : 1.256
 }
 
-LUMI_INT_2016 = -1  # pb^{-1}
-LUMI_INT_2017 = -1  # pb^{-1}
-LUMI_INT_2017_UL_Jake = -1  # pb^{-1}, PARTIALLY-PROCESSED 2018 DATA.
+LUMI_INT_2016 = -1  # pb^{-1}.
+LUMI_INT_2017 = -1  # pb^{-1}.
+LUMI_INT_2017_UL_Jake = 41798  # pb^{-1}.
 
 #===============#
 #=== 2018 UL ===#
@@ -69,6 +69,7 @@ LUMI_INT_2018_TWiki = 59740  # pb^{-1}, from Ref [1].
 
 n_totevts_dataset_dct = {
     # 'Nickname' : n_evts in MC file. Obtained from `crab report -d <dir>`.
+    #...I don't know where these numbers came from...
     'DY10'       : -1,  # Not yet analyzed.
     'DY50'       : 187531221,
     'TT'         : 63405000,

@@ -8,6 +8,7 @@ main_dir = "/blue/avery/rosedj1/ZplusXpython/sidequests/findmissingevents_compar
 data_2017_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/Data/2017/Data_2017_UL_MiniAODv2_skim2L_noDuplicates.root"
 dir_mc_2017_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/2017/"
 mc_2017_UL_DY = os.path.join(dir_mc_2017_UL, "DYJetsToLL_M-50_M125_2017_skimmed.root")
+mc_2017_UL_TT = os.path.join(dir_mc_2017_UL, "TTTo2L2Nu_M125_2017_skimmed.root")
 mc_2017_UL_WZ = os.path.join(dir_mc_2017_UL, "WZTo3LNu_M125_2017_skimmed.root")
 mc_2017_UL_ZZ = os.path.join(dir_mc_2017_UL, "ZZTo4L_M125_2017_skimmed.root")
 
