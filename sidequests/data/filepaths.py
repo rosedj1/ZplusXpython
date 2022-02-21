@@ -1,6 +1,11 @@
 import os
 
-main_dir = "/blue/avery/rosedj1/ZplusXpython/sidequests/findmissingevents_comparetoelisa/jakes_new2018data/"
+####################
+#--- Fake Rates ---#
+####################
+fakerates_WZremoved_2017_UL = ""
+fakerates_WZremoved_2018_UL = ""
+fakerates_WZremoved_2018_rereco = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
 
 ##############
 #=== 2017 ===#
@@ -12,9 +17,21 @@ mc_2017_UL_TT = os.path.join(dir_mc_2017_UL, "TTTo2L2Nu_M125_2017_skimmed.root")
 mc_2017_UL_WZ = os.path.join(dir_mc_2017_UL, "WZTo3LNu_M125_2017_skimmed.root")
 mc_2017_UL_ZZ = os.path.join(dir_mc_2017_UL, "ZZTo4L_M125_2017_skimmed.root")
 
-##############
-#=== 2018 ===#
-##############
+#################
+#=== 2018 UL ===#
+#################
+data_2018_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/Data/2018/2018DATA_noDuplicates.root"
+dir_mc_2018_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/2018/"
+mc_2018_UL_DY = os.path.join(dir_mc_2018_UL, "DYJetsToLL_M-50_M125_2018_skimmed.root")
+mc_2018_UL_TT = os.path.join(dir_mc_2018_UL, "TTTo2L2Nu_M125_2018_skimmed.root")
+mc_2018_UL_WZ = os.path.join(dir_mc_2018_UL, "WZTo3LNu_M125_2018_skimmed.root")
+mc_2018_UL_ZZ = os.path.join(dir_mc_2018_UL, "ZZTo4L_M125_2018_skimmed.root")
+
+#####################
+#=== 2018 RERECO ===#
+#####################
+main_dir = "/blue/avery/rosedj1/ZplusXpython/sidequests/findmissingevents_comparetoelisa/jakes_new2018data/"
+
 # infile_jake_tree = "/blue/avery/rosedj1/ZplusXpython/data/ZLL_CR_FRapplied/Data_2018_NoDuplicates_RunEventLumi.root"
 infile_jake_tree = "/blue/avery/rosedj1/ZplusXpython/data/ZLL_CR_FRapplied/new_data2018/cr_ZLL.root"
 # ^Contains all the passedZXCRSelection events as in:
@@ -64,8 +81,3 @@ outfile_LLR_data2018 = "/blue/avery/rosedj1/ZplusXpython/sidequests/findmissinge
 outfile_2p2f_common = os.path.join(main_dir, "CRLLos_listOfEvents_2P2F_common.txt")
 outfile_3p1f_common = os.path.join(main_dir, "CRLLos_listOfEvents_3P1F_common.txt")
 # write_tree_info_to_txt(infile_jake_tree, infile_jake)
-
-####################
-#--- Fake Rates ---#
-####################
-fakerates_WZremoved = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
