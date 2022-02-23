@@ -345,8 +345,8 @@ def select_better_zzcand(zzcand1, zzcand2, verbose=False):
             Perhaps there's something inherent in the smart cut that ensures
             the Z1 will pass tight selections.
     
-    If two ZZs do NOT have same leptons, then choose the ZZ with higher Kd
-    (this would only be possible when considering DIFFERENT lep quartets).
+    If two ZZs do NOT have same leptons, then choose the ZZ with higher Kd.
+    Unfortunately, this code cannot recalculate Kd's per ZZ.
     """
     ndx_fir = zzcand1.ndx_in_zzpair_ls
     ndx_sec = zzcand2.ndx_in_zzpair_ls

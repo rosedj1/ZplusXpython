@@ -149,7 +149,7 @@ scripts/plotters/plot_fakerate_hists.py
 
 ---
 
-## Estimate Non-ZZ Contribution
+## Estimate Reducible Background
 
 <!-- ### Optional - Add New Branches
 
@@ -160,7 +160,7 @@ skimmers/skim_ZLL_addbranches.py
 ``` -->
 
 Use Data and Monte Carlo ZZ->4l (irreducible background) to estimate the
-non-ZZ contribution.
+RB.
 Choose a framework to work with:
 
 - Vukasin's Framework.
@@ -186,9 +186,7 @@ Print out the estimates (integrals) within the histograms using:
 python estimate_final_numbers_macro.py
 ```
 
----
-
-## Plot the 2P2F/3P1F distributions
+#### Plot the 2P2F/3P1F distributions
 
 ```bash
 python plotting_macros.py

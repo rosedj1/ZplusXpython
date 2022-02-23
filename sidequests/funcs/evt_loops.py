@@ -47,7 +47,7 @@ from scripts.helpers.analyzeZX import (
     calc_wgt_2p2f_cr, calc_wgt_3p1f_cr
     )
 from constants.analysis_params import (
-    xs_dct_jake, n_sumgenweights_dataset_dct_jake
+    dct_xs_jake, n_sumgenweights_dataset_dct_jake
     )
 from constants.finalstates import dct_finalstates_str2int
 
@@ -397,9 +397,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     tree,
     infile_fakerates,
     genwgts_dct,
-    xs_dct,
+    dct_xs,
     outfile_root=None, outfile_json=None,
-    name="", int_lumi=59830,
+    name="", int_lumi=-1,
     start_at_evt=0, break_at_evt=-1,
     fill_hists=True,
     explain_skipevent=False, verbose=False, print_every=50000,
@@ -450,7 +450,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             Default is False.
         match_lep_Hindex (bool, optional):
             If True, then only keep the quartets whose selected lepton indices
-            exactly match those found in vector tree.lep_Hindex.
+            exactly match those found in the vector tree.lep_Hindex.
             Good for synchronizing with the BBF Analyzer.
             Default is False.
         recalc_mass4l_vals (bool, optional):
@@ -647,13 +647,13 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         #             for lep in mylep_ls:
         #                 lep.print_info()
         #         continue
-        # Guaranteed to have at least 4 leptons per event.
-        # At least 2 tight leptons.
-        # The remaining leptons should be loose.
 
-        #############################################################
-        #=== Make all lepton quartets (i.e. make all subevents). ===#
-        #############################################################
+        # Guaranteed to have at least 4 leptons per event.
+        # At least 2 leptons passing tight selections.
+        # The remaining should be failing leptons.
+        ###################################
+        #=== Make all lepton quartets. ===#
+        ###################################
         evt_is_2p2plusf = False
         evt_is_3p1plusf = False
         err_msg = (
@@ -710,7 +710,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 continue
 
             # Good 2P2F or 3P1F subevent!
-            # For now, the function above only picks out a single ZZ cand.
+            # For now, the function above picks out the "better" ZZ cand.
             zzcand = ls_zzcand[0]
             subevt_passes_sel_2p2f = evt_is_2p2plusf
             subevt_passes_sel_3p1f = evt_is_3p1plusf
@@ -729,7 +729,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             # Event weight calculation.
             n_dataset_tot = float(genwgts_dct[name])
             evt_weight_calcd = get_evt_weight(
-                xs_dct=xs_dct, Nickname=name, lumi=int_lumi, event=tree,
+                dct_xs=dct_xs, Nickname=name, lumi=int_lumi, event=tree,
                 n_dataset_tot=n_dataset_tot, orig_evt_weight=tree.eventWeight
                 )
             
@@ -893,7 +893,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 print_skipevent_msg(msg, evt_num, run, lumi, event)
             continue
 
-        # Recall that we should have either ONLY 3P1F or ONLY 2P2F subevents.
+        # Recall that we should have either ONLY 3P1F or ONLY 2P2F quartets.
         evt_info_d["n_good_redbkg_evts"] += 1
         if evt_is_2p2plusf:
             evt_type_msg = "2P2+F"
@@ -950,7 +950,7 @@ def evt_loop_evtsel_WCF(
     tree,
     infile_fakerates,
     genwgts_dct,
-    xs_dct,
+    dct_xs,
     outfile_root=None, outfile_json=None,
     name="", int_lumi=59830,
     start_at_evt=0, break_at_evt=-1,
@@ -1267,6 +1267,17 @@ def evt_loop_evtsel_WCF(
             # Good 2P2F or 3P1F subevent!
             # For now, the function above only picks out a single ZZ cand.
             zzcand = ls_zzcand[0]
+
+            if match_lep_Hindex:
+                # Make sure mass4l vars in TTree come from same leps
+                # as the leps that built the ZZ candidate I selected.
+                lep_Hindex_ls = list(tree.lep_Hindex)
+                myleps_ls_ptorder = zzcand.z_fir.get_mylep_idcs_pTorder() + \
+                                    zzcand.z_sec.get_mylep_idcs_pTorder()
+                if lep_Hindex_ls != myleps_ls_ptorder:
+                    evt_info_d["n_quartets_skip_lep_Hindex_mismatch"] += 1
+                    continue
+                
             subevt_passes_sel_2p2f = evt_is_2p2plusf
             subevt_passes_sel_3p1f = evt_is_3p1plusf
 
@@ -1284,7 +1295,7 @@ def evt_loop_evtsel_WCF(
             # Event weight calculation.
             n_dataset_tot = float(genwgts_dct[name])
             evt_weight_calcd = get_evt_weight(
-                xs_dct=xs_dct, Nickname=name, lumi=int_lumi, event=tree,
+                dct_xs=dct_xs, Nickname=name, lumi=int_lumi, event=tree,
                 n_dataset_tot=n_dataset_tot, orig_evt_weight=tree.eventWeight
                 )
             
@@ -1385,16 +1396,6 @@ def evt_loop_evtsel_WCF(
                     f"            new_weight_up = {new_weight_up:.6f}"
                 )
                 zzcand.print_info(name="SELECTED")
-
-            if match_lep_Hindex:
-                # Make sure mass4l vars in TTree come from same leps
-                # as the leps that built the ZZ candidate I selected.
-                lep_Hindex_ls = list(tree.lep_Hindex)
-                myleps_ls_ptorder = zzcand.z_fir.get_mylep_idcs_pTorder() + \
-                                    zzcand.z_sec.get_mylep_idcs_pTorder()
-                if lep_Hindex_ls != myleps_ls_ptorder:
-                    evt_info_d["n_quartets_skip_lep_Hindex_mismatch"] += 1
-                    continue
 
             # Save this subevent in TTree. Fill branches.
             lep_idcs = [
@@ -1714,7 +1715,7 @@ def fillhists_osmethod_bbfntuple(
             elif t.isMCzz:
                 # n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[name])
                 # evt_weight_calcd = get_evt_weight(
-                #     xs_dct=xs_dct_jake, Nickname=name, lumi=int_lumi, event=tree,
+                #     dct_xs=dct_xs_jake, Nickname=name, lumi=int_lumi, event=tree,
                 #     n_dataset_tot=n_dataset_tot, orig_evt_weight=t.eventWeight
                 #     )
 

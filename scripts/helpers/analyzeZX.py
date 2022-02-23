@@ -26,7 +26,7 @@ import ROOT as rt
 import numpy as np
 # from Utils_Python.Utils_Files import check_overwrite
 from scripts.helpers.MC_composition import PartOrigin
-from constants.analysis_params import xs_dct_jake, MZ_PDG, LUMI_INT_2018_Jake, n_sumgenweights_dataset_dct_jake
+from constants.analysis_params import dct_xs_jake, MZ_PDG, LUMI_INT_2018_Jake, n_sumgenweights_dataset_dct_jake
 # from HiggsMassMeasurement.Utils_ROOT.ROOT_classes import make_TH1F
 from Utils_ROOT.ROOT_classes import make_TH1F
 from Utils_Python.Utils_Files import check_overwrite
@@ -129,7 +129,7 @@ def get_expected_n_evts(xs, lumi, isMCzz, event):
     return n_exp
 
 def get_evt_weight(
-    xs_dct,
+    dct_xs,
     Nickname,
     lumi,
     event,
@@ -144,7 +144,7 @@ def get_evt_weight(
 
     Parameters
     ----------
-    xs_dct : dict
+    dct_xs : dict
         key (str) => nickname of physics process
         val (float) => cross section
     Nickname : str
@@ -175,7 +175,7 @@ def get_evt_weight(
         return 1
     else:
         # Sample is Monte Carlo.
-        xs = xs_dct[Nickname]
+        xs = dct_xs[Nickname]
         n_exp = get_expected_n_evts(xs, lumi, isMCzz, event)
         # newweight/oldweight = n_exp/n_obs = (L_int * xs * eff) / n_obs
         new_weight = orig_evt_weight * (n_exp / n_dataset_tot)
@@ -840,7 +840,7 @@ def analyzeZX(
         # n_dataset_tot = floa[Nickname])
         n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[Nickname])
         weight = get_evt_weight(
-                    xs_dct_jake,
+                    dct_xs_jake,
                     Nickname,
                     lumi,
                     tree,

@@ -3,13 +3,13 @@ import os
 ####################
 #--- Fake Rates ---#
 ####################
-fakerates_WZremoved_2017_UL = ""
-fakerates_WZremoved_2018_UL = ""
+fakerates_WZremoved_2017_UL = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2017UL_WZxs5p26invpb.root"
+fakerates_WZremoved_2018_UL = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2018UL_WZxs5p26invpb.root"
 fakerates_WZremoved_2018_rereco = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
 
-##############
-#=== 2017 ===#
-##############
+#################
+#=== 2017 UL ===#
+#################
 data_2017_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/Data/2017/Data_2017_UL_MiniAODv2_skim2L_noDuplicates.root"
 dir_mc_2017_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/2017/"
 mc_2017_UL_DY = os.path.join(dir_mc_2017_UL, "DYJetsToLL_M-50_M125_2017_skimmed.root")

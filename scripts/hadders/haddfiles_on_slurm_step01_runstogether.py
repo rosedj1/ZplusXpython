@@ -13,8 +13,8 @@ Updated: 2022-02-15
 """
 import sys
 import os
-sys.path.append('/cmsuf/data/store/user/t2/users/rosedj1/')
-from HiggsMassMeasurement.Utils_Python.SlurmManager import SLURMSubmitter
+sys.path.append('/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement')
+from Utils_Python.SlurmManager import SLURMSubmitter
 
 indir_t2 = "/cmsuf/data/store/user/drosenzw/UFHZZAnalysisRun2/UL/Data2017/skim2L_UL/"
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2017/fullstats/"
