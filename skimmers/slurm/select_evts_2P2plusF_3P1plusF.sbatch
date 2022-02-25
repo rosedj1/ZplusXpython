@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=redbkgest_2018UL_ZZ
-#SBATCH --output=redbkgest_2018UL_ZZ.out
-#SBATCH --error=redbkgest_2018UL_ZZ.err
+#SBATCH --job-name=redbkgest_UL_WZxs5p26pb_ge3lepskim_2017_ZZ
+#SBATCH --output=redbkgest_UL_WZxs5p26pb_ge3lepskim_2017_ZZ.out
+#SBATCH --error=redbkgest_UL_WZxs5p26pb_ge3lepskim_2017_ZZ.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rosedj1@ufl.edu
-#SBATCH --time=04:00:00
+#SBATCH --time=01:00:00
 #SBATCH --account=avery
 #SBATCH --qos=avery
 #SBATCH --mem=8gb
-#SBATCH --partition=bigmem
+#SBATCH --partition=hpg2-compute
 #SBATCH --nodes=1
 
 pwd; hostname; date
@@ -27,6 +27,6 @@ export X509_CERT_DIR=/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client
 
 echo 'Starting script...'
 cd skimmers/
-time python select_evts_2P2plusF_3P1plusF.py > output/redbkgest_2018UL_ZZ.txt
+time python select_evts_2P2plusF_3P1plusF.py > output/redbkgest_UL_WZxs5p26pb_ge3lepskim_2017_ZZ.txt
 
 echo 'Script finished!'

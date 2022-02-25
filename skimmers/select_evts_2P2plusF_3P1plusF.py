@@ -1,7 +1,8 @@
 """Select 2P2+F and 3P1+F events. Add new branches to TTree in new file.
 #=============================================================================
 # Syntax:
-#   
+#           
+#     
 # Notes:
 #     This code selects 2P2+F and 3P1+F reducible background events.
 #     It considers events with >4 leptons and properly handles all possible
@@ -55,7 +56,7 @@
 #     - lep_RedBkgindex (int arr[4])
 # Author: Jake Rosenzweig
 # Created: 2021-11-30
-# Updated: 2022-02-23
+# Updated: 2022-02-25
 #=============================================================================
 """
 import os
@@ -66,13 +67,17 @@ from sidequests.funcs.evt_loops import (
     evt_loop_evtsel_2p2plusf3p1plusf_subevents
     )
 from sidequests.data.filepaths import (
-    data_2017_UL, data_2018_UL,
-    mc_2017_UL_ZZ, mc_2018_UL_ZZ,
+    data_2017_UL, data_2017_UL_ge3lepskim,
+    data_2018_UL, data_2018_UL_ge3lepskim,
+    mc_2017_UL_ZZ, mc_2017_UL_ZZ_ge3lepskim,
+    mc_2018_UL_ZZ, mc_2018_UL_ZZ_ge3lepskim,
     # infile_filippo_data_2018_fromhpg,
     # infile_filippo_zz_2018_fromhpg,
     # mc_2018_zz_hpg,
     fakerates_WZremoved_2017_UL,
-    fakerates_WZremoved_2018_UL
+    fakerates_WZremoved_2018_UL,
+    fakerates_WZremoved_2017_UL_woFSR,
+    fakerates_WZremoved_2018_UL_woFSR
     )
 from Utils_Python.Utils_Files import check_overwrite
 from Utils_Python.Commands import shell_cmd
@@ -90,10 +95,15 @@ from constants.analysis_params import (
 # Files to analyze.
 d_nicknames_files = {
     # 'Data': data_2017_UL,
-    'ZZ': mc_2017_UL_ZZ,
+    # 'Data': data_2017_UL_ge3lepskim,
+    # 'ZZ': mc_2017_UL_ZZ,
+    'ZZ': mc_2017_UL_ZZ_ge3lepskim,
 
     # 'Data': data_2018_UL,
+    # 'Data': data_2018_UL_ge3lepskim,
     # 'ZZ': mc_2018_UL_ZZ,
+    # 'ZZ': mc_2018_UL_ZZ_ge3lepskim,
+
     # "Data" : infile_filippo_data_2018_fromhpg,
     # "ZZ" : mc_2018_zz_hpg,
     # "ZZ" : infile_filippo_zz_2018_fromhpg,
@@ -101,7 +111,7 @@ d_nicknames_files = {
 year = 2017
 genwgts_dct = dct_sumgenweights_2017_UL
 int_lumi = LUMI_INT_2017_UL
-infile_FR_wz_removed = fakerates_WZremoved_2017_UL
+infile_FR_wz_removed = fakerates_WZremoved_2017_UL_woFSR
 dct_xs = dct_xs_jake
 
 start_at_evt = 0
@@ -123,7 +133,7 @@ outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/re
 outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
 # basename gets appended with file nickname:
-outfile_basename = "redbkgest_2017UL"
+outfile_basename = "redbkgest_UL_WZxs5p26pb_ge3lepskim"
 #=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -29,7 +29,7 @@ dct_xs_jake = {
     'DY10' : 18610.0,
     'DY50' : 6077.22, # From [2] and [3].
     'TT'   : 87.31,
-    'WZ'   : 5.26,  # For aMCatNLO and mll > 30 GeV. #AN-19-139v6=4.43 (4.42965), #v1=4.9 (from MCM).
+    'WZ'   : 5.26, # After much deliberation, use 5.26 for UL samples. For aMCatNLO and mll > 30 GeV. #AN-19-139v6=4.43 (4.42965), #v1=4.9 (from MCM).
     'WZ-ext1-v2' : 4.9, # Elisa used this WZ sample.
     'ZZ'   : 1.256, # From MCM.,
     'Data' : -1  # Can be anything.
