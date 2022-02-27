@@ -84,13 +84,15 @@ def get_list_of_entries(txt):
                 ls_entries.extend([entry])
     return ls_entries
 
-def evtID_as_str(evtID):
-    """Return `evtID` as a str: 'Run : Lumi : Event'."""
-    return f"{evtID[0]} : {evtID[1]} : {evtID[2]}"
+def evtID_as_str(tup_evtID):
+    """Return `tup_evtID` (tuple or list) as a str: 'Run : Lumi : Event'."""
+    return f"{tup_evtID[0]} : {tup_evtID[1]} : {tup_evtID[2]}"
 
 class FileComparer:
 
-    def __init__(self, txt_file1, txt_file2, control_reg="", verbose=False):
+    def __init__(
+        self, txt_file1, txt_file2, control_reg="", verbose=False
+        ):
         """
         Feed in two txt files to be compared.
 

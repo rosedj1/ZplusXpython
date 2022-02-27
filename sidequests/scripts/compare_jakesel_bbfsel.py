@@ -1,7 +1,7 @@
 """Print info comparing event selections between BBF and "Jake" analyzers.
 # ============================================================================
 # Created: 2021-12-16
-# Updated: 2022-02-03
+# Updated: 2022-02-26
 # Creator: Jake Rosenzweig
 # Comment: Useful for doing event synchronization.
 # ============================================================================
@@ -17,22 +17,20 @@ from Utils_Python.Utils_Files import (
     open_json, save_to_pkl, open_pkl, check_overwrite
     )
 from Utils_Python.printing import print_periodic_evtnum, print_header_message
-from sidequests.data.filepaths import infile_filippo_data_2018_fromhpg
 from sidequests.funcs.evt_comparison import (
     print_evt_info_bbf, analyze_single_evt, find_runlumievent_using_entry
     )
-from skimmers.select_evts_2P2plusF_3P1plusF import infile_FR_wz_removed
-
 from sidequests.data.filepaths import (
     infile_filippo_data_2018_fromhpg,
-    fakerates_WZremoved
+    fakerates_WZremoved_2017_UL_woFSR,
+    fakerates_WZremoved_2018_UL_woFSR,
     )
 from constants.analysis_params import (
     n_sumgenweights_dataset_dct_jake,
-    xs_dct_jake
+    dct_xs_jake
     )
 
-infile_fakerates = fakerates_WZremoved
+infile_fakerates = fakerates_WZremoved_2017_UL_woFSR
 
 analyze_using = "jake"  # Choose between: "jake" or "bbf".
 allow_ge4tightleps = 1
@@ -40,42 +38,6 @@ allow_ge4tightleps = 1
 start_at = 95615
 end_at = start_at + 1
 
-# Filippo's unique 3P1F 4mu events.
-# They all have at least 4 tight leptons!
-ls_tup_unique_fili = [
-    (322492, 778, 1346201480),
-    (321961, 189, 343183869),
-    (321909, 32, 57978416),
-    (321396, 930, 1447135355),
-    (325022, 162, 228256467),
-    (317320, 504, 706020777),
-    (315689, 604, 672709805),
-    (315713, 819, 996429494),
-    (316758, 674, 941538912),
-    (325022, 1263, 1789168728),
-    (316766, 1907, 2626778761),
-    (317661, 556, 813675880),
-    (319449, 364, 498050124),
-    ]
-
-ls_tup_unique_jake = [
-    # Jake's unique 3P1F 4mu events.
-    # (321887, 450, 722204060),
-    # (315689, 342, 398232246),
-    # (319991, 777, 1213672625),
-    # (322599, 224, 359072495),
-    # (316766, 179, 208365005),
-    # (319524, 885, 1310553109),
-    # (317291, 636, 878537435),
-    # (322348, 827, 1498597313),
-    # (321434, 39, 65055154)
-
-    (321010, 33, 54826308),
-    (316218, 760, 1057128632),
-    (324980, 1481, 2730022725),
-    ]
-
-# CHOOSE A LIST FROM ABOVE TO USE!
 ls_tup_unique = ls_tup_unique_jake
 
 # Use Jake's analyzer on Filippo's unique events to see why Jake's FW failed.
@@ -99,12 +61,52 @@ for evt_num in range(start_at, end_at):
             evt_start=0, evt_end=-1, print_every=500000,
             infile_fakerates=infile_fakerates,
             genwgts_dct=n_sumgenweights_dataset_dct_jake,
-            xs_dct=xs_dct_jake,
+            dct_xs=dct_xs_jake,
             allow_ge4tightleps=allow_ge4tightleps,
             explain_skipevent=True,
             verbose=True
             )
     
+
+
+
+# Filippo's unique 3P1F 4mu events.
+# They all have at least 4 tight leptons!
+# ls_tup_unique_fili = [
+#     (322492, 778, 1346201480),
+#     (321961, 189, 343183869),
+#     (321909, 32, 57978416),
+#     (321396, 930, 1447135355),
+#     (325022, 162, 228256467),
+#     (317320, 504, 706020777),
+#     (315689, 604, 672709805),
+#     (315713, 819, 996429494),
+#     (316758, 674, 941538912),
+#     (325022, 1263, 1789168728),
+#     (316766, 1907, 2626778761),
+#     (317661, 556, 813675880),
+#     (319449, 364, 498050124),
+#     ]
+
+# ls_tup_unique_jake = [
+#     # Jake's unique 3P1F 4mu events.
+#     # (321887, 450, 722204060),
+#     # (315689, 342, 398232246),
+#     # (319991, 777, 1213672625),
+#     # (322599, 224, 359072495),
+#     # (316766, 179, 208365005),
+#     # (319524, 885, 1310553109),
+#     # (317291, 636, 878537435),
+#     # (322348, 827, 1498597313),
+#     # (321434, 39, 65055154)
+
+#     (321010, 33, 54826308),
+#     (316218, 760, 1057128632),
+#     (324980, 1481, 2730022725),
+#     ]
+
+
+
 # # inpkl_bbf_2p2f  = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/bbf_evtids_2p2f.pkl"
 # # inpkl_bbf_3p1f  = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/bbf_evtids_3p1f.pkl"
 # # inpkl_jake_2p2f = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/pkls/jake_evtids_2p2f.pkl"

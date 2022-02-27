@@ -12,8 +12,8 @@ fakerates_WZremoved_2018_rereco = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpyth
 ##############################
 #--- RedBkg Skimmed Trees ---#
 ##############################
-rb_skim_UL2017 = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_2017_Data_ZZ.root"
-rb_skim_UL2018 = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_2018_Data_ZZ.root"
+rb_skim_UL2017 = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge3lepskim_2017_Data_ZZ.root"
+rb_skim_UL2018 = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge3lepskim_2018_Data_ZZ.root"
 
 #################
 #=== 2017 UL ===#
