@@ -5,10 +5,10 @@
 # Notes: Only used on 1 root file at a time, so 1 SLURM job per root file.
 # Author: Jake Rosenzweig
 # Created: 2022-02-26
+# Updated: 2022-02-27
 #=============================================================================
-# infile_root='root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/2017/DYJetsToLL_M-50_M125_2017_skimmed.root'
-infile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2018/skimge3leps/2018DATA_noDuplicates.root'
-outfile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2018/skimge4leps/2018DATA_noDuplicates.root'
+infile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2017/skimge3leps/DYJetsToLL_M-50_M125_2017_skimmed.root'
+outfile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2017/skimge4leps/DYJetsToLL_M-50_M125_2017_skimmed.root'
 outdir_logs="/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output"
 
 py_template='/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/select_evts_geXleps_template.py'

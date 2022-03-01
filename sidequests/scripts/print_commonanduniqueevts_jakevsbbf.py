@@ -1,25 +1,27 @@
 from ROOT import TFile
 #=== Local imports. ===#
-from Utils_Python.printing import print_header_message
+from Utils_Python.printing import print_header_message, print_periodic_evtnum
 from constants.finalstates import dct_finalstates_int2str
 from sidequests.classes.filecomparer import FileRunLumiEvent
 from sidequests.funcs.evt_comparison import make_ls_evtIDs_OSmethod
 from sidequests.data.filepaths import (
-    rb_skim_UL2017, rb_skim_UL2018,
-    data_2017_UL_ge3lepskim, data_2018_UL_ge3lepskim
+    rb_skim_UL2017_data, rb_skim_UL2018_data,
+    rb_skim_UL2017_data_zz, rb_skim_UL2018_data_zz,
+    data_2017_UL_ge3lepskim, data_2018_UL_ge3lepskim,
+    data_2017_UL_ge4lepskim, data_2018_UL_ge4lepskim
     )
 
-infile_jak = rb_skim_UL2017
-infile_bbf = data_2017_UL_ge3lepskim
+infile_jak = rb_skim_UL2017_data
+infile_bbf = data_2017_UL_ge4lepskim
 
 tree_path_jak = 'passedEvents'
 tree_path_bbf = 'passedEvents'
 
-ls_finalstates = [1]
+ls_finalstates = [1, 2, 3, 4]
 m4l_lim = (105, 140)
 keep_2P2F = False
 keep_3P1F = True
-print_every = 50000
+print_every = 20000
 
 def print_commonanduniqueevts_jakvsbbf(
     infile_jak, tree_path_jak,
@@ -30,11 +32,6 @@ def print_commonanduniqueevts_jakvsbbf(
     print_every=500000
     ):
     """Print common and unique event info between Jake and xBF Ntuples."""
-
-    f_jak = TFile.Open(infile_jak, 'read')
-    f_bbf = TFile.Open(infile_bbf, 'read')
-    tree_jak = f_jak.Get(tree_path_jak)
-    tree_bbf = f_bbf.Get(tree_path_bbf)
 
     if ls_finalstates == [5]:
         fs_str = "4mu, 4e, 2e2mu, 2mu2e"
@@ -58,6 +55,12 @@ def print_commonanduniqueevts_jakvsbbf(
         f"  Will analyze CR{'s' if 'and' in cr_str else ''}: {cr_str}"
     )
 
+    tf_jak = TFile.Open(infile_jak, 'read')
+    tree_jak = tf_jak.Get(tree_path_jak)
+    tf_bbf = TFile.Open(infile_bbf, 'read')
+    tree_bbf = tf_bbf.Get(tree_path_bbf)
+
+    print(f"Looping over final states and comparing events...")
     for fs in ls_finalstates:
 
         ls_collection = []
@@ -69,7 +72,8 @@ def print_commonanduniqueevts_jakvsbbf(
             msg = (
                 f"Framework = {fw}, "
                 f"fs = {dct_finalstates_int2str[fs]}, "
-                f"CR = {cr_str}"
+                f"CR = {cr_str}, "
+                f"{m4l_lim[0]} < mass4l < {m4l_lim[1]} GeV"
                 )
             print_header_message(msg=msg, pad_char="-", n_center_pad_chars=3)
 
@@ -82,19 +86,12 @@ def print_commonanduniqueevts_jakvsbbf(
                 fs=fs,
                 print_every=print_every,
                 )
-            # ls_tup_evtIDs_bbf = make_ls_evtIDs_OSmethod(
-            #     tree=tree_bbf,
-            #     framework="bbf",
-            #     m4l_lim=m4l_lim,
-            #     keep_2P2F=keep_2P2F,
-            #     keep_3P1F=keep_3P1F,
-            #     fs=fs,
-            #     print_every=print_every,
-            #     )
+
             ls_collection.extend(
                 (ls_evtID,)
                 )
 
+        # Unpack each list.
         ls_tup_evtIDs_jak, ls_tup_evtIDs_bbf = ls_collection
 
         # Load FileRunLumiEvent comparers.
@@ -102,7 +99,7 @@ def print_commonanduniqueevts_jakvsbbf(
         frle_bbf = FileRunLumiEvent(ls_tup_evtid=ls_tup_evtIDs_bbf)
 
         # Do event comparisons.
-        frle_jak.analyze_evtids(frle_bbf, event_type="common", print_evts=True)
+        frle_jak.analyze_evtids(frle_bbf, event_type="common", print_evts=False)
         frle_jak.analyze_evtids(frle_bbf, event_type="unique", print_evts=True)
         frle_bbf.analyze_evtids(frle_jak, event_type="unique", print_evts=True)
 

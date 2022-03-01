@@ -27,4 +27,9 @@ export X509_CERT_DIR=/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client
 
 # Code here.
 
-echo 'Script finished!'
+err_code=$?
+if [ ${err_code} -eq 0 ]; then
+    echo "Code ran successfully!"
+else
+    echo "Code did not run successfully (error ${err_code})."
+fi

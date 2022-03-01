@@ -429,14 +429,18 @@ class FileRunLumiEvent:
             raise ValueError(f"event_type={event_type} not understood")
         n_evts = len(set_evt_combine)
         if self.txt is None:
-            basename = "...the original list you used."
+            basename = "...the first event list"
         else:
             basename = os.path.basename(self.txt)
         msg = f"Found {n_evts} {event_type} events in:\n{basename}"
         if event_type == 'common':
             msg = msg.replace("events in", "events between")
-            msg += f"\nand\n{os.path.basename(other.txt)}"
+            if other.txt is not None:
+                msg += f"\nand\n{os.path.basename(other.txt)}"
+            else:
+                msg += f"\nand\n...the second event list."
         print(msg)
         if print_evts:
-            pprint(set_evt_combine)
+            for tup in set_evt_combine:
+                print(tup)
         return list(set_evt_combine)

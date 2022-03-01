@@ -12,32 +12,53 @@ fakerates_WZremoved_2018_rereco = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpyth
 ##############################
 #--- RedBkg Skimmed Trees ---#
 ##############################
-rb_skim_UL2017 = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge3lepskim_2017_Data_ZZ.root"
-rb_skim_UL2018 = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge3lepskim_2018_Data_ZZ.root"
+rb_skim_UL2017_data = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge3lepskim_2017_Data.root"
+rb_skim_UL2018_data = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge3lepskim_2018_Data.root"
+rb_skim_UL2017_data_zz = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge3lepskim_2017_Data_ZZ.root"
+rb_skim_UL2018_data_zz = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge3lepskim_2018_Data_ZZ.root"
+
+#################
+#=== 2016 UL ===#
+#################
+# NOTE: Don't use DoubleMuonLowMass. Also we require MuonEG!
+data_2016_UL = "/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016"
+
+# dir_mc_2016_UL = "root://eoscms.cern.ch//eos/user/f/ferrico/www/FullRun2/20165"
+dir_mc_2016_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/"
+mc_2016_UL_DY = os.path.join(dir_mc_2016_UL, "DYJetsToLL_M-50_M125_20165_skimmed.root")
+mc_2016_UL_TT = os.path.join(dir_mc_2016_UL, "TTTo2L2Nu_M125_20165_skimmed.root")
+mc_2016_UL_WZ = os.path.join(dir_mc_2016_UL, "WZTo3LNu_M125_20165_skimmed.root")
+mc_2016_UL_ZZ = os.path.join(dir_mc_2016_UL, "ZZTo4L_M125_20165_skimmed.root")
 
 #################
 #=== 2017 UL ===#
 #################
 data_2017_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/Data/2017/Data_2017_UL_MiniAODv2_skim2L_noDuplicates.root"
 data_2017_UL_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/skimge3leps/Data_2017_UL_MiniAODv2_skim2L_noDuplicates.root"
+data_2017_UL_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/skimge4leps/Data_2017_UL_MiniAODv2_skim2L_noDuplicates.root"
+
 dir_mc_2017_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/2017/"
 mc_2017_UL_DY = os.path.join(dir_mc_2017_UL, "DYJetsToLL_M-50_M125_2017_skimmed.root")
 mc_2017_UL_TT = os.path.join(dir_mc_2017_UL, "TTTo2L2Nu_M125_2017_skimmed.root")
 mc_2017_UL_WZ = os.path.join(dir_mc_2017_UL, "WZTo3LNu_M125_2017_skimmed.root")
 mc_2017_UL_ZZ = os.path.join(dir_mc_2017_UL, "ZZTo4L_M125_2017_skimmed.root")
 mc_2017_UL_ZZ_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2017/skimge3leps/ZZTo4L_M125_2017_skimmed.root"
+mc_2017_UL_ZZ_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2017/skimge4leps/ZZTo4L_M125_2017_skimmed.root"
 
 #################
 #=== 2018 UL ===#
 #################
 data_2018_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/Data/2018/2018DATA_noDuplicates.root"
 data_2018_UL_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2018/skimge3leps/2018DATA_noDuplicates.root"
+data_2018_UL_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2018/skimge4leps/2018DATA_noDuplicates.root"
+
 dir_mc_2018_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/2018/"
 mc_2018_UL_DY = os.path.join(dir_mc_2018_UL, "DYJetsToLL_M-50_M125_2018_skimmed.root")
 mc_2018_UL_TT = os.path.join(dir_mc_2018_UL, "TTTo2L2Nu_M125_2018_skimmed.root")
 mc_2018_UL_WZ = os.path.join(dir_mc_2018_UL, "WZTo3LNu_M125_2018_skimmed.root")
 mc_2018_UL_ZZ = os.path.join(dir_mc_2018_UL, "ZZTo4L_M125_2018_skimmed.root")
 mc_2018_UL_ZZ_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2018/skimge3leps/ZZTo4L_M125_2018_skimmed.root"
+mc_2018_UL_ZZ_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2018/skimge4leps/ZZTo4L_M125_2018_skimmed.root"
 
 #####################
 #=== 2018 RERECO ===#

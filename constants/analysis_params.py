@@ -48,8 +48,23 @@ xs_dct_vukasin = {
 #==========#
 #=== UL ===#
 #==========#
-LUMI_INT_2017_UL = 41798  # pb^{-1}.
-LUMI_INT_2018_UL = 58951  # pb^{-1}.
+# All L_ints are in pb^{-1}.
+LUMI_INT_2016_UL_pre = 19520
+LUMI_INT_2016_UL_post = 16810
+LUMI_INT_2016_UL_comb = LUMI_INT_2016_UL_pre + LUMI_INT_2016_UL_post
+LUMI_INT_2017_UL = 41798
+LUMI_INT_2018_UL = 58951
+
+dct_sumgenweights_2016_UL = {
+    #=== Chenguang processed Data 2018 UL. ===#
+    # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
+    'DY10'       : -1,  # Not yet analyzed.
+    'DY50'       : 104156464.0,
+    'TT'         : 43277268.0,
+    'WZ'         : 6890010.0,
+    'ZZ'         : 49373660.0,
+    'Data'       : 1,
+}
 
 dct_sumgenweights_2017_UL = {
     #=== Chenguang processed Data 2018 UL. ===#

@@ -1,7 +1,7 @@
 from classes.mylepton import (check_leps_separated_in_DeltaR,
                               check_leps_pass_leadsublead_pTcuts,
                               leps_pass_lowmass_dilep_res,
-                              has_2p2f_leps,has_3p1f_leps)
+                              has_2p2f_leps, has_3p1f_leps)
 from classes.myzboson import MyZboson, make_all_zcands
 from Utils_Python.printing import print_header_message
 
@@ -430,21 +430,21 @@ def get_ZZcands_from_myleps_OSmethod(
     # Need 2 tight + 2 loose leps (2P2F) or 3 tight + 1 loose leps (3P1F).
     # This checks that leptons pass basic kinematic criteria (at least loose).
     if verbose:
-        print(
-            f"Event {run}:{lumi}:{event} (entry = {entry})\n"
-            f"  Checking for 2P2F or 3P1F leptons."
-            )
+        print(f"Event {run}:{lumi}:{event} (entry = {entry})")
     if (not has_2p2f_leps(mylep_ls)) and (not has_3p1f_leps(mylep_ls)):
         if verbose or explain_skipevent:
-            print("Leptons are not 2P2F or 3P1F.")
+            print("  MyLep list does not fall into 2P2F or 3P1F CR.")
         return empty_ls
     
     # Build all general Z candidates:
     # 12 < mll < 120 GeV.
     # OSSF leptons.
     # Leptons at least loose.
-    if verbose: print("  Making all Z candidates.")
-    zcand_ls = make_all_zcands(mylep_ls, explain_skipevent=explain_skipevent)
+    if verbose: print("  Building all Z candidates...")
+    zcand_ls = make_all_zcands(
+        mylep_ls,
+        explain_skipevent=explain_skipevent, verbose=verbose
+        )
     n_zcands = len(zcand_ls)
     if verbose: print(f"  Number of Z candidates: {n_zcands}")
     if n_zcands < 2:

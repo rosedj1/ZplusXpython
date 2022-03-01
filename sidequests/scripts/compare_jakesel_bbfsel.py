@@ -1,72 +1,235 @@
 """Print info comparing event selections between BBF and "Jake" analyzers.
-# ============================================================================
+#=============================================================================
 # Created: 2021-12-16
-# Updated: 2022-02-26
+# Updated: 2022-02-27
 # Creator: Jake Rosenzweig
-# Comment: Useful for doing event synchronization.
-# ============================================================================
+# Comment:
+#   FIXME: This code has been updated, but not tested. Needs a lookover.
+#   Useful for doing event synchronization.
+#=============================================================================
 """
-import sys
 from ROOT import TFile
 # Local imports.
-from sidequests.classes.filecomparer import (
-    FileRunLumiEvent, get_list_of_entries,
-    write_tree_info_to_txt
-    )
-from Utils_Python.Utils_Files import (
-    open_json, save_to_pkl, open_pkl, check_overwrite
-    )
-from Utils_Python.printing import print_periodic_evtnum, print_header_message
+# from sidequests.classes.filecomparer import (
+#     FileRunLumiEvent, get_list_of_entries,
+#     )
+from Utils_Python.printing import print_periodic_evtnum
 from sidequests.funcs.evt_comparison import (
-    print_evt_info_bbf, analyze_single_evt, find_runlumievent_using_entry
+    # print_evt_info_bbf,
+    analyze_single_evt,
+    find_runlumievent_using_entry
     )
 from sidequests.data.filepaths import (
-    infile_filippo_data_2018_fromhpg,
+    rb_skim_UL2017_data,
+    data_2017_UL_ge4lepskim,
+    # infile_filippo_data_2018_fromhpg,
     fakerates_WZremoved_2017_UL_woFSR,
     fakerates_WZremoved_2018_UL_woFSR,
     )
 from constants.analysis_params import (
-    n_sumgenweights_dataset_dct_jake,
-    dct_xs_jake
+    dct_sumgenweights_2017_UL, dct_sumgenweights_2018_UL,
+    dct_xs_jake,
+    LUMI_INT_2017_UL, LUMI_INT_2018_UL
     )
 
+year = 2017
+lumi_int = LUMI_INT_2017_UL
+infile_root = data_2017_UL_ge4lepskim
+genwgts_dct = dct_sumgenweights_2017_UL
+tree_path = "passedEvents"
 infile_fakerates = fakerates_WZremoved_2017_UL_woFSR
 
 analyze_using = "jake"  # Choose between: "jake" or "bbf".
-allow_ge4tightleps = 1
+start_at = 0
+end_at = -1  #start_at + 1
+print_every = 50000
 
-start_at = 95615
-end_at = start_at + 1
+allow_ge4tightleps = True
+keep_only_mass4lgt0 = True
+match_lep_Hindex = True
+recalc_mass4l_vals = False
 
-ls_tup_unique = ls_tup_unique_jake
+# Either use `run_lumi_evt_row` or fill in `ls_tup_unique`:
+run_lumi_evt_row = (304366, 1117, 1809338116, 270236)
+
+ls_tup_unique = [
+    # Data 2017 UL, 4mu unique in xBF:,
+    (304366, 1117, 1809338116),
+    # (297178, 716, 891914663),
+    # (304625, 298, 425714862),
+    # (300517, 258, 314860251),
+    # (305314, 48, 56936615),
+    # (305081, 55, 11862118),
+    # (306125, 480, 843196636),
+    # (305636, 1142, 2053996960),
+    # (300122, 409, 561022370),
+    # # Data 2017 UL, 4e unique in xBF:,
+    # (297219, 1957, 2885608175),
+    # (297603, 241, 433745367),
+    # (299370, 371, 471174005),
+    # (306138, 1158, 1507073799),
+    # (302448, 345, 411406556),
+    # (297296, 333, 477343383),
+    # (302393, 106, 125394268),
+    # (300785, 975, 1153338559),
+    # (304616, 603, 1002279386),
+    # (304062, 1481, 1947677889),
+    # (305112, 1334, 2220608605),
+    # (300123, 254, 294498299),
+    # (297293, 134, 208229640),
+    # (297656, 288, 472775383),
+    # (300155, 919, 1242579761),
+    # (299096, 51, 84760341),
+    # (300517, 339, 408325107),
+    # (305204, 321, 543469667),
+    # (304144, 959, 1659587081),
+    # (299184, 409, 680767941),
+    # (303948, 572, 921521958),
+    # (304506, 46, 80595885),
+    # # Data 2017 UL, 2e2mu unique in xBF:,
+    # (305282, 95, 66742053),
+    # (301627, 244, 210214709),
+    # (305112, 1449, 2365634557),
+    # # Data 2017 UL, 2mu2e unique in xBF:,
+    # (300516, 54, 67369043),
+    # (303832, 167, 171552872),
+    # (305064, 171, 275285910),
+    # (305207, 666, 1039685283),
+    # (304062, 306, 452386132),
+    # (304144, 2176, 2993221045),
+    # (305586, 249, 397773940),
+    # (300284, 56, 81830714),
+    # (300157, 776, 786459853),
+    # (304144, 254, 379612237),
+    # (303832, 137, 126397351),
+    # (300464, 250, 362770303),
+    # (305406, 1400, 2223006930),
+    # (302029, 17, 21904470),
+    # (301986, 113, 102785248),
+    # (304209, 387, 664130533),
+    # (297562, 198, 323224932),
+    # (304144, 137, 145237539),
+    # (302476, 135, 102855717),
+    # (301472, 472, 454742452),
+    # (297487, 369, 482491182),
+    # (300462, 91, 138044248),
+    # (304333, 1100, 1755439890),
+    # (305045, 260, 458138209),
+    # (300636, 253, 348785005),
+    # (297292, 722, 1288623271),
+    # (300785, 649, 812374663),
+    # (302344, 178, 163157463),
+    # (301998, 1335, 1086736376),
+    # (301323, 354, 349857504),
+    # (300514, 65, 58754413),
+    # (305636, 1578, 2746712922),
+    # (302343, 10, 9296697),
+]
 
 # Use Jake's analyzer on Filippo's unique events to see why Jake's FW failed.
-f = TFile.Open(infile_filippo_data_2018_fromhpg, "read")
-tree = f.Get("passedEvents")
+f = TFile.Open(infile_root, "read")
+tree = f.Get(tree_path)
 
 # Run over root file and compare each event to event of interest.
 # Pro: only 1 for loop over entire root file.
 # Con: events of interest are analyzed in the order as found in NTuple.
-if end_at == -1:
-    end_at = tree.GetEntries()
-for evt_num in range(start_at, end_at):
-    print_periodic_evtnum(evt_num, end_at, print_every=500000)
-    # tree.GetEntry(evt_num)
-    tup_evtid = find_runlumievent_using_entry(tree, evt_num, fw="bbf")
-    if tup_evtid in ls_tup_unique:
-        run, lumi, event = tup_evtid
-        analyze_single_evt(
-            tree, run=run, lumi=lumi, event=event, entry=evt_num,
-            fw=analyze_using, which="first",
-            evt_start=0, evt_end=-1, print_every=500000,
-            infile_fakerates=infile_fakerates,
-            genwgts_dct=n_sumgenweights_dataset_dct_jake,
-            dct_xs=dct_xs_jake,
-            allow_ge4tightleps=allow_ge4tightleps,
-            explain_skipevent=True,
-            verbose=True
-            )
-    
+if run_lumi_evt_row is not None:
+    run = run_lumi_evt_row[0]
+    lumi = run_lumi_evt_row[1]
+    event = run_lumi_evt_row[2] 
+    entry = run_lumi_evt_row[3]
+    analyze_single_evt(
+        tree, run=run, lumi=lumi, event=event, entry=entry,
+        fw=analyze_using, which="first",
+        evt_start=0, evt_end=-1, print_every=print_every,
+        infile_fakerates=infile_fakerates,
+        genwgts_dct=genwgts_dct,
+        dct_xs=dct_xs_jake,
+        LUMI_INT=lumi_int,
+        smartcut_ZapassesZ1sel=False,
+        overwrite=False,
+        keep_only_mass4lgt0=False,
+        match_lep_Hindex=False,
+        recalc_mass4l_vals=False,
+        allow_ge4tightleps=allow_ge4tightleps,
+        skip_passedFullSelection=True,
+        explain_skipevent=True,
+        verbose=True,
+        )
+else:
+    # Use list of provided evtIDs.
+    if end_at == -1:
+        end_at = tree.GetEntries()
+    for evt_num in range(start_at, end_at):
+        print_periodic_evtnum(evt_num, end_at, print_every=print_every)
+
+        tree.GetEntry(evt_num)
+        tup_evtid = find_runlumievent_using_entry(tree, evt_num, fw="bbf")
+
+        if tup_evtid in ls_tup_unique:
+            run, lumi, event = tup_evtid
+            # We know the exact row. Grab the event.
+            analyze_single_evt(
+                tree, run=run, lumi=lumi, event=event, entry=evt_num,
+                fw=analyze_using, which="first",
+                evt_start=0, evt_end=-1, print_every=print_every,
+                infile_fakerates=infile_fakerates,
+                genwgts_dct=genwgts_dct,
+                dct_xs=dct_xs_jake,
+                LUMI_INT=lumi_int,
+                smartcut_ZapassesZ1sel=False,
+                overwrite=False,
+                keep_only_mass4lgt0=False,
+                match_lep_Hindex=False,
+                recalc_mass4l_vals=False,
+                allow_ge4tightleps=allow_ge4tightleps,
+                skip_passedFullSelection=True,
+                explain_skipevent=True,
+                verbose=True,
+                )
+
+
+# tf = TFile.Open(infile_filippo_data_2018_fromhpg)
+# tree_bbf = tf.Get("passedEvents")
+
+# if use_exact_entry:
+#     ls_uniq_entries = get_list_of_entries(infile_exact_entries)
+#     for entry in ls_uniq_entries:
+#         analyze_single_evt(
+#             tree_bbf,
+#             run=None, lumi=None, event=None,
+#             entry=entry,
+#             fw="bbf", which="first"
+#             )
+#         analyze_single_evt(
+#             tree_bbf,
+#             run=None, lumi=None, event=None,
+#             entry=entry,
+#             fw="jake", which="first",
+#             infile_FR_wz_removed=infile_FR_wz_removed,
+#             explain_skipevent=explain_skipevent,
+#             verbose=verbose
+#             )
+#         print("=#" * 39)
+#         print("=#" * 39)
+#         print("=#" * 39)
+# else:
+#     # Not sure which entry to use. Find using exactly run, lumi, event.
+#     for ct, tup_fili_uniq_evtid in enumerate(fili_unique_evts):
+#         # if ct == 1:
+#         #     break
+#         run, lumi, event = tup_fili_uniq_evtid
+#         ls_bbf_evt_ndx = analyze_entry(
+#             tree_bbf, entry=None, run=run, lumi=lumi, event=event,
+#             fw="bbf", which="first"
+
+#             tree, run, lumi, event, entry=None, fw="bbf", which="all",
+#             evt_start=0, evt_end=-1, print_every=10000,
+#             infile_FR_wz_removed=infile_FR_wz_removed,
+#             explain_skipevent=True,
+#             verbose=False
+#             )
+#         print()
 
 
 
@@ -117,67 +280,3 @@ for evt_num in range(start_at, end_at):
 # intxt_jake_2p2f = "../txt/cjlstOSmethodevtsel_2p2plusf_3p1plusf_downupscale_2ormoretightleps_pTnoFSRforFRs_2018_Data_2p2f.txt"
 # intxt_fili_3p1f = "../txt/data2018_filippo_evtids_3p1f.txt"
 
-# infile_FR_wz_removed = fakerates_WZremoved
-
-# explain_skipevent = True
-# verbose = False
-# use_exact_entry = True
-# infile_exact_entries = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/sidequests/scripts/bbf_unique3p1f_comparedtojake.out"
-
-# # Get 3P1F events from Filippo's 2018 Data rootfile.
-# # ls_evtids_jake_3p1f = open_pkl(inpkl_jake_3p1f)
-# # set_evtids_bbf_3p1f = open_pkl(inpkl_bbf_3p1f)
-
-# # Load Jake's file into a file analyzer. Do same for Filippo's.
-# frle_jake_3p1f = FileRunLumiEvent(txt=intxt_jake_3p1f)
-# frle_fili_3p1f = FileRunLumiEvent(txt=intxt_fili_3p1f)
-# # frle_jake_3p1f = FileRunLumiEvent(ls_tup_evtid=ls_evtids_jake_3p1f)
-# # frle_fili_3p1f = FileRunLumiEvent(set_tup_evtid=set_evtids_bbf_3p1f)
-
-# #=== Look at events in common. ===#
-# # frle_jake_3p1f.analyze_evtids(frle_fili_3p1f, event_type="common", print_evts=False)
-
-# # Look at BBF unique events.
-# fili_unique_evts = frle_fili_3p1f.analyze_evtids(frle_jake_3p1f, event_type="unique", print_evts=False)
-
-# tf = TFile.Open(infile_filippo_data_2018_fromhpg)
-# tree_bbf = tf.Get("passedEvents")
-
-# if use_exact_entry:
-#     ls_uniq_entries = get_list_of_entries(infile_exact_entries)
-#     for entry in ls_uniq_entries:
-#         analyze_single_evt(
-#             tree_bbf,
-#             run=None, lumi=None, event=None,
-#             entry=entry,
-#             fw="bbf", which="first"
-#             )
-#         analyze_single_evt(
-#             tree_bbf,
-#             run=None, lumi=None, event=None,
-#             entry=entry,
-#             fw="jake", which="first",
-#             infile_FR_wz_removed=infile_FR_wz_removed,
-#             explain_skipevent=explain_skipevent,
-#             verbose=verbose
-#             )
-#         print("=#" * 39)
-#         print("=#" * 39)
-#         print("=#" * 39)
-# else:
-#     # Not sure which entry to use. Find using exactly run, lumi, event.
-#     for ct, tup_fili_uniq_evtid in enumerate(fili_unique_evts):
-#         # if ct == 1:
-#         #     break
-#         run, lumi, event = tup_fili_uniq_evtid
-#         ls_bbf_evt_ndx = analyze_entry(
-#             tree_bbf, entry=None, run=run, lumi=lumi, event=event,
-#             fw="bbf", which="first"
-
-#             tree, run, lumi, event, entry=None, fw="bbf", which="all",
-#             evt_start=0, evt_end=-1, print_every=10000,
-#             infile_FR_wz_removed=infile_FR_wz_removed,
-#             explain_skipevent=True,
-#             verbose=False
-#             )
-#         print()
