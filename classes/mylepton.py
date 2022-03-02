@@ -86,27 +86,28 @@ class MyLepton:
             self.lmass_NoFSR
             )
     
-    def print_info(self):
+    def print_info(self, oneline=True):
         """Print info about this MyLepton."""
-        print(
-            f"#--- lepton info at vector index={self.ndx_lepvec} ---#\n"
-            f"#- General Info -#\n"
-            f"id={self.lid}, tightId={self.ltightId}, "
-            f"RelIsoNoFSR={self.lRelIsoNoFSR:.6f}\n"
-            f"is_loose={self.is_loose}, is_tight={self.is_tight}\n"
-            f"#- Kinematics -#\n"
-            f"(FSR)    pt={self.lpt:.6f}, "
-            f"eta={self.leta:.6f}, "
-            f"phi={self.lphi:.6f}, "
-            f"mass={self.lmass:.6f}"
-        )
+        info = f"#-- lep at index {self.ndx_lepvec}:\n"
         if self.lpt_NoFSR is not None:
-            print(
-                f"(no FSR) pt={self.lpt_NoFSR:.6f}, "
-                f"eta={self.leta_NoFSR:.6f}, "
-                f"phi={self.lphi_NoFSR:.6f}, "
-                f"mass={self.lmass_NoFSR:.6f}\n"
-            )
+            info += (
+                f" pt={self.lpt_NoFSR:.6f},"
+                f" eta={self.leta_NoFSR:.6f},"
+                f" phi={self.lphi_NoFSR:.6f},"
+                f" mass={self.lmass_NoFSR:.6f}\n"
+                )
+        info += (
+            f" pt_FSR={self.lpt:.6f},"
+            f" eta_FSR={self.leta:.6f},"
+            f" phi_FSR={self.lphi:.6f},"
+            f" mass_FSR={self.lmass:.6f}\n"
+            f" id={self.lid},  tightId={self.ltightId},"
+            f" RelIsoNoFSR={self.lRelIsoNoFSR:.6f}\n"
+            f" is_tight={self.is_tight}, is_loose={self.is_loose}\n"
+        )
+        if oneline:
+            info = info.replace('\n', ', ').rstrip(', ')
+        print(info)
 
     def calc_DeltaR(self, mylep2):
         """Return the DeltaR value between this MyLepton and mylep2."""
@@ -266,3 +267,143 @@ def has_atleastone_3p1f_comb(mylep_ls):
     if get_n_loose_myleps(mylep_ls) < 1:
         return False
     return True
+
+def find_combos_2tight2loose(mylep_ls):
+    """Return a list of all possible 4-tuples of 2tight2loose MyLeptons.
+    
+    Example:
+        Suppose you have 5 leptons:
+            mu-    mu+    e-     e+     e2+
+            pass   pass   fail   fail   fail (tight selection)
+        There are 2 different 4l combinations that MAY give a 2P2F quartet:
+            2P2Fa = mu-  mu+  e-   e+
+            2P2Fb = mu-  mu+  e-   e2+
+        So this ONE event has 2 different 2P2F combinations.
+        
+    Returns:
+        list of 4-tuples:
+            Each 4-tuple contains 2 leps passing tight sel and 2 failing.
+            Returns an empty list if no 2P2F quartets are found.
+
+    Will return (each object is a MyLepton):
+    [
+        (mu-, mu+, e-, e+),
+        (mu-, mu+, e-, e2+),
+        ...
+    ]
+        
+    NOTE:
+    - The MyLeptons in `mylep_ls` have already been indexed according to
+      original order in "lep_kinematic" vectors.
+    - Tight and loose leptons are not in any particular order in the tuple.
+        Actually I'm pretty sure the tight pair is first in each tuple.
+    """
+    fourlep_combos_2tight2loose = []
+    pair_ls_tight = find_all_pairs_leps_tight(mylep_ls)
+    pair_ls_loose = find_all_pairs_leps_loose(mylep_ls)
+    for tpair in pair_ls_tight:
+        for lpair in pair_ls_loose:
+            fourlep_tup = tuple(tpair + lpair)
+            # After appending to list: [(2P2F_a), (2P2F_b), ... ].
+            fourlep_combos_2tight2loose.append(fourlep_tup)
+    return fourlep_combos_2tight2loose
+
+def find_combos_3tight1loose(mylep_ls):
+    """Return a list of all possible 4-tuples of 3tight1loose MyLeptons.
+    
+    Args:
+        mylep_ls (list): Contains MyLepton objects.
+    Returns:
+        list of 4-tuples:
+            Each 4-tuple contains 3 leps passing tight sel and 1 failing.
+            Returns an empty list if no 3P1F quartets are found.
+    """
+    assert len(mylep_ls) >= 4
+    myleps_combos_3tight1loose = []
+    # Make all possible triplets of tight leptons:
+    triple_tight_leps = find_all_triplets_leps_tight(mylep_ls)
+    # Join each triplet with each loose lepton:
+    for triplet in triple_tight_leps:
+        # NOTE: if triple_tight_leps is empty, then for loop is skipped.
+        for lep in mylep_ls:
+            if not lep.is_loose:
+                continue
+            fourlep_tup = triplet + tuple([lep])
+            myleps_combos_3tight1loose.append(fourlep_tup)
+    return myleps_combos_3tight1loose
+
+def find_combos_4tight(mylep_ls):
+    """Return a list of all possible 4-tuples of 4tight MyLeptons.
+    
+    FIXME: Finish function.
+
+    Args:
+        mylep_ls (list): Contains MyLepton objects.
+    """
+    raise RuntimeError("Finish this function!")
+    assert len(mylep_ls) >= 4
+    myleps_combos_4loose = []
+    # Make all possible triplets of tight leptons:
+    triple_tight_leps = find_all_triplets_leps_tight(mylep_ls)
+    # Join each triplet with each loose lepton:
+    for triplet in triple_tight_leps:
+        for lep in mylep_ls:
+            if not lep.is_loose:
+                continue
+            fourlep_tup = triplet + tuple([lep])
+            myleps_combos_4loose.append(fourlep_tup)
+    return myleps_combos_4loose
+
+def find_all_triplets_leps_tight(mylep_ls, debug=False):
+    """Return a list of all possible 3-tup of tight MyLeptons."""
+    tight_leps = [tlep for tlep in mylep_ls if tlep.is_tight]
+    triple_ls_tight = []
+    for ndx1, mylep1 in enumerate(tight_leps[:-2]):
+        if debug: print(f"For loop 1: ndx1={ndx1}")
+        start_i2 = ndx1 + 1
+        for ndx2, mylep2 in enumerate(tight_leps[start_i2:-1], start_i2):
+            if debug: print(f"For loop 2: ndx2={ndx2}")
+            start_i3 = ndx2 + 1
+            for ndx3, mylep3 in enumerate(tight_leps[start_i3:], start_i3):
+                if debug: print(f"For loop 3: ndx3={ndx3}")
+                lep_tup = (mylep1, mylep2, mylep3)
+                if debug: print(f"Found good triple: ({ndx1, ndx2, ndx3})")
+                triple_ls_tight.append(lep_tup)
+    n_tight_leps = len(tight_leps)
+    try:
+        assert len(triple_ls_tight) == int(binom(n_tight_leps, 3))
+    except ModuleNotFoundError:
+        pass
+    except NameError:
+        pass
+    return triple_ls_tight
+
+def find_all_pairs_leps_tight(mylep_ls):
+    """Return a list of all possible 2-tup of tight MyLeptons."""
+    pair_ls_tight = []
+    for ndx1, mylep1 in enumerate(mylep_ls[:-1]):
+        if not mylep1.is_tight:
+            continue
+        start_i2 = ndx1 + 1
+        for mylep2 in mylep_ls[start_i2:]:
+            if not mylep2.is_tight:
+                continue
+            # Found 2 tight leptons.
+            lep_tup = (mylep1, mylep2)
+            pair_ls_tight.append(lep_tup)
+    return pair_ls_tight
+
+def find_all_pairs_leps_loose(mylep_ls):
+    """Return a list of all possible 2-tup of tight MyLeptons."""
+    pair_ls_loose = []
+    for ndx1, mylep1 in enumerate(mylep_ls[:-1]):
+        if not mylep1.is_loose:
+            continue
+        start_i2 = ndx1 + 1
+        for mylep2 in mylep_ls[start_i2:]:
+            if not mylep2.is_loose:
+                continue
+            # Found 2 loose leptons.
+            lep_tup = (mylep1, mylep2)
+            pair_ls_loose.append(lep_tup)
+    return pair_ls_loose

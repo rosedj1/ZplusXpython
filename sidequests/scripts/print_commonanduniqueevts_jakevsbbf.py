@@ -1,3 +1,11 @@
+"""Print info comparing the 3P1F/2P2F events between 2 NTuples.
+#=============================================================================
+# Recommended syntax (to store output in txt file):
+#   `python this_script.py > some_output.txt`
+# Author: Jake Rosenzweig
+# Created: 2022-02-28
+#=============================================================================
+"""
 from ROOT import TFile
 #=== Local imports. ===#
 from Utils_Python.printing import print_header_message, print_periodic_evtnum
@@ -11,16 +19,16 @@ from sidequests.data.filepaths import (
     data_2017_UL_ge4lepskim, data_2018_UL_ge4lepskim
     )
 
-infile_jak = rb_skim_UL2017_data
-infile_bbf = data_2017_UL_ge4lepskim
+infile_jak = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge4lepskim_2p2fsync_2018_Data.root"
+infile_bbf = data_2018_UL_ge4lepskim
 
 tree_path_jak = 'passedEvents'
 tree_path_bbf = 'passedEvents'
 
-ls_finalstates = [1, 2, 3, 4]
+ls_finalstates = [1, 2, 3, 4]  # Use `[5]` to get all final states in one go.
 m4l_lim = (105, 140)
-keep_2P2F = False
-keep_3P1F = True
+keep_2P2F = False   # Only select 2P2F-type events.
+keep_3P1F = True  # Only 3P1F.
 print_every = 20000
 
 def print_commonanduniqueevts_jakvsbbf(

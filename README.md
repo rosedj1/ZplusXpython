@@ -9,6 +9,15 @@ This repo contains scripts to:
 - Estimate the total non-ZZ background contribution.
 - Plot the resulting distributions.
 
+**Other scripts:**
+
+- Compare specific events between analyzers:
+   - UFHZZAnalyzer (xBF)
+   - CJLST Analyzer
+   - Multiple quartets per event (Jake)
+      - `sidequests/scripts/print_commonanduniqueevts_jakevsbbf.py`
+      - `sidequests/scripts/compare_jakesel_bbfsel.py`
+
 ---
 
 ## Skim NTuples

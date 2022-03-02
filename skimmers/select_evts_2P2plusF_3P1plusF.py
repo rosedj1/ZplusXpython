@@ -1,36 +1,39 @@
 """Select 2P2+F and 3P1+F events. Add new branches to TTree in new file.
 #=============================================================================
 # Syntax:
-#           
+#   python <this_script>.py
+#   Flags:
+#       -x : overwrite existing files
+#       -v : verbose output
 #     
 # Notes:
-#     This code selects 2P2+F and 3P1+F reducible background events.
-#     It considers events with >4 leptons and properly handles all possible
-#     lepton quartets. Each passing quartet is saved as an entry in a new
-#     TTree. The BBF HZZ Analyzer does not yet do handle same-event quartets.
-#     The input files for this script should be root files produced from the
-#     BBF HZZ Analyzer.
+#   This code selects 2P2+F and 3P1+F reducible background events.
+#   It considers events with >4 leptons and properly handles all possible
+#   lepton quartets. Each passing quartet is saved as an entry in a new
+#   TTree. The BBF HZZ Analyzer does not yet do handle same-event quartets.
+#   The input files for this script should be root files produced from the
+#   BBF HZZ Analyzer.
 # 
-#     In effect this is an updated event selection that bypasses the branches:
-#         - passedZXCRSelection
-#         - nZXCRFailedLeptons
+#   In effect this is an updated event selection that bypasses the branches:
+#       - passedZXCRSelection
+#       - nZXCRFailedLeptons
 # 
-#     This code makes a json file which stores the Run:Lumi:Event of all
-#     events which pass 3P1F or 2P2F event selection. It also creates a TH2
-#     of per-event 3P1F 4-lep quartets vs. per-event 2P2F 4-lep quartets and
-#     writes the hist in a root file. You can draw the TH2 with:
-#         `draw_th2_plots.py`
+#   This code makes a json file which stores the Run:Lumi:Event of all
+#   events which pass 3P1F or 2P2F event selection. It also creates a TH2
+#   of per-event 3P1F 4-lep quartets vs. per-event 2P2F 4-lep quartets and
+#   writes the hist in a root file. You can draw the TH2 with:
+#       `draw_th2_plots.py`
 #     
-#     User should review the parameters located just after the imports.
+#   User should review the parameters located just after the imports.
 # 
-#     New branches added to TTree:
+#   New branches added to TTree:
 #         TODO: Update this list of new branches.
-#     - is2P2F        (int)
-#     - is3P1F        (int)
-#     - isMCzz        (int)
-#     - fr2           (float)
-#     - fr3           (float)
-#     - eventWeightFR (float)
+#       - is2P2F        (int)
+#       - is3P1F        (int)
+#       - isMCzz        (int)
+#       - fr2           (float)
+#       - fr3           (float)
+#       - eventWeightFR (float)
 # 
 # is2P2F
 # is3P1F
@@ -56,7 +59,7 @@
 #     - lep_RedBkgindex (int arr[4])
 # Author: Jake Rosenzweig
 # Created: 2021-11-30
-# Updated: 2022-02-25
+# Updated: 2022-03-01
 #=============================================================================
 """
 import os
@@ -67,8 +70,8 @@ from sidequests.funcs.evt_loops import (
     evt_loop_evtsel_2p2plusf3p1plusf_subevents
     )
 from sidequests.data.filepaths import (
-    data_2017_UL, data_2017_UL_ge3lepskim,
-    data_2018_UL, data_2018_UL_ge3lepskim,
+    data_2017_UL, data_2017_UL_ge3lepskim, data_2017_UL_ge4lepskim,
+    data_2018_UL, data_2018_UL_ge3lepskim, data_2018_UL_ge4lepskim,
     mc_2017_UL_ZZ, mc_2017_UL_ZZ_ge3lepskim,
     mc_2018_UL_ZZ, mc_2018_UL_ZZ_ge3lepskim,
     # infile_filippo_data_2018_fromhpg,
@@ -96,11 +99,13 @@ from constants.analysis_params import (
 d_nicknames_files = {
     # 'Data': data_2017_UL,
     # 'Data': data_2017_UL_ge3lepskim,
+    # 'Data': data_2017_UL_ge4lepskim,
     # 'ZZ': mc_2017_UL_ZZ,
-    'ZZ': mc_2017_UL_ZZ_ge3lepskim,
+    # 'ZZ': mc_2017_UL_ZZ_ge3lepskim,
 
     # 'Data': data_2018_UL,
     # 'Data': data_2018_UL_ge3lepskim,
+    'Data': data_2018_UL_ge4lepskim,
     # 'ZZ': mc_2018_UL_ZZ,
     # 'ZZ': mc_2018_UL_ZZ_ge3lepskim,
 
@@ -108,15 +113,15 @@ d_nicknames_files = {
     # "ZZ" : mc_2018_zz_hpg,
     # "ZZ" : infile_filippo_zz_2018_fromhpg,
 }
-year = 2017
-genwgts_dct = dct_sumgenweights_2017_UL
-int_lumi = LUMI_INT_2017_UL
-infile_FR_wz_removed = fakerates_WZremoved_2017_UL_woFSR
+year = 2018
+genwgts_dct = dct_sumgenweights_2018_UL
+int_lumi = LUMI_INT_2018_UL
+infile_FR_wz_removed = fakerates_WZremoved_2018_UL_woFSR
 dct_xs = dct_xs_jake
 
 start_at_evt = 0
 break_at_evt = -1  # Use -1 to run over all events.
-print_every = 1000000
+print_every = 50000
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 
 explain_skipevent = 0
@@ -133,7 +138,7 @@ outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/re
 outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
 # basename gets appended with file nickname:
-outfile_basename = "redbkgest_UL_WZxs5p26pb_ge3lepskim"
+outfile_basename = "redbkgest_UL_WZxs5p26pb_ge4lepskim_2p2fsync"
 #=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

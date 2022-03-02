@@ -149,10 +149,12 @@ def makes_valid_zcand(lep1, lep2, verbose=False):
             lep2.get_LorentzVector(include_FSR=True)
     z_mass = zcand.M()
     if (z_mass < 12):
-        if verbose: print(f"PAIRING FAILED: Zmass ({z_mass}) < 12 GeV.")
+        if verbose:
+            print(f"PAIRING FAILED: Zmass ({z_mass:.6f}) < 12 GeV.")
         return False
     if (z_mass > 120):
-        if verbose: print(f"PAIRING FAILED: Zmass ({z_mass}) > 120 GeV.")
+        if verbose:
+            print(f"PAIRING FAILED: Zmass ({z_mass:.6f}) > 120 GeV.")
         return False
     return True
     

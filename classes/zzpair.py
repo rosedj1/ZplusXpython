@@ -235,7 +235,7 @@ class ZZPair:
             f"{header}\n"
             f"Info about ZZ candidate #{self.ndx_in_zzpair_ls}: {name}\n"
             f"{header}\n"
-            f"  m(4l): {self.get_m4l():.9f}\n"
+            f"  m(4l): {self.get_m4l():.6f}\n"
             f"  final state: {self.get_finalstate()}\n"
             f"               | z_fir | z_sec |\n"
             f"  lep indices: | "
@@ -266,7 +266,21 @@ class ZZPair:
         assert len(other_lep_idxs) == 4, err_msg
         n_overlap_leps = (my_lep_idxs & other_lep_idxs)
         return True if len(n_overlap_leps) == 4 else False
-    # End of ZZPair.
+    
+    def get_num_failing_leps(self):
+        """Return the number of failing leptons in this ZZ pair.
+        
+        Note: "Failing" means failing tight selection.
+        """
+        return sum([lep.is_loose for lep in self.get_mylep_ls()])
+
+    def get_num_passing_leps(self):
+        """Return the number of passing leptons in this ZZ pair.
+        
+        Note: "Passing" means passing tight selection.
+        """
+        return sum([lep.is_tight for lep in self.get_mylep_ls()])
+# End of ZZPair.
     
 def make_all_zz_pairs(zcand_ls, explain_skipevent=False, smartcut_ZapassesZ1sel=False):
     """Return a list of all possible ZZPair objects.
