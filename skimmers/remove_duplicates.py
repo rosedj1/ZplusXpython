@@ -108,11 +108,10 @@ def eliminate_duplicates(tree, start_at=0, end_at=-1, verbose=False):
         if ct == end_at:
             break
         
-    if verbose:
-        print(
-            f"Number of duplicates found: {num_duplicates}, "
-            f"({num_duplicates/n_tot * 100:.1f}% of original entries)"
-            )
+    print(
+        f"Number of duplicates found: {num_duplicates}, "
+        f"({num_duplicates/n_tot * 100:.1f}% of original entries)"
+        )
 
     return newtree
 

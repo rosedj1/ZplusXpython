@@ -7,15 +7,15 @@
 # Created: 2022-02-26
 # Updated: 2022-02-27
 #=============================================================================
-infile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2017/skimge3leps/DYJetsToLL_M-50_M125_2017_skimmed.root'
-outfile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2017/skimge4leps/DYJetsToLL_M-50_M125_2017_skimmed.root'
+infile_root='root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/ZZTo4L_M125_20165_skimmed.root'
+outfile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge3leps/ZZTo4L_M125_20165_skimmed.root'
 outdir_logs="/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output"
 
 py_template='/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/select_evts_geXleps_template.py'
 sbatch_template='/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/select_evts_geXleps_onslurm_template.sbatch'
 
 tree_path='passedEvents'
-n_leps_skim=4
+n_leps_skim=3
 break_at=-1
 ovewrite=0
 print_every=1000000

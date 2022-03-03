@@ -5,7 +5,6 @@
 #   Flags:
 #       -x : overwrite existing files
 #       -v : verbose output
-#     
 # Notes:
 #   This code selects 2P2+F and 3P1+F reducible background events.
 #   It considers events with >4 leptons and properly handles all possible
@@ -59,7 +58,7 @@
 #     - lep_RedBkgindex (int arr[4])
 # Author: Jake Rosenzweig
 # Created: 2021-11-30
-# Updated: 2022-03-01
+# Updated: 2022-03-03
 #=============================================================================
 """
 import os
@@ -70,8 +69,10 @@ from sidequests.funcs.evt_loops import (
     evt_loop_evtsel_2p2plusf3p1plusf_subevents
     )
 from sidequests.data.filepaths import (
+    data_2016_UL_ge4lepskim,
     data_2017_UL, data_2017_UL_ge3lepskim, data_2017_UL_ge4lepskim,
     data_2018_UL, data_2018_UL_ge3lepskim, data_2018_UL_ge4lepskim,
+    mc_2016_UL_ZZ_ge4lepskim,
     mc_2017_UL_ZZ, mc_2017_UL_ZZ_ge3lepskim,
     mc_2018_UL_ZZ, mc_2018_UL_ZZ_ge3lepskim,
     # infile_filippo_data_2018_fromhpg,
@@ -79,14 +80,17 @@ from sidequests.data.filepaths import (
     # mc_2018_zz_hpg,
     fakerates_WZremoved_2017_UL,
     fakerates_WZremoved_2018_UL,
+    fakerates_WZremoved_2016_UL_woFSR,
     fakerates_WZremoved_2017_UL_woFSR,
     fakerates_WZremoved_2018_UL_woFSR
     )
 from Utils_Python.Utils_Files import check_overwrite
 from Utils_Python.Commands import shell_cmd
 from constants.analysis_params import (
-    LUMI_INT_2017_UL, LUMI_INT_2018_UL,
-    dct_sumgenweights_2017_UL, dct_sumgenweights_2018_UL,
+    LUMI_INT_2016_UL, LUMI_INT_2017_UL, LUMI_INT_2018_UL,
+    dct_sumgenweights_2016_UL,
+    dct_sumgenweights_2017_UL,
+    dct_sumgenweights_2018_UL,
     # n_sumgenweights_dataset_dct_jake,
     # n_sumgenweights_dataset_dct_filippo,
     dct_xs_jake
@@ -97,6 +101,10 @@ from constants.analysis_params import (
 #########################
 # Files to analyze.
 d_nicknames_files = {
+    # 'Data': data_2016_UL_ge4lepskim,
+    # 'ZZ': mc_2016_UL_ZZ,
+    'ZZ': mc_2016_UL_ZZ_ge4lepskim,
+
     # 'Data': data_2017_UL,
     # 'Data': data_2017_UL_ge3lepskim,
     # 'Data': data_2017_UL_ge4lepskim,
@@ -105,7 +113,7 @@ d_nicknames_files = {
 
     # 'Data': data_2018_UL,
     # 'Data': data_2018_UL_ge3lepskim,
-    'Data': data_2018_UL_ge4lepskim,
+    # 'Data': data_2018_UL_ge4lepskim,
     # 'ZZ': mc_2018_UL_ZZ,
     # 'ZZ': mc_2018_UL_ZZ_ge3lepskim,
 
@@ -113,10 +121,10 @@ d_nicknames_files = {
     # "ZZ" : mc_2018_zz_hpg,
     # "ZZ" : infile_filippo_zz_2018_fromhpg,
 }
-year = 2018
-genwgts_dct = dct_sumgenweights_2018_UL
-int_lumi = LUMI_INT_2018_UL
-infile_FR_wz_removed = fakerates_WZremoved_2018_UL_woFSR
+year = 2016
+genwgts_dct = dct_sumgenweights_2016_UL
+int_lumi = LUMI_INT_2016_UL
+infile_FR_wz_removed = fakerates_WZremoved_2016_UL_woFSR
 dct_xs = dct_xs_jake
 
 start_at_evt = 0
@@ -138,7 +146,7 @@ outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/re
 outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
 # basename gets appended with file nickname:
-outfile_basename = "redbkgest_UL_WZxs5p26pb_ge4lepskim_2p2fsync"
+outfile_basename = "redbkgest_UL_WZxs5p26pb_ge4lepskim_2p2fsync_2016_ZZ_check"
 #=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

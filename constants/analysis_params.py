@@ -52,12 +52,12 @@ xs_dct_vukasin = {
 LUMI_INT_2016_UL_pre = 19520
 LUMI_INT_2016_UL_post = 16810
 # Use combined for MC event scaling.
-LUMI_INT_2016_UL_comb = LUMI_INT_2016_UL_pre + LUMI_INT_2016_UL_post
+LUMI_INT_2016_UL = LUMI_INT_2016_UL_pre + LUMI_INT_2016_UL_post
 LUMI_INT_2017_UL = 41798
 LUMI_INT_2018_UL = 58951
 
 dct_sumgenweights_2016_UL = {
-    #=== Chenguang processed Data 2018 UL. ===#
+    #=== Kun processed Data 2016 UL pre- and post-VFP. ===#
     # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
     'DY10'       : -1,  # Not yet analyzed.
     'DY50'       : 104156464.0,
@@ -74,7 +74,6 @@ dct_sumgenweights_2017_UL = {
     'DY50'       : 103345040.0,
     'TT'         : 105860000.0,
     'WZ'         : 6826898.0,
-    'WZ-ext1-v2' : -1,
     'ZZ'         : 98378136.0,
     'Data'       : 1,
 }
@@ -86,7 +85,6 @@ dct_sumgenweights_2018_UL = {
     'DY50'       : 96233360.0,
     'TT'         : 144783312.0,
     'WZ'         : 6482815.0,
-    'WZ-ext1-v2' : -1,
     'ZZ'         : 98187552.0,
     'Data'       : 1,
 }

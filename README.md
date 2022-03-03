@@ -19,6 +19,20 @@ This repo contains scripts to:
       - `sidequests/scripts/compare_jakesel_bbfsel.py`
       - `sidequests/scripts/run_bbfana_using_runlumievent.py`
 
+   Run Sequentially:
+
+   ```bash
+   # Create fake rates with WZ removed.
+   python WZremoval_from_FR_comp.py
+
+   # Plot fake rates.
+   python scripts/plotters/plot_fakerate_hists.py \
+      -d "Hist_Data_ptl3_Data_2016.root" \
+      -w "Hist_Data_ptl3_WZremoved_2016.root" \
+      -o "fakerates_2016UL.pdf" \
+      -y 2016
+   ```
+
 ---
 
 ## Skim NTuples
