@@ -18,7 +18,7 @@ from pprint import pprint
 from Utils_Python.Utils_Files import save_to_json, check_overwrite
 from Utils_Python.printing import print_header_message
 from sidequests.data.datasets import dataset_tup_2018
-from sidequests.classes.filemanager import DataSetFinder
+from sidequests.classes.datasetfinder import DataSetFinder
 
 infile_txt_elisa_unique_3p1f       = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_3P1F_listOfEvents_unique.txt"
 infile_txt_elisa_unique_2p2f       = "/afs/cern.ch/work/d/drosenzw/zplusx/ZplusXpython/sidequests/data/jakes_new2018data/CRLLos_2P2F_listOfEvents_unique.txt"

@@ -26,8 +26,8 @@ void skim_useless_branches() {
   // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/SingleMuon_skimmed.root";
   // TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
   // TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/skimmedbranches/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_2018.root";
-  TString infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2017/fullstats/SingleElectron_2017.root";
-  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2017/fullstats/skimmedbranches/fewbranches/SingleElectron_2017.root";
+  TString infile = "/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016pre/Data_Run2016-HIPM_UL2016_pre_MiniAODv2_unskimmed.root";
+  TString outfile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_pre_MiniAODv2.root";
   TString intree = "Ana/passedEvents";
   unsigned int n_evts_to_keep = -1;  // Use -1 for "all".
   bool verbose = true;
@@ -65,7 +65,7 @@ void skim_useless_branches() {
     "mass4l",
   };
   */
-  vector<TString> branches{
+  vector<TString> branches {
     "Run",
     "Event",
     "LumiSect",
@@ -156,7 +156,7 @@ void skim_useless_branches() {
     "lep_matchedR03_PdgId",
     "lep_matchedR03_MomId",
     "lep_matchedR03_MomMomId",
-    
+  };
     // New branches that will be added for RedBkg studies.
     // "is2P2F",
     // "is3P1F",

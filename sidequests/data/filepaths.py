@@ -21,9 +21,11 @@ rb_skim_UL2018_data_zz = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/r
 #=== 2016 UL ===#
 #################
 # NOTE: Don't use DoubleMuonLowMass. Also we require MuonEG!
-data_2016_UL = "/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016"
+data_2016_UL_preVFP_orig = "/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016pre/Data_Run2016-HIPM_UL2016_pre_MiniAODv2_unskimmed.root"
+data_2016_UL_postVFP_orig = "/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016/Data_Run2016-UL2016_post_MiniAODv2_unskimmed.root"
+data_2016_UL_preVFP = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_pre_MiniAODv2.root"
+data_2016_UL_postVFP = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_post_MiniAODv2_noDuplicates.root"
 
-# dir_mc_2016_UL = "root://eoscms.cern.ch//eos/user/f/ferrico/www/FullRun2/20165"
 dir_mc_2016_UL = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/"
 mc_2016_UL_DY = os.path.join(dir_mc_2016_UL, "DYJetsToLL_M-50_M125_20165_skimmed.root")
 mc_2016_UL_TT = os.path.join(dir_mc_2016_UL, "TTTo2L2Nu_M125_20165_skimmed.root")

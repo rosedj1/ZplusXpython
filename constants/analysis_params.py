@@ -51,6 +51,7 @@ xs_dct_vukasin = {
 # All L_ints are in pb^{-1}.
 LUMI_INT_2016_UL_pre = 19520
 LUMI_INT_2016_UL_post = 16810
+# Use combined for MC event scaling.
 LUMI_INT_2016_UL_comb = LUMI_INT_2016_UL_pre + LUMI_INT_2016_UL_post
 LUMI_INT_2017_UL = 41798
 LUMI_INT_2018_UL = 58951

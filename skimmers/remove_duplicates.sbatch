@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=JOBNAMEHERE
-#SBATCH --output=JOBNAMEHERE.out
-#SBATCH --error=JOBNAMEHERE.err
+#SBATCH --job-name=remove_duplicates_Data2016UL_preVFP
+#SBATCH --output=/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output/remove_duplicates_Data2016UL_preVFP.out
+#SBATCH --error=/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output/remove_duplicates_Data2016UL_preVFP.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rosedj1@ufl.edu
 #SBATCH --time=12:00:00
@@ -20,6 +20,6 @@ echo 'Packages loaded.'
 echo 'Starting script...'
 
 # time root -l /blue/avery/rosedj1/ZplusXpython/skimmers/remove_duplicates.C
-python /cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/remove_duplicates.py > /cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates.out
+python /cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/remove_duplicates.py > /cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output/remove_duplicates_Data2016UL_preVFP.txt
 
 echo 'Script finished!'

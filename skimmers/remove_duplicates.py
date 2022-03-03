@@ -1,26 +1,26 @@
 """Write a new root file with a copy of a TTree without duplicates.
 # ==============================================================================
-# Syntax:  python this_script.py
+# Syntax:  python this_script.py [-x] [-v]
+#   -x (overwrite)
+#   -v (verbose)
 # Author:  Jake Rosenzweig
 # Created: 2021-Oct
-# Updated: 2022-02-09
+# Updated: 2022-03-02
 # Comment:
 #   This script is faster than the C++ version!
 #   Can submit to SLURM using: skimmers/remove_duplicates.sbatch
 # ==============================================================================
 """
+from argparse import ArgumentParser
 from ROOT import TFile
-import sys
-sys.path.append("/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/")
 from Utils_Python.Utils_Files import check_overwrite
+from sidequests.data.filepaths import data_2016_UL_preVFP
 
-infile = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2017/fullstats/skimmedbranches/fewbranches/Data_2017_UL_MiniAODv2_skim2L.root"
-outfile =  infile.replace(".root", "_noDuplicates.root") #"/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates_comparesetwithstrandtup_deleteme.root"
+infile = data_2016_UL_preVFP
+outfile = infile.replace(".root", "_noDuplicates.root") #"/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/2018/fullstats/ZL_ZLL_4P_CR/noduplicates/Data2018_NoDuplicates_comparesetwithstrandtup_deleteme.root"
 path_to_tree = "passedEvents"
-start_at = 25798047  # First event is indexed at 0.
+start_at = 0  # First event is indexed at 0.
 end_at = -1  # Use -1 to process all events.
-overwrite = 1
-verbose = 1
 
 def make_prefilled_event_set(tree, start_at, verbose=False):
     """Return a set of 3-tuples from entry0 -> `start_at` (exclusive).
@@ -118,8 +118,7 @@ def eliminate_duplicates(tree, start_at=0, end_at=-1, verbose=False):
 
 def main(
     infile, path_to_tree, outfile,
-    start_at=0, end_at=-1,
-    overwrite=False
+    start_at=0, end_at=-1
     ):
     """Write a new root file with a cloned TTree, but with no duplicates.
     
@@ -129,8 +128,22 @@ def main(
         infile (str): Absolute path of input root file.
         path_to_tree (str): Path inside root file to `Get()` the TTree.
         outfile (str): Absolute path of output root file.
-        overwrite (bool, optional): Overwrite new file. Defaults to False.
     """
+    argpar = ArgumentParser()
+    argpar.add_argument(
+        '-x', '--overwrite',
+        dest="overwrite", action="store_true",
+        help="Overwrite output file. Default is False."
+        )
+    argpar.add_argument(
+        '-v', '--verbose',
+        dest="verbose", action="store_true",
+        help="Overwrite output file. Default is False."
+        )
+    args = argpar.parse_args()
+    overwrite = args.overwrite
+    verbose = args.verbose
+
     f = TFile(infile)
     old_tree = f.Get(path_to_tree)
     print(f"Input file opened:\n{infile}")
@@ -148,4 +161,4 @@ def main(
     newfile.Close()
 
 if __name__ == '__main__':
-    main(infile, path_to_tree, outfile, start_at=start_at, end_at=end_at, overwrite=overwrite)
+    main(infile, path_to_tree, outfile, start_at=start_at, end_at=end_at)

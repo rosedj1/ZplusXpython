@@ -13,15 +13,19 @@ Updated: 2022-02-15
 """
 import sys
 import os
-sys.path.append('/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement')
+from sidequests.data.filepaths import 
 from Utils_Python.SlurmManager import SLURMSubmitter
 
-indir_t2 = "/cmsuf/data/store/user/drosenzw/UFHZZAnalysisRun2/UL/Data2017/skim2L_UL/"
+# indir_t2 = "/cmsuf/data/store/user/drosenzw/UFHZZAnalysisRun2/UL/Data2017/skim2L_UL/"
+indir_t2 = "/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016"
 outdir = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2017/fullstats/"
 # Use empty string if you don't want suffix:
-suffix_to_outfile = "_MiniAODv2_missing1LumiSect"
+suffix_to_outfile = "postVFP"
 
-year = 2017
+year = "2016"
+# Notes on Data 2016 UL:
+# "pre-VFP" (aka "HIPM" or "APV"): eras B-F (31 runs)
+# "post-VFP" (aka "no-HIPM"): eras F(7 runs)-H
 
 #################
 #=== 2017 UL ===#

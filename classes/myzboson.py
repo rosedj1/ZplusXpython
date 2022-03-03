@@ -38,7 +38,7 @@ class MyZboson:
         """
         return self.get_LorentzVector().M()
 
-    def print_info(self, name=""):
+    def print_info(self, name=None):
         """Print info about this Z boson.
         
         Args:
@@ -56,14 +56,14 @@ class MyZboson:
             f"# Z CANDIDATE INFO{name}\n"
             f"Z_pt={zvec.Pt():.6f}, Z_eta={zvec.Eta():.6f}, "
             f"Z_phi={zvec.Phi():.6f}, Z_mass={zvec.M():.6f}\n"
-            f"Z boson made from leptons with vector indices: "
-            f"({self.mylep1.ndx_lepvec}, {self.mylep2.ndx_lepvec})\n"
+            f"Z made from pT-ordered leptons at indices: "
+            f"{self.get_mylep_idcs_pTorder()}\n"
             f"Passes Z1 selections: {self.passes_z1_kinematic_selec()}\n"
             f"{lep_tightness_info}\n"
             f"{header_footer.replace('#', '-')}"
         )
-        self.mylep1.print_info()
-        self.mylep2.print_info()
+        # self.mylep1.print_info()
+        # self.mylep2.print_info()
         print()
         
     def get_distance_from_PDG_mass(self):
