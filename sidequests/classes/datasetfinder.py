@@ -1,3 +1,4 @@
+import warnings
 from sidequests.classes.rootfileevent import RootFileEvent
 from Utils_Python.Commands import shell_cmd
 
@@ -38,6 +39,9 @@ class DataSetFinder:
           eventsToProcess=321834:126135620 \\
           inputFiles=/store/data/Run2018D/MuonEG/MINIAOD/PromptReco-v2/000/321/834/00000/4C96D92F-3AAE-E811-80D4-FA163E9D5E27.root
         """
+        if "inputFiles=" not in stdout:
+            warnings.warn('"inputFiles=" not found in stdout.')
+            return ""
         return stdout.split("inputFiles=")[1].rstrip("\n")
   
     def find_first_dataset_rootfile(self, run, lumisect, event, dataset_tup, outfile="pickevents.root"):

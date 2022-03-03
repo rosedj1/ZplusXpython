@@ -51,7 +51,7 @@ indir_rootfiles = "../rootfiles/"
 
 def check_rootfile_has_evt(new_root, tree_name="Ana/passedEvents"):
     """Return True if newly-produced root file has exactly 1 event."""
-    f = ROOT.TFile(new_root)
+    f = TFile(new_root)
     t = f.Get(tree_name)
     return True if t.GetEntries() == 1 else False
 

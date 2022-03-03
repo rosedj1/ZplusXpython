@@ -1,12 +1,36 @@
+dataset_tup_2017_UL = (
+    "/DoubleEG/Run2017B-UL2017_MiniAODv2-v1/MINIAOD",
+    "/DoubleEG/Run2017C-UL2017_MiniAODv2-v2/MINIAOD",
+    "/DoubleEG/Run2017D-UL2017_MiniAODv2-v1/MINIAOD",
+    "/DoubleEG/Run2017E-UL2017_MiniAODv2-v1/MINIAOD",
+    "/DoubleEG/Run2017F-UL2017_MiniAODv2-v2/MINIAOD",
+    "/MuonEG/Run2017B-UL2017_MiniAODv2-v1/MINIAOD",
+    "/MuonEG/Run2017C-UL2017_MiniAODv2-v1/MINIAOD",
+    "/MuonEG/Run2017D-UL2017_MiniAODv2-v1/MINIAOD",
+    "/MuonEG/Run2017E-UL2017_MiniAODv2-v1/MINIAOD",
+    "/MuonEG/Run2017F-UL2017_MiniAODv2-v1/MINIAOD",
+    "/DoubleMuon/Run2017B-UL2017_MiniAODv2-v1/MINIAOD",
+    "/DoubleMuon/Run2017C-UL2017_MiniAODv2-v1/MINIAOD",
+    "/DoubleMuon/Run2017D-UL2017_MiniAODv2-v1/MINIAOD",
+    "/DoubleMuon/Run2017E-UL2017_MiniAODv2-v2/MINIAOD",
+    "/DoubleMuon/Run2017F-UL2017_MiniAODv2-v1/MINIAOD",
+    "/SingleElectron/Run2017B-UL2017_MiniAODv2-v1/MINIAOD",
+    "/SingleElectron/Run2017C-UL2017_MiniAODv2-v1/MINIAOD",
+    "/SingleElectron/Run2017D-UL2017_MiniAODv2-v1/MINIAOD",
+    "/SingleElectron/Run2017E-UL2017_MiniAODv2-v1/MINIAOD",
+    "/SingleElectron/Run2017F-UL2017_MiniAODv2-v1/MINIAOD",
+    "/SingleMuon/Run2017B-UL2017_MiniAODv2-v1/MINIAOD",
+    "/SingleMuon/Run2017C-UL2017_MiniAODv2-v1/MINIAOD",
+    "/SingleMuon/Run2017D-UL2017_MiniAODv2-v1/MINIAOD",
+    "/SingleMuon/Run2017E-UL2017_MiniAODv2-v1/MINIAOD",
+    "/SingleMuon/Run2017F-UL2017_MiniAODv2-v1/MINIAOD",
+)
+
 dataset_tup_2018 = (
-    # It seems that many of Elisa's events are found in
-    # "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"
-    # I've moved that data set to the first spot
-    # so that it gets checked first.
-    "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD",
     "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD",
     "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD",
     "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD",
+    "/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD",
     "/DoubleMuon/Run2018A-17Sep2018-v2/MINIAOD",
     "/DoubleMuon/Run2018B-17Sep2018-v1/MINIAOD",
     "/DoubleMuon/Run2018C-17Sep2018-v1/MINIAOD",
