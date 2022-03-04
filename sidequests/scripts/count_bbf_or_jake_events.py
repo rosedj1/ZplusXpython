@@ -6,16 +6,15 @@
 # Created: 2022-02-23
 #=============================================================================
 """
+from argparse import ArgumentParser
 from ROOT import TFile
 # Local imports.
-from sidequests.data.filepaths import data_2017_UL, data_2018_UL
 from Utils_Python.printing import (
     print_header_message, print_periodic_evtnum,
     pretty_print_dict
     )
 
 # For collecting 3P1F/2P2F events in Filippo's file.
-infile = data_2017_UL #data_2018_UL
 tree_path = 'passedEvents'
 m4l_lim = (105, 140)
 
@@ -27,6 +26,7 @@ def make_cr_fs_dct():
     return d
 
 def count_xbf_events(infile, tree_path, m4l_lim):
+
     m4l_min = m4l_lim[0]
     m4l_max = m4l_lim[1]
 
@@ -76,4 +76,8 @@ def count_xbf_events(infile, tree_path, m4l_lim):
     pretty_print_dict(dct_cr_fs_m4l_window)
 
 if __name__ == '__main__':
-    count_xbf_events(infile, tree_path, m4l_lim)
+    argpar = ArgumentParser()
+    argpar.add_argument('-i', dest='infile')
+    args = argpar.parse_args()
+    
+    count_xbf_events(args.infile, tree_path, m4l_lim)

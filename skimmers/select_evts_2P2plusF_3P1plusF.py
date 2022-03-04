@@ -146,7 +146,7 @@ outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/re
 outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
 # basename gets appended with file nickname:
-outfile_basename = "redbkgest_UL_WZxs5p26pb_ge4lepskim_2p2fsync_2016_ZZ_check"
+outfile_basename = "redbkgest_UL_WZxs5p26pb_ge4lepskim_2p2fsync_2016_ZZ"
 #=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
