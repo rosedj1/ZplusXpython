@@ -63,31 +63,26 @@ def make_evt_info_d():
     """
     tup = (
         # These will be dict keys whose values start at 0 and then increment.
-        # "n_evts_eq4_leps",
-        # "n_evts_ne4_leps",
         "n_evts_lt4_leps",
+        # "n_evts_lt1looselep",
         # "n_evts_lt2tightleps",
-        "n_evts_gt3tightleps",
+        # "n_evts_gt3tightleps",
         # "n_evts_not2or3tightleps",
         "n_evts_novalid2P2For3P1F_ZZcands",
-        "n_quartets_zerogoodZZcands",
-        "n_evts_nosubevtspassingsel",
-        "n_evts_fail_zzcand",
-        # "n_evts_ge4_leps",
+        # "n_quartets_zerogoodZZcands",
+        # "n_evts_nosubevtspassingsel",
         "n_evts_passedFullSelection",
         # "n_evts_passedZXCRSelection",
-        # "n_evts_lt2tightleps",
-        # "n_evts_lt1looselep",
         # "n_evts_lt2_zcand",
         # "n_evts_ne2_zcand",
         # "n_evts_lt4tightpluslooseleps",
         # "n_evts_no4lep_combos",
         # "n_combos_4tightleps",
         "n_good_redbkg_evts",
-        "n_good_2p2f_evts",
         "n_good_3p1f_evts",
-        "n_tot_good_2p2f_combos",
-        "n_tot_good_3p1f_combos",
+        "n_good_2p2f_evts",
+        "n_tot_3p1f_quartets",
+        "n_tot_2p2f_quartets",
         "n_evts_skip_mass4l_le0",
         "n_quartets_skip_lep_Hindex_mismatch"
     )
@@ -202,8 +197,8 @@ def make_evt_info_d():
 #         _ = [lep.print_info() for lep in fourlep_combos[0]]
 
 #         # Check which four-lep combos pass ZZ selections.
-#         n_tot_good_2p2f_combos_this_event = 0
-#         n_tot_good_3p1f_combos_this_event = 0
+#         n_tot_2p2f_quartets = 0
+#         n_tot_3p1f_quartets_this_event = 0
 #         for fourlep_tup in fourlep_combos:
             # if not myleps_pass_cjlst_osmethod_selection(
 #                     fourlep_tup, verbose=verbose, explain_skipevent=explain_skipevent,
@@ -219,9 +214,9 @@ def make_evt_info_d():
 
 #             # Good RedBkg event!
 #             if has_2p2f_leps(fourlep_tup):
-#                 n_tot_good_2p2f_combos_this_event += 1
+#                 n_tot_2p2f_quartets += 1
 #             elif has_3p1f_leps(fourlep_tup):
-#                 n_tot_good_3p1f_combos_this_event += 1
+#                 n_tot_3p1f_quartets_this_event += 1
 #             else:
 #                 raise ValueError("Something is wrong with event selection.")
 #         # End loop over all possible four-lepton combinations.
@@ -232,8 +227,8 @@ def make_evt_info_d():
 #                 f"{evt_id} (entry {evt_num})"
 #                 )
         
-#         has_good_2p2f_combos = (n_tot_good_2p2f_combos_this_event > 0)
-#         has_good_3p1f_combos = (n_tot_good_3p1f_combos_this_event > 0)
+#         has_good_2p2f_combos = (n_tot_2p2f_quartets > 0)
+#         has_good_3p1f_combos = (n_tot_3p1f_quartets_this_event > 0)
 
 #         evt_info_d["n_good_redbkg_evts"] += 1
 #         if has_good_2p2f_combos:
@@ -243,16 +238,16 @@ def make_evt_info_d():
         
 #         if fill_hists:
 #             if has_good_2p2f_combos or has_good_3p1f_combos:
-#                 h1_n2p2f_combos.Fill(n_tot_good_2p2f_combos_this_event, 1)
-#                 h1_n3p1f_combos.Fill(n_tot_good_3p1f_combos_this_event, 1)
+#                 h1_n2p2f_combos.Fill(n_tot_2p2f_quartets, 1)
+#                 h1_n3p1f_combos.Fill(n_tot_3p1f_quartets_this_event, 1)
 #                 h2_n3p1fcombos_n2p2fcombos.Fill(
-#                     n_tot_good_2p2f_combos_this_event,
-#                     n_tot_good_3p1f_combos_this_event,
+#                     n_tot_2p2f_quartets,
+#                     n_tot_3p1f_quartets_this_event,
 #                     1)
             
 #                 evt_info_2p2f_3p1f_d[evt_id] = {
-#                     "num_combos_2p2f" : n_tot_good_2p2f_combos_this_event,
-#                     "num_combos_3p1f" : n_tot_good_3p1f_combos_this_event,
+#                     "num_combos_2p2f" : n_tot_2p2f_quartets,
+#                     "num_combos_3p1f" : n_tot_3p1f_quartets_this_event,
 #                 }
 #     print("End loop over events.")
 
@@ -268,7 +263,7 @@ def make_evt_info_d():
 #         save_to_json(evt_info_2p2f_3p1f_d, outfile_json, overwrite=True,
 #                     sort_keys=False)
 
-def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
+def select_evts_2P2F_3P1F_multiquartets(
     tree,
     infile_fakerates,
     genwgts_dct,
@@ -283,8 +278,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     keep_only_mass4lgt0=False,
     match_lep_Hindex=False,
     recalc_mass4l_vals=False,
-    allow_ge4tightleps=True,
     skip_passedFullSelection=True,
+    stop_when_found_3p1f=True,
+    keep_first_quartet=False,
     ):
     """Apply RedBkg multi-lepton quartet selection to all events in tree.
 
@@ -335,18 +331,9 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         recalc_mass4l_vals (bool, optional):
             If True, recalculate mass4l of selected lepton quartet and
             corresponding massZ1 and massZ2 values.
-        allow_ge4tightleps (bool, optional):
-            If True, keep lepton quartets which satisfy 2P2F/3P1F selections,
-            even if 4 or more tight leptons are present in event.
-            Default is True.
-            NOTE:
-                Filippo made the good point that we may be killing events too
-                quickly if we throw events away with >=4 tight leptons!
-                For example, what if we have:
-                    mu+     mu-     mu+      mu-    e+
-                    (tight) (tight) (tight) (loose) (tight)
-                There are 4 tight leptons, but they can't make a signal
-                candidate. Therefore the 4 tight cut is made too early.
+        stop_when_found_3p1f (bool, optional):
+            If True, if at least one valid 3P1F ZZ candidate was found,
+            do not look for any 2P2F candidates. Defaults to True.
     TODO Update above:
     """
     if fill_hists:
@@ -378,9 +365,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
     evt_info_2p2f_3p1f_d = {}  # Info for json file.
 
     assert infile_fakerates is not None
-    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end = retrieve_FR_hists(
-                                                    infile_fakerates
-                                                    )
+    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end = \
+        retrieve_FR_hists(infile_fakerates)
 
     if outfile_json is not None:
         check_overwrite(outfile_json, overwrite=overwrite)
@@ -530,7 +516,8 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 verbose=verbose,
                 explain_skipevent=explain_skipevent,
                 smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
-                run=run, lumi=lumi, event=event, entry=evt_num
+                run=run, lumi=lumi, event=event, entry=evt_num,
+                stop_when_found_3p1f=stop_when_found_3p1f
                 )
 
         evt_is_3p1plusf = False
@@ -564,7 +551,7 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
         ##############################################################
         #=== Record each valid ZZ cand per quartet in this event. ===#
         ##############################################################
-        for n_quartet, zzcand in enumerate(ls_valid_ZZcands_OS):
+        for ndx_zzcand, zzcand in enumerate(ls_valid_ZZcands_OS, 1):
             nZXCRFailedLeptons = zzcand.get_num_failing_leps()
             # Make sure one of (but not both):
             # 1 lep failed and it's 3P1F or
@@ -653,6 +640,23 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                 new_weight = (fr2 / (1-fr2)) * (fr3 / (1-fr3)) * evt_weight_calcd
                 new_weight_up = (fr2_up / (1-fr2_up)) * (fr3_up / (1-fr3_up)) * evt_weight_calcd
 
+            if match_lep_Hindex:
+                # Make sure mass4l vars in TTree come from same leps
+                # as the leps that built the ZZ candidate I selected.
+                lep_Hindex_ls = list(tree.lep_Hindex)
+                myleps_ls_ptorder = zzcand.z_fir.get_mylep_idcs_pTorder() + \
+                                    zzcand.z_sec.get_mylep_idcs_pTorder()
+                raise RuntimeError(
+                    f'Need to update this to allow for matches, like:\n'
+                    f'  lep_Hindex = [2, 3, 1, 4]\n'
+                    f'  this_quart = [3, 2, 1, 4]\n'
+                    f'  that_quart = [3, 2, 4, 1]\n'
+                    f'All of which should be valid matches!'
+                    )
+                if lep_Hindex_ls != myleps_ls_ptorder:
+                    evt_info_d["n_quartets_skip_lep_Hindex_mismatch"] += 1
+                    continue
+
             if verbose:
                 print(
                     f"ZZcand is {'3P1F' if evt_is_3p1plusf else '2P2F'}\n"
@@ -667,27 +671,18 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
                     f"  fr2_down={fr2_down:.6f}, fr3_down={fr3_down:.6f}\n"
                     f"       fr2={fr2:.6f},      fr3={fr3:.6f}\n"
                     f"    fr2_up={fr2_up:.6f},   fr3_up={fr3_up:.6f}\n"
-                    f"    tree.eventWeight = {tree.eventWeight:.6f}\n"
-                    f"    evt_weight_calcd = {evt_weight_calcd:.6f}\n"
+                    f"         tree.eventWeight = {tree.eventWeight:.6f}\n"
+                    f"         evt_weight_calcd = {evt_weight_calcd:.6f}\n"
                     f"          new_weight_down = {new_weight_down:.6f}\n"
                     f"               new_weight = {new_weight:.6f}\n"
                     f"            new_weight_up = {new_weight_up:.6f}"
                 )
+                n_zzcands = len(ls_valid_ZZcands_OS)
                 zzcand.print_info(
-                    name=f"SELECTED ZZ CAND FOR QUARTET #{n_quartet}"
+                    name=f"SELECTED ZZ CAND ({ndx_zzcand}/{n_zzcands})"
                     )
 
-            if match_lep_Hindex:
-                # Make sure mass4l vars in TTree come from same leps
-                # as the leps that built the ZZ candidate I selected.
-                lep_Hindex_ls = list(tree.lep_Hindex)
-                myleps_ls_ptorder = zzcand.z_fir.get_mylep_idcs_pTorder() + \
-                                    zzcand.z_sec.get_mylep_idcs_pTorder()
-                if lep_Hindex_ls != myleps_ls_ptorder:
-                    evt_info_d["n_quartets_skip_lep_Hindex_mismatch"] += 1
-                    continue
-
-            # Save this subevent in TTree. Fill branches.
+            # Save this quartet in TTree. Fill branches.
             lep_idcs = [
                 mylep1_fromz1.ndx_lepvec,
                 mylep2_fromz1.ndx_lepvec,
@@ -715,11 +710,11 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             ptr_lep_RedBkgindex[3] = lep_idcs[3]
 
             if recalc_mass4l_vals:
-                # Getting an IndexError since there is a discrepancy in the length
-                # of vectors, like `lep_pt` and `vtxLepFSR_BS_pt`.
                 ptr_massZ1[0] = zzcand.z_fir.get_mass()
                 ptr_massZ2[0] = zzcand.z_sec.get_mass()
                 ptr_mass4l[0] = zzcand.get_m4l()
+                # Getting an IndexError since there is a discrepancy in the length
+                # of vectors, like `lep_pt` and `vtxLepFSR_BS_pt`.
                 # ptr_mass4l[0] = calc_mass4l_from_idcs(
                 #     tree, lep_idcs, kind="lepFSR"
                 #     )
@@ -733,9 +728,16 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
 
             if verbose:
                 print(
-                    f"** Quartet {n_quartet} passed OS Method Sel: **\n"
+                    f"** ZZ cand {ndx_zzcand} passed OS Method Sel: **\n"
                     f"   CR {cr_str}: {evt_id}, (row {evt_num})"
                     )
+
+            if keep_first_quartet:
+                warnings.warn(
+                    f'Keeping only the first (arbitrary!) '
+                    f'lepton quartet found in the event.'
+                    )
+                break
         # End loop over quartets.
 
         # Final counts.
@@ -744,11 +746,13 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
             cr = "3p1f"
             n_quartets_3p1f = n_valid_ZZcands_OS
             n_quartets_2p2f = 0
+            evt_info_d["n_tot_3p1f_quartets"] += n_quartets_3p1f
             evt_info_d["n_good_3p1f_evts"] += 1
         if evt_is_2p2plusf:
             cr = "2p2f"
             n_quartets_3p1f = 0
             n_quartets_2p2f = n_valid_ZZcands_OS
+            evt_info_d["n_tot_2p2f_quartets"] += n_quartets_2p2f
             evt_info_d["n_good_2p2f_evts"] += 1
 
         evt_info_2p2f_3p1f_d[evt_id] = {
@@ -798,7 +802,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
 #     keep_only_mass4lgt0=False,
 #     match_lep_Hindex=False,
 #     recalc_mass4l_vals=False,
-#     allow_ge4tightleps=True,
 #     skip_passedFullSelection=True,
 #     ):
 #     """Select RedBkg wrong charge/flavor events.
@@ -846,18 +849,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
 #         recalc_mass4l_vals (bool, optional):
 #             If True, recalculate mass4l of selected lepton quartet and
 #             corresponding massZ1 and massZ2 values.
-#         allow_ge4tightleps (bool, optional):
-#             If True, keep lepton quartets which satisfy 2P2F/3P1F selections,
-#             even if 4 or more tight leptons are present in event.
-#             Default is True.
-#             NOTE:
-#                 Filippo made the good point that we may be killing events too
-#                 quickly if we throw events away with >=4 tight leptons!
-#                 For example, what if we have:
-#                     mu+     mu-     mu+      mu-    e+
-#                     (tight) (tight) (tight) (loose) (tight)
-#                 There are 4 tight leptons, but they can't make a signal
-#                 candidate. Therefore the 4 tight cut is made too early.
 #     """
 #     if fill_hists:
 #         # Prep histograms.
@@ -1024,19 +1015,6 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
 #                 print_skipevent_msg(msg, evt_num, run, lumi, event)
 #             continue
 
-#         #=== The selection below was skipping possible good RedBkg evts. ===#
-#         #=== Consider mu+T mu-T mu+T mu-L e+T
-#         #=== This has 4 tight leptons, but obviously we skip the electron.
-#         # if not allow_ge4tightleps:
-#         #     if n_tight_leps > 3:
-#         #         evt_info_d["n_evts_gt3tightleps"] += 1
-#         #         if explain_skipevent:
-#         #             msg = f"  Contains {n_tight_leps} (> 3) tight leps."
-#         #             print_skipevent_msg(msg, evt_num, run, lumi, event)
-#         #         if verbose:
-#         #             for lep in mylep_ls:
-#         #                 lep.print_info()
-#         #         continue
 #         # Guaranteed to have at least 4 leptons per event.
 #         # At least 2 tight leptons.
 #         # The remaining leptons should be loose.
@@ -1121,11 +1099,11 @@ def evt_loop_evtsel_2p2plusf3p1plusf_subevents(
 #             if subevt_passes_sel_2p2f:
 #                 nZXCRFailedLeptons = 2
 #                 n_quartets_2p2f += 1
-#                 evt_info_d["n_tot_good_2p2f_combos"] += 1
+#                 evt_info_d["n_tot_2p2f_quartets"] += 1
 #             elif subevt_passes_sel_3p1f:
 #                 nZXCRFailedLeptons = 1
 #                 n_quartets_3p1f += 1
-#                 evt_info_d["n_tot_good_3p1f_combos"] += 1
+#                 evt_info_d["n_tot_3p1f_quartets"] += 1
 #             else:
 #                 raise ValueError("SHOULD NEVER TRIGGER.")
 
@@ -1598,3 +1576,68 @@ def fillhists_osmethod_bbfntuple(
         d_zz_2p2fpred_fs_hists,
         )
 
+def make_ls_evtIDs_OSmethod(
+    tree, framework,
+    m4l_lim=(70, 1000),
+    keep_2P2F=0,
+    keep_3P1F=0,
+    fs=1,
+    print_every=5000,
+    ):
+    """Return a list of 3-tuples of event IDs that pass OS Method selection.
+
+    Args:
+        framework (str, optional):
+            'jake' uses `is3P1F` and `isData`. Defaults to "jake".
+        m4l_lim (2-tuple, optional):
+            Select events with mass4l in this range. Defaults to (70, 1000).
+        keep_2P2F (bool, optional):
+            Select 2P2F-type events. Both this and keep_3P1F can be True.
+            Defaults to False.
+        keep_3P1F (bool, optional):
+            Select 3P1F-type events. Both this and keep_2P2F can be True.
+            Defaults to False.
+        fs (int, optional):
+            Final state to select.
+            1=4mu, 2=4e, 3=2e2mu, 4=2mu2e, 5=all.
+            Defaults to 5.
+        print_every (int, optional):
+            How often to print event info.
+            Defaults to 500000.
+    """
+    ls_tup_evtID = []
+    m4l_min = m4l_lim[0]
+    m4l_max = m4l_lim[1]
+
+    n_tot = tree.GetEntries()
+    for ct, evt in enumerate(tree):
+        print_periodic_evtnum(ct, n_tot, print_every=print_every)
+        
+        m4l = evt.mass4l
+        if evt.finalState not in (1, 2, 3, 4):
+            continue
+        if (m4l < m4l_min) or (m4l > m4l_max):
+            continue
+        good_fs = True if fs == evt.finalState or fs == 5 else False
+        if not good_fs:
+            continue
+
+        keep_evt = False
+        if framework.lower() == "jake":
+            if keep_2P2F and evt.is2P2F:
+                keep_evt = True
+            elif keep_3P1F and evt.is3P1F:
+                keep_evt = True
+        elif framework.lower() == "bbf":
+            if not evt.passedZXCRSelection:
+                continue
+            if keep_2P2F and (evt.nZXCRFailedLeptons == 2):
+                keep_evt = True
+            elif keep_3P1F and (evt.nZXCRFailedLeptons == 1):
+                keep_evt = True
+
+        if keep_evt:
+            tup_evtID = (evt.Run, evt.LumiSect, evt.Event,)
+            ls_tup_evtID.append(tup_evtID)
+
+    return ls_tup_evtID

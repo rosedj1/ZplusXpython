@@ -244,6 +244,8 @@ class FileRunLumiEvent:
         ls_tup_evtid=None,
         set_tup_evtid=None,
         jsonpath_and_cr=('', ''),
+        rootfile_info=None,
+        name=None
         ):
         """Load a list of event IDs from some source of event IDs.
         
@@ -265,14 +267,21 @@ class FileRunLumiEvent:
                         'num_combos_2p2f': 0,
                         'num_combos_3p1f': 1
                         }
+            rootfile_info (2-tuple):
+                ('filepath', 'tree_name')
+            name (str):
+                Nickname of this file.
+                Used for keeping track of which events came from which file.
         """
         # Make sure only 1 source of events was given.
         assert sum(
                 x is not None for x in (
                     txt, ls_str_evtid, ls_tup_evtid, set_tup_evtid,
+                    rootfile_info
                     )
                 ) == 1
         self.txt = txt
+        self.name = name
 
         # First priority: store `self.ls_tup_evtid`.
         if ls_tup_evtid is not None:
@@ -282,6 +291,13 @@ class FileRunLumiEvent:
         #     cr = jsonpath_and_cr[1].lower()
         #     assert cr in ('2p2f', '3p1f')
         #     self.ls_tup_evtid = self.convert_dict_to_ls_tup(json_path, cr)
+        elif isinstance(rootfile_info, tuple) and (len(rootfile_info) == 2):
+            # ROOT file was provided. Extract (Run, Lumi, Event).
+            rtfile = rootfile_info[0]
+            tree_path = rootfile_info[1]
+            self.ls_tup_evtid = self.extract_evtid_from_rootfile(
+                                    rtfile, tree_path
+                                    )
         else:
             self.ls_tup_evtid = self.get_ls_tup_evtid(
                 txt,
@@ -348,6 +364,33 @@ class FileRunLumiEvent:
             return [self.as_str(tup) for tup in set_tup]
         return list(set_tup)
     
+    def extract_evtid_from_rootfile(self, rootfile, tree_name):
+        """Return a list of 3-tuples of event IDs in `rootfile`.
+
+        Args:
+            rootfile (str): Path to ROOT file.
+            tree_name (str): Name of TTree.
+        """
+        tf = TFile.Open(rootfile, 'read')
+        tree = tf.Get(tree_name)
+
+        ls_evtids = []
+        for evt in tree:
+            ls_evtids.extend(
+                ((evt.Run, evt.LumiSect, evt.Event),)
+            )
+        return ls_evtids
+
+    def get_basename(self):
+        """Return str of basename of file, giving preference to nickname."""
+        if self.name is not None:
+            basename = self.name
+        elif self.txt is not None:
+            basename = os.path.basename(self.txt)
+        else:
+            basename = '...no file specified.'
+        return basename
+
     def get_num_duplicates(self, verbose=False):
         """Return the number of duplicate events found in this file.
         
@@ -388,7 +431,7 @@ class FileRunLumiEvent:
         """
         counter = self.get_duplicate_counter()
         if len(counter.keys()) == 0:
-            print("No duplicates found.")
+            print(f"No duplicates found in {self.get_basename()}.")
         else:
             print(f"{'Duplicate Event ID':^26} --- Total Appearances")
             for evtID, n_times in counter.items():
@@ -418,6 +461,7 @@ class FileRunLumiEvent:
         NOTE:
             Duplicates are removed before evtIds are compared.
         """
+        print(f"Analyzing event IDs in: {self.get_basename()}")
         this_set = set(self.get_ls_evtids_nodups())
         other_set = set(other.get_ls_evtids_nodups())
         choice = event_type.lower()
@@ -425,20 +469,22 @@ class FileRunLumiEvent:
             set_evt_combine = this_set & other_set
         elif "unique" in choice:
             set_evt_combine = this_set - other_set
+            print(
+                f"  Total entries:{' '*11}{self.get_tot_num_entries()}\n"
+                f"  Total entries (no dups): {self.get_num_entries_nodup()}\n"
+                f"  Total dups:{' '*14}{self.get_num_duplicates()}"
+            )
         else:
             raise ValueError(f"event_type={event_type} not understood")
         n_evts = len(set_evt_combine)
-        if self.txt is None:
-            basename = "...the first event list"
-        else:
-            basename = os.path.basename(self.txt)
-        msg = f"Found {n_evts} {event_type} events in:\n{basename}"
-        if event_type == 'common':
-            msg = msg.replace("events in", "events between")
-            if other.txt is not None:
-                msg += f"\nand\n{os.path.basename(other.txt)}"
-            else:
-                msg += f"\nand\n...the second event list."
+
+        basename = self.get_basename()
+        msg = f"  Found {n_evts} {event_type} events in: {basename}"
+        if n_evts == 1:
+            msg = msg.replace('events', 'event')
+        if choice == 'common':
+            msg = msg.replace("in:", "between:")
+            msg += f" and {other.get_basename()}"
         print(msg)
         if print_evts:
             for tup in set_evt_combine:

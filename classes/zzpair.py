@@ -486,13 +486,15 @@ def get_ZZcands_from_myleps_OSmethod(
         # Return either empty list or the only ZZ cand made.
         return ls_all_passing_zz
     assert n_zzcands < 3, (
-        f"  Houston, we have a problem ({n_zzcands} ZZ cands)."
+        f"  Houston, we have a problem...\n"
+        f"  Quartet of leptons built {n_zzcands} ZZ cands."
         )
     # Found two ZZ cands.
-    print(
-        f"  Found {n_zzcands} ZZ candidates in event "
-        f"{run} : {lumi} : {event} (entry {entry})."
-        )
+    if verbose:
+        print(
+            f"  Found {n_zzcands} ZZ candidates in event "
+            f"{run} : {lumi} : {event} (entry {entry})."
+            )
     zzcand1, zzcand2 = ls_all_passing_zz
     better_zz_cand = select_better_zzcand(zzcand1, zzcand2, verbose=verbose)
     return [better_zz_cand]

@@ -19,23 +19,31 @@ from sidequests.funcs.evt_comparison import (
     find_runlumievent_using_entry
     )
 from sidequests.data.filepaths import (
-    rb_skim_UL2017_data, rb_skim_UL2018_data,
-    data_2017_UL_ge4lepskim, data_2018_UL_ge4lepskim,
+    rb_skim_UL2017_data,
+    rb_skim_UL2018_data,
+    data_2016_UL_ge4lepskim,
+    data_2017_UL_ge4lepskim,
+    data_2018_UL_ge4lepskim,
     # infile_filippo_data_2018_fromhpg,
+    fakerates_WZremoved_2016_UL_woFSR,
     fakerates_WZremoved_2017_UL_woFSR,
     fakerates_WZremoved_2018_UL_woFSR,
     )
 from constants.analysis_params import (
-    dct_sumgenweights_2017_UL, dct_sumgenweights_2018_UL,
+    dct_sumgenweights_2016_UL,
+    dct_sumgenweights_2017_UL,
+    dct_sumgenweights_2018_UL,
     dct_xs_jake,
-    LUMI_INT_2017_UL, LUMI_INT_2018_UL
+    LUMI_INT_2016_UL,
+    LUMI_INT_2017_UL,
+    LUMI_INT_2018_UL
     )
 
-year = 2017
-lumi_int = LUMI_INT_2017_UL
-infile_root = data_2017_UL_ge4lepskim
-genwgts_dct = dct_sumgenweights_2017_UL
-infile_fakerates = fakerates_WZremoved_2017_UL_woFSR  # Required for 'jake'.
+year = 2016
+lumi_int = LUMI_INT_2016_UL
+infile_root = data_2016_UL_ge4lepskim
+genwgts_dct = dct_sumgenweights_2016_UL
+infile_fakerates = fakerates_WZremoved_2016_UL_woFSR  # Required for 'jake'.
 tree_path = "passedEvents"
 
 analyze_using = "jake"  # Choose between: "jake" or "bbf".
@@ -44,18 +52,35 @@ start_at = 0
 end_at = -1  #start_at + 1
 print_every = 50000
 
-allow_ge4tightleps = True
 keep_only_mass4lgt0 = True
 match_lep_Hindex = True
 recalc_mass4l_vals = False
+stop_when_found_3p1f = 1
+keep_first_quartet = 1
 
-# Either use `run_lumi_evt_row` or fill in `ls_tup_unique`:
+# Either give a 4-tuple into `run_lumi_evt_row` or
+# put `None` and fill in `ls_tup_unique` with 3-tuples.
 run_lumi_evt_row = None #(304366, 1117, 1809338116, 270236) #None
 
 ls_tup_unique = [
     ######################
     #=== DATA 2018 UL ===#
     ######################
+    # Post skip 2P2F if no 3P1F fix.
+    # Set match_lep_Hindex = False.
+    # Found 10 more 3P1F events (not quartets) than xBF. 
+    (276948, 47, 95193527),
+    (275125, 881, 1595205888),
+    (280385, 1996, 3571547040),
+    (278406, 324, 461292610),
+    (274422, 587, 1031884076),
+    (283934, 457, 757731820),
+    (279116, 336, 600864918),
+    (276831, 894, 1603784346),
+    (280018, 485, 842900725),
+    (278875, 52, 102022909),
+
+
 #     # Data 2018 UL, 4mu unique in xBF:
 #     (316218, 967, 1341095734),
 #     (317640, 312, 422234534),
@@ -129,7 +154,7 @@ ls_tup_unique = [
         # (300517, 339, 408325107), # --- Jake tagged as valid 3P1F quartet,
 #     # (305204, 321, 543469667) --- Jake tagged as valid 3P1F quartet,
 #     (304144, 959, 1659587081),
-    (299184, 409, 680767941) # --- Jake tagged as valid 3P1F quartet,
+    # (299184, 409, 680767941) # --- Jake tagged as valid 3P1F quartet,
 #     # (303948, 572, 921521958) --- Jake tagged as valid 3P1F quartet,
 #     (304506, 46, 80595885),
 
@@ -199,8 +224,9 @@ if run_lumi_evt_row is not None:
         keep_only_mass4lgt0=False,
         match_lep_Hindex=False,
         recalc_mass4l_vals=False,
-        allow_ge4tightleps=allow_ge4tightleps,
         skip_passedFullSelection=True,
+        stop_when_found_3p1f=stop_when_found_3p1f,
+        keep_first_quartet=keep_first_quartet,
         explain_skipevent=True,
         verbose=True,
         )
@@ -230,7 +256,6 @@ else:
                 keep_only_mass4lgt0=False,
                 match_lep_Hindex=False,
                 recalc_mass4l_vals=False,
-                allow_ge4tightleps=allow_ge4tightleps,
                 skip_passedFullSelection=True,
                 explain_skipevent=True,
                 verbose=True,

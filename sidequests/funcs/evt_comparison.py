@@ -7,7 +7,8 @@ from Utils_Python.Utils_Files import check_overwrite
 from sidequests.classes.cjlstflag import CjlstFlag
 from sidequests.classes.filecomparer import evtID_as_str
 from sidequests.funcs.evt_loops import (
-    evt_loop_evtsel_2p2plusf3p1plusf_subevents
+    select_evts_2P2F_3P1F_multiquartets,
+    make_ls_evtIDs_OSmethod
     )
 from constants.finalstates import dct_finalstates_int2str
 
@@ -134,8 +135,9 @@ def analyze_single_evt(
     keep_only_mass4lgt0=False,
     match_lep_Hindex=False,
     recalc_mass4l_vals=False,
-    allow_ge4tightleps=False,
     skip_passedFullSelection=True,
+    stop_when_found_3p1f=True,
+    keep_first_quartet=False,
     explain_skipevent=True,
     verbose=True,
     ):
@@ -154,17 +156,6 @@ def analyze_single_evt(
             Which instance of the event you want to select.
             Options: "first", anything else collects all such events.
         evt_start (int):
-        allow_ge4tightleps (bool):
-            If True, then Jake's Analyzer will look for 3P1F quartets even
-            when an event has >=4 tight leptons.
-            NOTE:
-                Filippo made the good point that we may be killing events too
-                quickly if we throw events away with >=4 tight leptons!
-                For example, what if we have:
-                    mu+     mu-     mu+T    mu-L    e+T
-                    (tight) (tight) (tight) (loose) (tight)
-                There are 4 tight leptons, but they can't make a signal
-                candidate. Therefore the 4 tight selection is made too early.
     """
     know_evtid = all(x is not None for x in (run, lumi, event))
     know_entry = entry is not None
@@ -203,7 +194,7 @@ def analyze_single_evt(
             print_evt_info_bbf(tree)
         elif fw == "jake":
             print_header_message("ANALYZER: Jake")
-            evt_loop_evtsel_2p2plusf3p1plusf_subevents(
+            select_evts_2P2F_3P1F_multiquartets(
                 tree,
                 infile_fakerates=infile_fakerates,
                 genwgts_dct=genwgts_dct,
@@ -223,8 +214,9 @@ def analyze_single_evt(
                 keep_only_mass4lgt0=False,
                 match_lep_Hindex=match_lep_Hindex,
                 recalc_mass4l_vals=False,
-                allow_ge4tightleps=allow_ge4tightleps,
                 skip_passedFullSelection=skip_passedFullSelection,
+                stop_when_found_3p1f=stop_when_found_3p1f,
+                keep_first_quartet=keep_first_quartet,
                 )
             # store_evt = True
         elif fw == "cjlst":
@@ -331,72 +323,6 @@ def get_control_region(evt):
     
 #     # tfile.Close()
 #     return ls_tup_evtID
-
-def make_ls_evtIDs_OSmethod(
-    tree, framework,
-    m4l_lim=(70, 1000),
-    keep_2P2F=0,
-    keep_3P1F=1,
-    fs=1,
-    print_every=5000,
-    ):
-    """Return a list of 3-tuples of event IDs that pass OS Method selection.
-
-    Args:
-        framework (str, optional):
-            'jake' uses `is3P1F` and `isData`. Defaults to "jake".
-        m4l_lim (2-tuple, optional):
-            Select events with mass4l in this range. Defaults to (70, 1000).
-        keep_2P2F (bool, optional):
-            Select 2P2F-type events. Both this and keep_3P1F can be True.
-            Defaults to True.
-        keep_3P1F (bool, optional):
-            Select 3P1F-type events. Both this and keep_2P2F can be True.
-            Defaults to True.
-        fs (int, optional):
-            Final state to select.
-            1=4mu, 2=4e, 3=2e2mu, 4=2mu2e, 5=all.
-            Defaults to 5.
-        print_every (int, optional):
-            How often to print event info.
-            Defaults to 500000.
-    """
-    ls_tup_evtID = []
-    m4l_min = m4l_lim[0]
-    m4l_max = m4l_lim[1]
-
-    n_tot = tree.GetEntries()
-    for ct, evt in enumerate(tree):
-        print_periodic_evtnum(ct, n_tot, print_every=print_every)
-        
-        m4l = evt.mass4l
-        if evt.finalState not in (1, 2, 3, 4):
-            continue
-        if (m4l < m4l_min) or (m4l > m4l_max):
-            continue
-        good_fs = True if fs == evt.finalState or fs == 5 else False
-        if not good_fs:
-            continue
-
-        keep_evt = False
-        if framework.lower() == "jake":
-            if keep_2P2F and evt.is2P2F:
-                keep_evt = True
-            elif keep_3P1F and evt.is3P1F:
-                keep_evt = True
-        elif framework.lower() == "bbf":
-            if not evt.passedZXCRSelection:
-                continue
-            if keep_2P2F and (evt.nZXCRFailedLeptons == 2):
-                keep_evt = True
-            elif keep_3P1F and (evt.nZXCRFailedLeptons == 1):
-                keep_evt = True
-
-        if keep_evt:
-            tup_evtID = (evt.Run, evt.LumiSect, evt.Event,)
-            ls_tup_evtID.append(tup_evtID)
-
-    return ls_tup_evtID
 
 def write_tree_evtID_to_txt(
     infile,

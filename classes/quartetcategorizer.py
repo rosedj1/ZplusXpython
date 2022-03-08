@@ -8,13 +8,50 @@ from classes.mylepton import (
 )
 
 class QuartetCategorizer:
+    """Per event, sort MyLeptons into 2P2F and 3P1F quartets.
+    
+    Applies ZZ candidate selection criteria to determine "valid" ZZ cands.
+
+    NOTE:
+        By default, if a 3P1F ZZ cand is found, then 2P2F cands will NOT
+        be searched for. To find 
+    """
 
     def __init__(
         self, mylep_ls,
         verbose=False, explain_skipevent=False,
         smartcut_ZapassesZ1sel=False,
-        run=None, lumi=None, event=None, entry=None
+        run=None, lumi=None, event=None, entry=None,
+        stop_when_found_3p1f=True,
         ):
+        """Make categorizer with sorted MyLepton quartets for one event.
+
+        Args:
+            mylep_ls (list):
+                This event's list of MyLeptons.
+            verbose (bool, optional):
+                Verbose output. Defaults to False.
+            explain_skipevent (bool, optional):
+                Print details on why the ZZ candidate was not built.
+                Defaults to False.
+            smartcut_ZapassesZ1sel (bool, optional):
+                Deprecated.
+                Defaults to False.
+            run (int, optional):
+                Run number. Useful for selecting a specific event.
+                Defaults to None.
+            lumi (int, optional):
+                Lumi section number. Useful for selecting a specific event.
+                Defaults to None.
+            event (int, optional):
+                Event number. Useful for selecting a specific event.
+                Defaults to None.
+            entry (int, optional):
+                Row in TTree. Defaults to None.
+            stop_when_found_3p1f (bool, optional):
+                If True, if at least one valid 3P1F ZZ candidate was found,
+                do not look for any 2P2F candidates. Defaults to True.
+        """
         # Categorize mylep_ls into OS Method 3P1F and 2P2F quartets.
         self.ls_valid_ZZcands_OS_3p1f = \
             self.get_best_ZZcand_per_quart(
@@ -24,19 +61,22 @@ class QuartetCategorizer:
                 smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
                 run=run, lumi=lumi, event=event, entry=entry
                 )
-        self.ls_valid_ZZcands_OS_2p2f = \
-            self.get_best_ZZcand_per_quart(
-                mylep_ls, cr='2P2F',
-                verbose=verbose,
-                explain_skipevent=explain_skipevent,
-                smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
-                run=run, lumi=lumi, event=event, entry=entry
-                )
-
         self.n_valid_ZZcands_OS_3p1f = len(self.ls_valid_ZZcands_OS_3p1f)
-        self.n_valid_ZZcands_OS_2p2f = len(self.ls_valid_ZZcands_OS_2p2f)
-
         self.has_valid_ZZcand_OS_3p1f = (self.n_valid_ZZcands_OS_3p1f > 0)
+        
+        if self.has_valid_ZZcand_OS_3p1f and stop_when_found_3p1f:
+            self.ls_valid_ZZcands_OS_2p2f = []
+        else:
+            self.ls_valid_ZZcands_OS_2p2f = \
+                self.get_best_ZZcand_per_quart(
+                    mylep_ls, cr='2P2F',
+                    verbose=verbose,
+                    explain_skipevent=explain_skipevent,
+                    smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
+                    run=run, lumi=lumi, event=event, entry=entry
+                    )
+
+        self.n_valid_ZZcands_OS_2p2f = len(self.ls_valid_ZZcands_OS_2p2f)
         self.has_valid_ZZcand_OS_2p2f = (self.n_valid_ZZcands_OS_2p2f > 0)
 
     def get_best_ZZcand_per_quart(

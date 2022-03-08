@@ -1,4 +1,4 @@
-"""Select 2P2+F and 3P1+F events. Add new branches to TTree in new file.
+"""Select 2P2F and 3P1F lepton quartets. Add new branches to TTree.
 #=============================================================================
 # Syntax:
 #   python <this_script>.py
@@ -9,9 +9,9 @@
 #   This code selects 2P2+F and 3P1+F reducible background events.
 #   It considers events with >4 leptons and properly handles all possible
 #   lepton quartets. Each passing quartet is saved as an entry in a new
-#   TTree. The BBF HZZ Analyzer does not yet do handle same-event quartets.
-#   The input files for this script should be root files produced from the
-#   BBF HZZ Analyzer.
+#   TTree. The xBF HZZ Analyzer does not yet handle multiple quartets within
+#   the same event. The input files for this script should be root files
+#   produced from the xBF HZZ Analyzer.
 # 
 #   In effect this is an updated event selection that bypasses the branches:
 #       - passedZXCRSelection
@@ -58,7 +58,7 @@
 #     - lep_RedBkgindex (int arr[4])
 # Author: Jake Rosenzweig
 # Created: 2021-11-30
-# Updated: 2022-03-03
+# Updated: 2022-03-08
 #=============================================================================
 """
 import os
@@ -66,7 +66,7 @@ import argparse
 from ROOT import TFile
 # Local modules.
 from sidequests.funcs.evt_loops import (
-    evt_loop_evtsel_2p2plusf3p1plusf_subevents
+    select_evts_2P2F_3P1F_multiquartets
     )
 from sidequests.data.filepaths import (
     data_2016_UL_ge4lepskim,
@@ -101,9 +101,9 @@ from constants.analysis_params import (
 #########################
 # Files to analyze.
 d_nicknames_files = {
-    # 'Data': data_2016_UL_ge4lepskim,
+    'Data': data_2016_UL_ge4lepskim,
     # 'ZZ': mc_2016_UL_ZZ,
-    'ZZ': mc_2016_UL_ZZ_ge4lepskim,
+    # 'ZZ': mc_2016_UL_ZZ_ge4lepskim,
 
     # 'Data': data_2017_UL,
     # 'Data': data_2017_UL_ge3lepskim,
@@ -129,15 +129,16 @@ dct_xs = dct_xs_jake
 
 start_at_evt = 0
 break_at_evt = -1  # Use -1 to run over all events.
-print_every = 50000
-smartcut_ZapassesZ1sel = False  # Literature sets this to False.
-
+print_every = 100_000
 explain_skipevent = 0
-keep_only_mass4lgt0 = 1
-match_lep_Hindex = 1  # Only keep quartets that perfectly match lep_Hindex.
-recalc_mass4l_vals = 0
-allow_ge4tightleps = 1  # To sync with BBF Ana, set to True.
+
+smartcut_ZapassesZ1sel = False  # Literature sets this to False.
+keep_only_mass4lgt0 = 0
+match_lep_Hindex = 0  # Only keep quartets that perfectly match lep_Hindex.
+recalc_mass4l_vals = 1
 skip_passedFullSelection = 1  # To sync with BBF Ana, set to True.
+stop_when_found_3p1f = 1  # If a 3P1F ZZ candidate is found, don't look for 2P2F.
+keep_first_quartet = 1
 
 fill_hists = 1
 hadd_files = 0
@@ -146,7 +147,8 @@ outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/re
 outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
 # basename gets appended with file nickname:
-outfile_basename = "redbkgest_UL_WZxs5p26pb_ge4lepskim_2p2fsync_2016_ZZ"
+# outfile_basename = "osmethod_UL_nomatchlepHindex_multiquartets"
+outfile_basename = "osmethod_UL_nomatchlepHindex_analyzemass4llt0"
 #=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -164,9 +166,8 @@ if __name__ == '__main__':
     overwrite = args.overwrite
     verbose = args.verbose
 
-    assert all(
-        str(year) in name for name in list(d_nicknames_files.values())
-        )
+    year_in_name = [infile_FR_wz_removed] + list(d_nicknames_files.values())
+    assert all(str(year) in name for name in year_in_name)
 
     # Base names below will have name of data type appended ("Data", "ZZ").
     outfile_base_root = f"{outfile_basename}.root"
@@ -206,7 +207,7 @@ if __name__ == '__main__':
             f"  Processing: year={year}, name={name}"
             )
 
-        evt_loop_evtsel_2p2plusf3p1plusf_subevents(
+        select_evts_2P2F_3P1F_multiquartets(
             tree,
             infile_fakerates=infile_FR_wz_removed,
             genwgts_dct=genwgts_dct,
@@ -226,8 +227,9 @@ if __name__ == '__main__':
             keep_only_mass4lgt0=keep_only_mass4lgt0,
             match_lep_Hindex=match_lep_Hindex,
             recalc_mass4l_vals=recalc_mass4l_vals,
-            allow_ge4tightleps=allow_ge4tightleps,
             skip_passedFullSelection=skip_passedFullSelection,
+            stop_when_found_3p1f=stop_when_found_3p1f,
+            keep_first_quartet=keep_first_quartet
             )
         ls_all_outfiles.append(outfile_root)
 

@@ -193,7 +193,7 @@ Choose a framework to work with:
 ### Jake's Framework
 
 Select "OS Method" events (2P2F and 3P1F) with:
-   - `skimmers/select_evts_2P2plusF_3P1plusF.py`
+   - `skimmers/select_evts_OSmethod_multiquartetperevt.py`
 
 ### Vukasin's Framework
 
