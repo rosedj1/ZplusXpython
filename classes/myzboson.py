@@ -23,11 +23,17 @@ class MyZboson:
         mass = self.get_mass()
         if (mass < 40):
             if self.explain_skipevent:
-                print(f"  Failed Z1 cut: mass ({mass:.6f}) < 40 GeV.")
+                print(
+                    f"  Z (from leps {self.get_mylep_indices()}) "
+                    f"failed Z1 cut: mass ({mass:.6f}) < 40 GeV."
+                    )
             return False
         if not self.made_from_tight_leps:
             if self.explain_skipevent:
-                print(f"  Failed Z1 cut: not built from tight leptons.")
+                print(
+                    f"  Z (from leps {self.get_mylep_indices()}) "
+                    f"failed Z1 cut: not built from tight leptons."
+                    )
             return False
         return True
     

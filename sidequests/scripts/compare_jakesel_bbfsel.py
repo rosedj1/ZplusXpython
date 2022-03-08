@@ -50,7 +50,7 @@ match_lep_Hindex = True
 recalc_mass4l_vals = False
 
 # Either use `run_lumi_evt_row` or fill in `ls_tup_unique`:
-run_lumi_evt_row = None #(304366, 1117, 1809338116, 270236)
+run_lumi_evt_row = None #(304366, 1117, 1809338116, 270236) #None
 
 ls_tup_unique = [
     ######################
@@ -101,7 +101,7 @@ ls_tup_unique = [
 #     # Data 2017 UL, 4mu unique in xBF:
 #     (304366, 1117, 1809338116),
 #     (297178, 716, 891914663)  #--- Jake tagged as valid 3P1F quartet,
-#     # (304625, 298, 425714862) --- Jake tagged as valid 3P1F quartet,
+    #   (304625, 298, 425714862),# --- Jake tagged as valid 3P1F quartet,
 #     (300517, 258, 314860251),
 #     (305314, 48, 56936615),
 #     (305081, 55, 11862118),
@@ -118,8 +118,7 @@ ls_tup_unique = [
 #     (297296, 333, 477343383),
 #     # (302393, 106, 125394268) --- Jake tagged as valid 3P1F quartet,
 #     (300785, 975, 1153338559),
-      (304616, 603, 1002279386),  # --- Jake tagged as valid 3P1F quartet,
-]
+    #   (304616, 603, 1002279386),  # --- Jake tagged as valid 3P1F quartet,
 #     (304062, 1481, 1947677889),
 #     (305112, 1334, 2220608605),
 #     (300123, 254, 294498299),
@@ -127,10 +126,10 @@ ls_tup_unique = [
 #     (297656, 288, 472775383),
 #     (300155, 919, 1242579761),
 #     (299096, 51, 84760341),
-#     # (300517, 339, 408325107) --- Jake tagged as valid 3P1F quartet,
+        # (300517, 339, 408325107), # --- Jake tagged as valid 3P1F quartet,
 #     # (305204, 321, 543469667) --- Jake tagged as valid 3P1F quartet,
 #     (304144, 959, 1659587081),
-#     # (299184, 409, 680767941) --- Jake tagged as valid 3P1F quartet,
+    (299184, 409, 680767941) # --- Jake tagged as valid 3P1F quartet,
 #     # (303948, 572, 921521958) --- Jake tagged as valid 3P1F quartet,
 #     (304506, 46, 80595885),
 
@@ -173,7 +172,7 @@ ls_tup_unique = [
 #     (300514, 65, 58754413),
 #     (305636, 1578, 2746712922),
 #     (302343, 10, 9296697),
-# ]
+]
 
 # Use Jake's analyzer on Filippo's unique events to see why Jake's FW failed.
 f = TFile.Open(infile_root, "read")
