@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=
-#SBATCH --output=
-#SBATCH --error=
+#SBATCH --job-name=NAME
+#SBATCH --output=LOGDIR/NAME.out
+#SBATCH --error=LOGDIR/NAME.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=rosedj1@ufl.edu
-#SBATCH --time=08:00:00
+#SBATCH --time=12:00:00
 #SBATCH --account=avery
 #SBATCH --qos=avery
-#SBATCH --mem=64gb
-#SBATCH --partition=bigmem
+#SBATCH --mem=6gb
+#SBATCH --partition=hpg2-compute
 #SBATCH --nodes=1
 
 pwd; hostname; date
@@ -26,10 +26,6 @@ export X509_USER_PROXY=/cmsuf/data/store/user/t2/users/rosedj1/myproxy
 export X509_CERT_DIR=/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client/certificates
 
 # Code here.
+python NEW_PYSCRIPT > LOGDIR/NAME.txt
 
-err_code=$?
-if [ ${err_code} -eq 0 ]; then
-    echo "Code ran successfully!"
-else
-    echo "Code did not run successfully (error ${err_code})."
-fi
+echo 'Script finished!'

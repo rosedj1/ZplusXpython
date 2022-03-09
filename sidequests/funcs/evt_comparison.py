@@ -1,11 +1,16 @@
-from ROOT import TFile
+import os
 import numpy as np
+from ROOT import TFile
 
 from Utils_Python.printing import print_periodic_evtnum, print_header_message
+from Utils_Python.Utils_Files import check_overwrite
 from sidequests.classes.cjlstflag import CjlstFlag
+from sidequests.classes.filecomparer import evtID_as_str
 from sidequests.funcs.evt_loops import (
-    evt_loop_evtsel_2p2plusf3p1plusf_subevents
+    select_evts_2P2F_3P1F_multiquartets,
+    make_ls_evtIDs_OSmethod
     )
+from constants.finalstates import dct_finalstates_int2str
 
 def print_evt_info_bbf(evt):
     """A goofy way to print branch info for `evt` in TTree.
@@ -100,7 +105,10 @@ def find_entries_using_runlumievent(
     return ls_entries
 
 def find_runlumievent_using_entry(tree, entry, fw="bbf"):
-    """Return the 3-tuple of run, lumi, event corresponding to `entry`."""
+    """Return the 3-tuple of run, lumi, event corresponding to `entry`.
+    
+    Works for xBF (BBF) or CJLST NTuples.
+    """
     tree.GetEntry(entry)
     if (fw == "bbf") or (fw == "jake"):
         tup_evt_id = (tree.Run, tree.LumiSect, tree.Event,)
@@ -120,9 +128,18 @@ def analyze_single_evt(
     evt_start=0, evt_end=-1, print_every=10000,
     infile_fakerates=None,
     genwgts_dct=None,
-    xs_dct=None,
+    dct_xs=None,
+    LUMI_INT=59830,
+    smartcut_ZapassesZ1sel=False,
+    overwrite=False,
+    keep_only_mass4lgt0=False,
+    match_lep_Hindex=False,
+    recalc_mass4l_vals=False,
+    skip_passedFullSelection=True,
+    stop_when_found_3p1f=True,
+    keep_first_quartet=False,
     explain_skipevent=True,
-    verbose=True
+    verbose=True,
     ):
     """Return list of event numbers that correspond to run, lumi, event.
 
@@ -133,12 +150,12 @@ def analyze_single_evt(
     Args:
         entry (int):
             Row in TTree.
-        fw : str
+        fw (str):
             Which framework to use: "bbf", "cjlst", "jake"
-        which : str
+        which (str):
             Which instance of the event you want to select.
             Options: "first", anything else collects all such events.
-        evt_start : int
+        evt_start (int):
     """
     know_evtid = all(x is not None for x in (run, lumi, event))
     know_entry = entry is not None
@@ -177,21 +194,29 @@ def analyze_single_evt(
             print_evt_info_bbf(tree)
         elif fw == "jake":
             print_header_message("ANALYZER: Jake")
-            evt_loop_evtsel_2p2plusf3p1plusf_subevents(
+            select_evts_2P2F_3P1F_multiquartets(
                 tree,
                 infile_fakerates=infile_fakerates,
                 genwgts_dct=genwgts_dct,
-                xs_dct=xs_dct,
-                outfile_root=None, outfile_json=None,
-                name="Data", int_lumi=59830,
-                start_at_evt=entry, break_at_evt=entry+1,
+                dct_xs=dct_xs,
+                outfile_root=None,
+                outfile_json=None,
+                name="Data",
+                int_lumi=LUMI_INT,
+                start_at_evt=entry,
+                break_at_evt=entry + 1,
                 fill_hists=False,
                 explain_skipevent=explain_skipevent,
                 verbose=verbose,
-                print_every=1, smartcut_ZapassesZ1sel=False,
-                overwrite=False, keep_only_mass4lgt0=False,
+                print_every=1,
+                smartcut_ZapassesZ1sel=False,
+                overwrite=False,
+                keep_only_mass4lgt0=False,
+                match_lep_Hindex=match_lep_Hindex,
                 recalc_mass4l_vals=False,
-                allow_ge4tightleps=False,
+                skip_passedFullSelection=skip_passedFullSelection,
+                stop_when_found_3p1f=stop_when_found_3p1f,
+                keep_first_quartet=keep_first_quartet,
                 )
             # store_evt = True
         elif fw == "cjlst":
@@ -225,3 +250,145 @@ def get_control_region(evt):
         return "2P2F"
     else:
         return f"[WARNING] Could not assign number of tight leps ({s}) to a CR!"
+
+# def make_ls_evtIDs_OSmethod(
+#     infile, path_to_tree, framework,
+#     m4l_lim=(70, 1000),
+#     keep_2P2F=True,
+#     keep_3P1F=True,
+#     fs=5,
+#     print_every=500000,
+#     ):
+#     """Return a list of 3-tuples of event IDs that pass OS Method selection.
+
+#     Args:
+#         framework (str, optional):
+#             'jake' uses `is3P1F` and `isData`. Defaults to "jake".
+#         m4l_lim (2-tuple, optional):
+#             Select events with mass4l in this range. Defaults to (70, 1000).
+#         keep_2P2F (bool, optional):
+#             Select 2P2F-type events. Both this and keep_3P1F can be True.
+#             Defaults to True.
+#         keep_3P1F (bool, optional):
+#             Select 3P1F-type events. Both this and keep_2P2F can be True.
+#             Defaults to True.
+#         fs (int, optional):
+#             Final state to select.
+#             1=4mu, 2=4e, 3=2e2mu, 4=2mu2e, 5=all.
+#             Defaults to 5.
+#         print_every (int, optional):
+#             How often to print event info.
+#             Defaults to 500000.
+#     """
+#     tfile = TFile.Open(infile)
+#     tree = tfile.Get(path_to_tree)
+
+#     ls_tup_evtID = []
+#     m4l_min = m4l_lim[0]
+#     m4l_max = m4l_lim[1]
+
+#     n_tot = tree.GetEntries()
+#     for ct in range(n_tot):
+#         print_periodic_evtnum(ct, n_tot, print_every=print_every)
+#         tree.GetEntry(ct)
+        
+#         m4l = tree.mass4l
+#         if tree.finalState not in (1, 2, 3, 4):
+#             continue
+#         if (m4l < m4l_min) or (m4l > m4l_max):
+#             continue
+#         good_fs = True if fs == tree.finalState or fs == 5 else False
+#         if not good_fs:
+#             continue
+
+#         keep_evt = False
+#         if framework.lower() == "jake":
+#             if keep_2P2F and tree.is2P2F:
+#                 keep_evt = True
+#             elif keep_3P1F and tree.is3P1F:
+#                 keep_evt = True
+#         elif framework.lower() == "bbf":
+#             if not tree.passedZXCRSelection:
+#                 continue
+#             if keep_2P2F and (tree.nZXCRFailedLeptons == 2):
+#                 keep_evt = True
+#             elif keep_3P1F and (tree.nZXCRFailedLeptons == 1):
+#                 keep_evt = True
+
+#         if keep_evt:
+#             tup_evtID = (tree.Run, tree.LumiSect, tree.Event,)
+#             ls_tup_evtID.extend(
+#                 (tup_evtID,)
+#             )
+    
+#     # tfile.Close()
+#     return ls_tup_evtID
+
+def write_tree_evtID_to_txt(
+    infile,
+    outtxt_basename,
+    framework="jake",
+    m4l_lim=(70, 1000),
+    keep_2P2F=True,
+    keep_3P1F=True,
+    fs=5,
+    path_to_tree="passedEvents",
+    print_every=500000,
+    overwrite=False,
+    ):
+    """Write 2P2F/3P1F evtIDs from TTree in TFile `infile` to `outtxt`.
+
+    Info which gets written:
+        Run : LumiSect : Event
+
+    NOTE:
+        - Select events passed on 2P2F/3P1F control regions, final state, and
+        mass4l cuts.
+        - If framework == "bbf", also requires passedZXCRSelection == 1.
+
+    Args:
+        fs (int): 4-lep final state (branch = finalState).
+            1 = 4mu
+            2 = 4e
+            3 = 2e2mu
+            4 = 2mu2e
+            5 = all
+    """
+    outtxt_dir = os.path.dirname(outtxt_basename)
+    outtxt_basename_noext = os.path.basename(outtxt_basename).split(".")[0]
+
+    if keep_2P2F:
+        outtxt_basename_noext += "_2P2F"
+    if keep_3P1F:
+        outtxt_basename_noext += "_3P1F"
+
+    m4l_min = m4l_lim[0]
+    m4l_max = m4l_lim[1]
+    outtxt_basename_noext += f"_{dct_finalstates_int2str[fs]}"
+    outtxt_basename_noext += f"_{m4l_min}masswindow{m4l_max}.txt"
+
+    outtxt_fullname = os.path.join(
+        outtxt_dir,
+        outtxt_basename_noext
+        )
+    check_overwrite(outtxt_fullname, overwrite=overwrite)
+
+    with open(outtxt_fullname, "w") as f:
+        f.write("# Run : LumiSect : Event\n")
+
+        tf = TFile.Open(infile, 'read')
+        tree = tf.Get(path_to_tree)
+        
+        ls_tup_evtID = make_ls_evtIDs_OSmethod(
+                        tree=tree,
+                        framework=framework,
+                        m4l_lim=m4l_lim,
+                        keep_2P2F=keep_2P2F,
+                        keep_3P1F=keep_3P1F,
+                        fs=fs,
+                        print_every=print_every
+                        )
+    
+        for tup_evtID in ls_tup_evtID:
+            f.write(f"{evtID_as_str(tup_evtID)}\n")
+    print(f"TTree info written to:\n{outtxt_fullname}")

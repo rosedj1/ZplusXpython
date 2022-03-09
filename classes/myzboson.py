@@ -1,4 +1,5 @@
 from constants.particleprops import ZMASS_PDG
+from Utils_Python.printing import print_header_message
 
 class MyZboson:
     
@@ -11,7 +12,8 @@ class MyZboson:
         
     def get_LorentzVector(self):
         """Return a Lorentz vector version of this Z boson."""
-        return self.mylep1.get_LorentzVector() + self.mylep2.get_LorentzVector()
+        return self.mylep1.get_LorentzVector(include_FSR=True) + \
+                self.mylep2.get_LorentzVector(include_FSR=True)
         
     def passes_z1_kinematic_selec(self):
         """Return True if this Z boson COULD pass as a Z1 candidate.
@@ -21,11 +23,17 @@ class MyZboson:
         mass = self.get_mass()
         if (mass < 40):
             if self.explain_skipevent:
-                print(f"  Failed Z1 cut: mass ({mass:.6f}) < 40 GeV.")
+                print(
+                    f"  Z (from leps {self.get_mylep_indices()}) "
+                    f"failed Z1 cut: mass ({mass:.6f}) < 40 GeV."
+                    )
             return False
         if not self.made_from_tight_leps:
             if self.explain_skipevent:
-                print(f"  Failed Z1 cut: not built from tight leptons.")
+                print(
+                    f"  Z (from leps {self.get_mylep_indices()}) "
+                    f"failed Z1 cut: not built from tight leptons."
+                    )
             return False
         return True
     
@@ -36,7 +44,7 @@ class MyZboson:
         """
         return self.get_LorentzVector().M()
 
-    def print_info(self, name=""):
+    def print_info(self, name=None):
         """Print info about this Z boson.
         
         Args:
@@ -54,14 +62,14 @@ class MyZboson:
             f"# Z CANDIDATE INFO{name}\n"
             f"Z_pt={zvec.Pt():.6f}, Z_eta={zvec.Eta():.6f}, "
             f"Z_phi={zvec.Phi():.6f}, Z_mass={zvec.M():.6f}\n"
-            f"Z boson made from leptons with vector indices: "
-            f"({self.mylep1.ndx_lepvec}, {self.mylep2.ndx_lepvec})\n"
+            f"Z made from pT-ordered leptons at indices: "
+            f"{self.get_mylep_idcs_pTorder()}\n"
             f"Passes Z1 selections: {self.passes_z1_kinematic_selec()}\n"
             f"{lep_tightness_info}\n"
             f"{header_footer.replace('#', '-')}"
         )
-        self.mylep1.print_info()
-        self.mylep2.print_info()
+        # self.mylep1.print_info()
+        # self.mylep2.print_info()
         print()
         
     def get_distance_from_PDG_mass(self):
@@ -113,10 +121,9 @@ class MyZboson:
         their_abs_dist = abs(other_z.get_distance_from_PDG_mass())
         i_am_closer = ((my_abs_dist - their_abs_dist) < 0)
         return True if i_am_closer else False
-
 # End of MyZboson.
 
-def makes_valid_zcand(lep1, lep2):
+def makes_valid_zcand(lep1, lep2, verbose=False):
     """Return True if lep1 and lep2 will form a valid Z candidate.
     
     NOTE:
@@ -124,6 +131,7 @@ def makes_valid_zcand(lep1, lep2):
     
     To form a valid Z candidate:
     - Leptons DO NOT HAVE TO be tight (loose+tightID+RelIso)!
+        - This will be accounted for in forming the Z1.
     - Leptons must be OSSF.
     - 12 < m(ll, including FSR) < 120 GeV.
 
@@ -135,17 +143,31 @@ def makes_valid_zcand(lep1, lep2):
 #         return False
     # Check OSSF:
     if (lep1.lid + lep2.lid) != 0:
+        if verbose:
+            print("PAIRING FAILED: Leptons are not OSSF")
+            for lep in (lep1, lep2):
+                lep.print_info()
         return False
     if (lep1.lid == 0) or (lep2.lid == 0):
         return False
     # Check invariant mass cut:
-    zcand = lep1.get_LorentzVector() + lep2.get_LorentzVector()
+    zcand = lep1.get_LorentzVector(include_FSR=True) + \
+            lep2.get_LorentzVector(include_FSR=True)
     z_mass = zcand.M()
-    if (z_mass < 12) or (z_mass > 120):
+    if (z_mass < 12):
+        if verbose:
+            print(f"PAIRING FAILED: Zmass ({z_mass:.6f}) < 12 GeV.")
+        return False
+    if (z_mass > 120):
+        if verbose:
+            print(f"PAIRING FAILED: Zmass ({z_mass:.6f}) > 120 GeV.")
         return False
     return True
     
-def make_all_zcands(mylep_ls, explain_skipevent=False):
+def make_all_zcands(
+    mylep_ls,
+    explain_skipevent=False, verbose=False
+    ):
     """Return list of valid Z candidates as MyZboson objects.
     
     This function DOES apply cuts to each Z!
@@ -162,10 +184,20 @@ def make_all_zcands(mylep_ls, explain_skipevent=False):
     # Make a lep-by-lep comparison to find eligible Z candidates.
     for ndx_lep1, mylep1 in enumerate(mylep_ls[:-1]):
         start_ndx_lep2 = ndx_lep1 + 1
-        for mylep2 in mylep_ls[start_ndx_lep2:]:
-            if not makes_valid_zcand(mylep1, mylep2):
+        for ndx_lep2, mylep2 in enumerate(
+                mylep_ls[start_ndx_lep2:], start_ndx_lep2
+                ):
+            these_lep_idcs = [mylep1.ndx_lepvec, mylep2.ndx_lepvec]
+            if verbose:
+                print_header_message(
+                    f"  Considering leptons: {these_lep_idcs}",
+                    n_center_pad_chars=1
+                    )
+            if not makes_valid_zcand(mylep1, mylep2, verbose=verbose):
+                if verbose: print(f"    Failed to make valid Z cand.\n")
                 continue
             # Found valid Z candidate.
+            if verbose: print(f"    Made valid Z cand.\n")
             zcand = MyZboson(mylep1, mylep2, explain_skipevent=explain_skipevent)
             zcand.ndx_zcand_ls = ndx_zvec
             ndx_zvec += 1

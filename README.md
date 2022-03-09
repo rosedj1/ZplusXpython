@@ -9,6 +9,30 @@ This repo contains scripts to:
 - Estimate the total non-ZZ background contribution.
 - Plot the resulting distributions.
 
+**Other scripts:**
+
+- Compare specific events between analyzers:
+   - UFHZZAnalyzer (xBF)
+   - CJLST Analyzer
+   - Multiple quartets per event (Jake)
+      - `sidequests/scripts/print_commonanduniqueevts_jakevsbbf.py`
+      - `sidequests/scripts/compare_jakesel_bbfsel.py`
+      - `sidequests/scripts/run_bbfana_using_runlumievent.py`
+
+   Run Sequentially:
+
+   ```bash
+   # Create fake rates with WZ removed.
+   python WZremoval_from_FR_comp.py
+
+   # Plot fake rates.
+   python scripts/plotters/plot_fakerate_hists.py \
+      -d "Hist_Data_ptl3_Data_2016.root" \
+      -w "Hist_Data_ptl3_WZremoved_2016.root" \
+      -o "fakerates_2016UL.pdf" \
+      -y 2016
+   ```
+
 ---
 
 ## Skim NTuples
@@ -16,33 +40,38 @@ This repo contains scripts to:
 1. Use the UFHZZ4LAnalyzer to skim the MiniAOD files (Data or MC).
 
 1. Combine files (using `hadd`) of the same process (e.g., MuonEG runs A-D) with:
-   - `hadders/haddfiles_on_slurm.ipynb` (submits `hadd` jobs to SLURM)
-   - **NOTE:** If you get an error like the one below
-   then first get rid of unncessary branches using
+   - `scripts/hadders/haddfiles_on_slurm_step01_runstogether.py`
+      - Submits `hadd` jobs to SLURM.
+      - **NOTE:** If you get an error like the one below
+   then first get rid of extraneous branches using
    `skimmers/skim_useless_branches.C`; then resume `hadd`ing.
 
    ```bash
    Error in <TBufferFile::WriteByteCount>: bytecount too large (more than 1073741822)
    ```
    
-1. Select Z+L events with:
-   - `skimmers/apply_redbkg_evt_selection_vxbs.C`
-   - Apply the skimmer to multiple samples with:
-      - `skimmers/skim_ZL_ZLL_4P_CR.sh`
+1. Skim any extraneous branches to reduce file size:
+   - `skimmers/skim_useless_branches_onslurm.py`
+   - **NOTE:** Make sure you keep the branches you want in the skimmer template:
+      - `skimmers/skim_useless_branches_template.C`
 
-1. Select "OS Method" events (2P2F and 3P1F) with:
-   - `skimmers/select_evts_2P2plusF_3P1plusF.py`
-      
-1. Combine data files into a single file (e.g. `Data2018_Duplicates.root`) using `hadd`.
-   - You can probably do it locally, but if the files are still large, use:
-      - `hadders/haddfiles_on_slurm.ipynb`
+1. Now `hadd` together the "AllRun" files with:
+   - `scripts/hadders/haddfiles_on_slurm_step02_datasetstogether.py`
+      - Submits the one `hadd` job to SLURM.
 
-<!-- 1. Remove duplicate events with:
-   - `skimmers/remove_duplicates.py` -->
+1. Remove duplicate events (same `Run:Lumi:Event`) with one of:
+   - `skimmers/remove_duplicates.py`
+   - `skimmers/remove_duplicates_Filippo.C`
+   - **NOTE:** The Python script may be faster than the C++ one:
+
+      | Script | user time | sys time |  TOTAL time |
+      | ---    | ---       | ---      | --- |
+      | Python | 19m50.211s | 0m30.203s | **20m20.413s** |
+      | C++    | 21m22.529s | 0m21.924s | 21m44.453s | 
    
-<!-- 1. [OPTIONAL] Combine Data files into a single file (e.g. `Data_*_NoDuplicates.root`).
-   - May not be possible due to memory issues! May get `'bytecount too large'` error. 
-   - Work around: skim these big files, hadd together, and THEN remove duplicates. -->
+1. Combine Data files into a single file (e.g. `Data2018_NoDuplicates.root`).
+   - If you get the `'bytecount too large'` error, consider first trimming
+   branches, then `hadd` together, and THEN remove duplicates.
 
 ---
 
@@ -72,9 +101,7 @@ The cross section is in the 'Generator Parameters' column to the right.
 
 Put cross sections in `constants/analysis_params.py`.
 
-### L_int for Data
-
-Go to `lxplus` and do:
+### Retrieve Integrated Lumi (L_int) for Data
 
 ```bash
 crab report -d <crab_dir>
@@ -122,6 +149,11 @@ ratio (fake rate) in bins of pT(lep3).
 - Uses `MC_composition.py` to call `PartOrigin()`.
    -  Checks the type of fake procedure (checking the ID of the parent).
 
+<!-- 1. Select Z+L events with:
+   - `skimmers/apply_redbkg_evt_selection_vxbs.C`
+   - Apply the skimmer to multiple samples with:
+      - `skimmers/skim_ZL_ZLL_4P_CR.sh` -->
+
 ---
 
 ## WZ Removal
@@ -136,23 +168,34 @@ python WZremoval_from_FR_comp.py
 Plot the fake rate histograms (before and after WZ removal) with:
 
 ```bash
-ZplusXpython/scripts/plotters/plot_fakerate_hists.py
+scripts/plotters/plot_fakerate_hists.py
 ```
 
-### Optional - Add New Branches
+---
+
+## Estimate Reducible Background
+
+<!-- ### Optional - Add New Branches
 
 Add new branches like (`is2P2F`, `isMCzz`, `fr2`, etc.) with:
 
 ```bash
 skimmers/skim_ZLL_addbranches.py
-```
-
----
-
-## Estimate Non-ZZ Contribution
+``` -->
 
 Use Data and Monte Carlo ZZ->4l (irreducible background) to estimate the
-non-ZZ contribution:
+RB.
+Choose a framework to work with:
+
+- Vukasin's Framework.
+- Jake's Framework.
+
+### Jake's Framework
+
+Select "OS Method" events (2P2F and 3P1F) with:
+   - `skimmers/select_evts_OSmethod_multiquartetperevt.py`
+
+### Vukasin's Framework
 
 ```bash
 python main_estimateZX_ntuples.py
@@ -167,9 +210,7 @@ Print out the estimates (integrals) within the histograms using:
 python estimate_final_numbers_macro.py
 ```
 
----
-
-## Plot the 2P2F/3P1F distributions
+#### Plot the 2P2F/3P1F distributions
 
 ```bash
 python plotting_macros.py

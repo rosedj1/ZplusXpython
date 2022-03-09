@@ -11,20 +11,22 @@ from Utils_Python.Utils_Files import check_overwrite
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-v', '--verbose',     dest="verbose", action="store_true")
-parser.add_argument('-d', '--infile_data', dest="infile_data", type=str, help='input Data rootfile')
-parser.add_argument('-f', '--infile_fr',   dest="infile_fr", type=str, help='input rootfile with fake rates (WZ removed)')
+# parser.add_argument('-v', '--verbose',     dest="verbose", action="store_true")
+parser.add_argument('-d', '--frs_data', dest="frs_data", type=str, help='input Data rootfile')
+parser.add_argument('-w', '--frs_wzrm',   dest="frs_wzrm", type=str, help='input rootfile with fake rates (WZ removed)')
 parser.add_argument('-o', '--outfile',     dest="outfile", type=str, help='output pdf with fake rate plots')
-parser.add_argument('-x', '--overwrite',   dest="overwrite", type=str, help='`1` will overwrite output pdf (0 otherwise)')
+parser.add_argument('-x', '--overwrite',   dest="overwrite", action='store_true', help='Overwrite existing file.')
+parser.add_argument('-y', '--year',        dest="year", type=int, help='Year of data set sample.')
 args = parser.parse_args()
 
-infile_data = args.infile_data
-infile_wz_rmv = args.infile_fr
+infile_data = args.frs_data
+infile_wz_rmv = args.frs_wzrm
 outfile = args.outfile
 # infile_data = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/Hist_Data_ptl3_Data.root"
 # infile_wz_rmv = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/fakerate_hists/Hist_Data_ptl3_WZremoved.root"
 # outfile = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/plots/fakerate_hists/jakesfiles_vukasinsframework_20210827.pdf"
 overwrite = args.overwrite
+year = args.year
 
 check_overwrite(outfile, overwrite=overwrite)
 
@@ -89,8 +91,26 @@ h_MB.GetXaxis().SetTitleOffset(1.1)
 h_EB.GetYaxis().SetTitleOffset(1.5)
 h_MB.GetYaxis().SetTitleOffset(1.5)
 # h_EB.GetXaxis().SetRangeUser(4, 84)
-h_EB.GetYaxis().SetRangeUser(0.01, 0.35)
-h_MB.GetYaxis().SetRangeUser(0.04, 0.35)
+if year == 2016:
+    y_min_muon = 0.04
+    y_max_muon = 0.35
+    y_min_elec = 0.008
+    y_max_elec = 0.35
+elif year == 2017:
+    y_min_muon = 0.0098
+    y_max_muon = 0.35
+    y_min_elec = 0.01
+    y_max_elec = 0.35
+elif year == 2018:
+    y_min_muon = 0.04
+    y_max_muon = 0.35
+    y_min_elec = 0.01
+    y_max_elec = 0.35
+else:
+    raise ValueError(f"Year ({year}) must be 2016, 2017, or 2018.")
+
+h_EB.GetYaxis().SetRangeUser(y_min_elec, y_max_elec)
+h_MB.GetYaxis().SetRangeUser(y_min_muon, y_max_muon)
 h_EB.SetStats(0)
 h_MB.SetStats(0)
 

@@ -16,7 +16,7 @@ from ROOT import TFile
 
 from sidequests.funcs.evt_loops import (
     evt_loop_evtselcjlst_atleast4leps,
-    evt_loop_evtsel_2p2plusf3p1plusf_subevents)
+    select_evts_2P2F_3P1F_multiquartets)
 from sidequests.data.filepaths import infile_filippo_data_2018_fromhpg
 from Utils_Python.Utils_Files import check_overwrite
 
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     tree = f_filippo_data2018.Get("passedEvents")
     print(f"Successfully opened:\n{infile_filippo_data_2018_fromhpg}")
 
-    evt_loop_evtsel_2p2plusf3p1plusf_subevents(tree, outfile_root=outfile_root, outfile_json=outfile_json,
+    select_evts_2P2F_3P1F_multiquartets(tree, outfile_root=outfile_root, outfile_json=outfile_json,
                                      start_at_evt=start_at_evt, break_at_evt=break_at_evt,
                                      fill_hists=True, explain_skipevent=explain_skipevent, verbose=verbose,
                                      print_every=print_every, smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,

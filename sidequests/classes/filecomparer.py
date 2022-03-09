@@ -5,6 +5,7 @@ from ROOT import TFile
 # Package imports.
 from Utils_Python.Utils_Files import check_overwrite, open_json
 from Utils_Python.printing import print_periodic_evtnum
+from constants.finalstates import dct_finalstates_int2str
 
 def get_list_of_tuples(evt_ls):
     """
@@ -36,50 +37,6 @@ def get_runlumievent_ls_tup(txt):
     NOTE: Tuple elements are int.
     """
     return get_list_of_tuples(get_list_of_lines(txt))
-
-def write_tree_info_to_txt(
-    infile, outtxt,
-    m4l_lim=(70, 1000),
-    keep_2P2F=True, keep_3P1F=True,
-    fs=5,
-    path_to_tree="passedEvents", print_every=500000
-    ):
-    """Write info from TFile `infile` from TTree 'passedEvents' to `outtxt`.
-
-    Info which gets written:
-    Run : LumiSect : Event
-
-    Args:
-        fs (int): 4-lep final state (branch = finalState).
-            1 = 4mu
-            2 = 4e
-            3 = 2e2mu
-            4 = 2mu2e
-            5 = all
-    """
-    tfile = TFile.Open(infile)
-    tree = tfile.Get(path_to_tree)
-    n_tot = tree.GetEntries()
-    with open(outtxt, "w") as f:
-        f.write("# Run : LumiSect : Event\n")
-        for ct, evt in enumerate(tree):
-            print_periodic_evtnum(ct, n_tot, print_every=print_every)
-            m4l = evt.mass4l
-            m4l_min = m4l_lim[0]
-            m4l_max = m4l_lim[1]
-            if (m4l < m4l_min) or (m4l > m4l_max):
-                continue
-            good_fs = True if fs == evt.finalState or fs == 5 else False
-            if not good_fs:
-                continue
-            keep_evt = False
-            if keep_2P2F and evt.is2P2F:
-                keep_evt = True
-            elif keep_3P1F and evt.is3P1F:
-                keep_evt = True
-            if keep_evt:
-                f.write(f"{evt.Run} : {evt.LumiSect} : {evt.Event}\n")
-    print(f"TTree info written to:\n{outtxt}")
 
 def write_lstup_info_to_txt(ls_tup, outtxt, print_every=500000):
     """Write event ID info from list of tuples `ls_tup` to `outtxt`.
@@ -127,9 +84,15 @@ def get_list_of_entries(txt):
                 ls_entries.extend([entry])
     return ls_entries
 
+def evtID_as_str(tup_evtID):
+    """Return `tup_evtID` (tuple or list) as a str: 'Run : Lumi : Event'."""
+    return f"{tup_evtID[0]} : {tup_evtID[1]} : {tup_evtID[2]}"
+
 class FileComparer:
 
-    def __init__(self, txt_file1, txt_file2, control_reg="", verbose=False):
+    def __init__(
+        self, txt_file1, txt_file2, control_reg="", verbose=False
+        ):
         """
         Feed in two txt files to be compared.
 
@@ -281,6 +244,8 @@ class FileRunLumiEvent:
         ls_tup_evtid=None,
         set_tup_evtid=None,
         jsonpath_and_cr=('', ''),
+        rootfile_info=None,
+        name=None
         ):
         """Load a list of event IDs from some source of event IDs.
         
@@ -302,14 +267,21 @@ class FileRunLumiEvent:
                         'num_combos_2p2f': 0,
                         'num_combos_3p1f': 1
                         }
+            rootfile_info (2-tuple):
+                ('filepath', 'tree_name')
+            name (str):
+                Nickname of this file.
+                Used for keeping track of which events came from which file.
         """
         # Make sure only 1 source of events was given.
         assert sum(
                 x is not None for x in (
                     txt, ls_str_evtid, ls_tup_evtid, set_tup_evtid,
+                    rootfile_info
                     )
                 ) == 1
         self.txt = txt
+        self.name = name
 
         # First priority: store `self.ls_tup_evtid`.
         if ls_tup_evtid is not None:
@@ -319,6 +291,13 @@ class FileRunLumiEvent:
         #     cr = jsonpath_and_cr[1].lower()
         #     assert cr in ('2p2f', '3p1f')
         #     self.ls_tup_evtid = self.convert_dict_to_ls_tup(json_path, cr)
+        elif isinstance(rootfile_info, tuple) and (len(rootfile_info) == 2):
+            # ROOT file was provided. Extract (Run, Lumi, Event).
+            rtfile = rootfile_info[0]
+            tree_path = rootfile_info[1]
+            self.ls_tup_evtid = self.extract_evtid_from_rootfile(
+                                    rtfile, tree_path
+                                    )
         else:
             self.ls_tup_evtid = self.get_ls_tup_evtid(
                 txt,
@@ -385,6 +364,33 @@ class FileRunLumiEvent:
             return [self.as_str(tup) for tup in set_tup]
         return list(set_tup)
     
+    def extract_evtid_from_rootfile(self, rootfile, tree_name):
+        """Return a list of 3-tuples of event IDs in `rootfile`.
+
+        Args:
+            rootfile (str): Path to ROOT file.
+            tree_name (str): Name of TTree.
+        """
+        tf = TFile.Open(rootfile, 'read')
+        tree = tf.Get(tree_name)
+
+        ls_evtids = []
+        for evt in tree:
+            ls_evtids.extend(
+                ((evt.Run, evt.LumiSect, evt.Event),)
+            )
+        return ls_evtids
+
+    def get_basename(self):
+        """Return str of basename of file, giving preference to nickname."""
+        if self.name is not None:
+            basename = self.name
+        elif self.txt is not None:
+            basename = os.path.basename(self.txt)
+        else:
+            basename = '...no file specified.'
+        return basename
+
     def get_num_duplicates(self, verbose=False):
         """Return the number of duplicate events found in this file.
         
@@ -397,6 +403,16 @@ class FileRunLumiEvent:
             else:
                 print("No duplicates found.")
         return n_dups
+
+    def get_duplicate_counter(self):
+        """Return a counter of ((evtID_tup): n_times_appeared).
+        
+        Duplicate events have identical Run : Lumi : Event numbers.
+        """
+        if self.get_num_duplicates() == 0:
+            return Counter()
+        else:
+            return Counter(self.ls_tup_evtid)
     
     def get_tot_num_entries(self):
         """Return the number of 3-tuples within `self.ls_tup_evtid`."""
@@ -413,25 +429,27 @@ class FileRunLumiEvent:
             as_type (str): Way to display the printed info.
                 Can choose: 'int' or 'str'.
         """
-        if self.get_num_duplicates() == 0:
-            print("No duplicates found.")
+        counter = self.get_duplicate_counter()
+        if len(counter.keys()) == 0:
+            print(f"No duplicates found in {self.get_basename()}.")
         else:
-            raise RuntimeError(
-                f"There is a counting error. Fix and validate this function."
-                )
-            # FIXME: There may be a counting error here...
-            counter = Counter(self.ls_tup_evtid)
-            if "str" in as_type.lower():
-                dup_ls = [self.as_str(k) for k,v in counter.items() if v > 1]
-            else:
-                dup_ls = [k for k,v in counter.items() if v > 1]
-            print("Duplicate events:")
-            pprint(dup_ls)
+            print(f"{'Duplicate Event ID':^26} --- Total Appearances")
+            for evtID, n_times in counter.items():
+                if n_times > 1:
+                    if "str" == as_type.lower():
+                        evtID = evtID_as_str(evtID)
+                    # Represent the tuple as a string in order to print it.
+                    print(f"{evtID.__repr__():<26} --- {n_times:^17}")
 
-    def as_str(self, key_tup):
-        """Return `key_tup` as a str: 'Run : Lumi : Event'."""
-        return f"{key_tup[0]} : {key_tup[1]} : {key_tup[2]}"
-    
+        # The below works but it's less sexy.
+        # ls_tup_evtid_cp = self.ls_tup_evtid.copy()
+        # for unique_evt in self.get_ls_evtids_nodups():
+        #     ls_tup_evtid_cp.remove(unique_evt)
+        # # Anything left is a duplicate.
+        # assert len(ls_tup_evtid_cp) == self.get_num_duplicates()
+        # print(f"Number of duplicates found: {len(ls_tup_evtid_cp)}")
+        # pprint(ls_tup_evtid_cp)
+
     def analyze_evtids(self, other, event_type, print_evts=False):
         """Return list of 3-tuple evtIds common to both FileRunLumiEvents.
         
@@ -443,6 +461,7 @@ class FileRunLumiEvent:
         NOTE:
             Duplicates are removed before evtIds are compared.
         """
+        print(f"Analyzing event IDs in: {self.get_basename()}")
         this_set = set(self.get_ls_evtids_nodups())
         other_set = set(other.get_ls_evtids_nodups())
         choice = event_type.lower()
@@ -450,14 +469,24 @@ class FileRunLumiEvent:
             set_evt_combine = this_set & other_set
         elif "unique" in choice:
             set_evt_combine = this_set - other_set
+            print(
+                f"  Total entries:{' '*11}{self.get_tot_num_entries()}\n"
+                f"  Total entries (no dups): {self.get_num_entries_nodup()}\n"
+                f"  Total dups:{' '*14}{self.get_num_duplicates()}"
+            )
         else:
             raise ValueError(f"event_type={event_type} not understood")
         n_evts = len(set_evt_combine)
-        if self.txt is None:
-            basename = "...the original list you used."
-        else:
-            basename = os.path.basename(self.txt)
-        print(f"Found {n_evts} {event_type} events in:\n{basename}")
+
+        basename = self.get_basename()
+        msg = f"  Found {n_evts} {event_type} events in: {basename}"
+        if n_evts == 1:
+            msg = msg.replace('events', 'event')
+        if choice == 'common':
+            msg = msg.replace("in:", "between:")
+            msg += f" and {other.get_basename()}"
+        print(msg)
         if print_evts:
-            print(set_evt_combine)
+            for tup in set_evt_combine:
+                print(tup)
         return list(set_evt_combine)

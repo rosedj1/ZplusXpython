@@ -1,3 +1,4 @@
-export PYTHONPATH=${PYTHONPATH}:'/blue/avery/rosedj1/HiggsMassMeasurement'
-export PYTHONPATH=${PYTHONPATH}:'/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement'
+dirabove=$( dirname ${PWD} )
 export PYTHONPATH=${PYTHONPATH}:${PWD}
+export PYTHONPATH=${PYTHONPATH}:"${dirabove}/HiggsMassMeasurement"
+export PYTHONPATH=${PYTHONPATH}:"${dirabove}/../HiggsMassMeasurement"

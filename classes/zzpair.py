@@ -1,7 +1,7 @@
 from classes.mylepton import (check_leps_separated_in_DeltaR,
                               check_leps_pass_leadsublead_pTcuts,
                               leps_pass_lowmass_dilep_res,
-                              has_2p2f_leps,has_3p1f_leps)
+                              has_2p2f_leps, has_3p1f_leps)
 from classes.myzboson import MyZboson, make_all_zcands
 from Utils_Python.printing import print_header_message
 
@@ -235,7 +235,7 @@ class ZZPair:
             f"{header}\n"
             f"Info about ZZ candidate #{self.ndx_in_zzpair_ls}: {name}\n"
             f"{header}\n"
-            f"  m(4l): {self.get_m4l():.9f}\n"
+            f"  m(4l): {self.get_m4l():.6f}\n"
             f"  final state: {self.get_finalstate()}\n"
             f"               | z_fir | z_sec |\n"
             f"  lep indices: | "
@@ -266,7 +266,21 @@ class ZZPair:
         assert len(other_lep_idxs) == 4, err_msg
         n_overlap_leps = (my_lep_idxs & other_lep_idxs)
         return True if len(n_overlap_leps) == 4 else False
-    # End of ZZPair.
+    
+    def get_num_failing_leps(self):
+        """Return the number of failing leptons in this ZZ pair.
+        
+        Note: "Failing" means failing tight selection.
+        """
+        return sum([lep.is_loose for lep in self.get_mylep_ls()])
+
+    def get_num_passing_leps(self):
+        """Return the number of passing leptons in this ZZ pair.
+        
+        Note: "Passing" means passing tight selection.
+        """
+        return sum([lep.is_tight for lep in self.get_mylep_ls()])
+# End of ZZPair.
     
 def make_all_zz_pairs(zcand_ls, explain_skipevent=False, smartcut_ZapassesZ1sel=False):
     """Return a list of all possible ZZPair objects.
@@ -345,8 +359,8 @@ def select_better_zzcand(zzcand1, zzcand2, verbose=False):
             Perhaps there's something inherent in the smart cut that ensures
             the Z1 will pass tight selections.
     
-    If two ZZs do NOT have same leptons, then choose the ZZ with higher Kd
-    (this would only be possible when considering DIFFERENT lep quartets).
+    If two ZZs do NOT have same leptons, then choose the ZZ with higher Kd.
+    Unfortunately, this code cannot recalculate Kd's per ZZ.
     """
     ndx_fir = zzcand1.ndx_in_zzpair_ls
     ndx_sec = zzcand2.ndx_in_zzpair_ls
@@ -430,21 +444,21 @@ def get_ZZcands_from_myleps_OSmethod(
     # Need 2 tight + 2 loose leps (2P2F) or 3 tight + 1 loose leps (3P1F).
     # This checks that leptons pass basic kinematic criteria (at least loose).
     if verbose:
-        print(
-            f"Event {run}:{lumi}:{event} (entry = {entry})\n"
-            f"  Checking for 2P2F or 3P1F leptons."
-            )
+        print(f"Event {run}:{lumi}:{event} (entry = {entry})")
     if (not has_2p2f_leps(mylep_ls)) and (not has_3p1f_leps(mylep_ls)):
         if verbose or explain_skipevent:
-            print("Leptons are not 2P2F or 3P1F.")
+            print("  MyLep list does not fall into 2P2F or 3P1F CR.")
         return empty_ls
     
     # Build all general Z candidates:
     # 12 < mll < 120 GeV.
     # OSSF leptons.
     # Leptons at least loose.
-    if verbose: print("  Making all Z candidates.")
-    zcand_ls = make_all_zcands(mylep_ls, explain_skipevent=explain_skipevent)
+    if verbose: print("  Building all Z candidates...")
+    zcand_ls = make_all_zcands(
+        mylep_ls,
+        explain_skipevent=explain_skipevent, verbose=verbose
+        )
     n_zcands = len(zcand_ls)
     if verbose: print(f"  Number of Z candidates: {n_zcands}")
     if n_zcands < 2:
@@ -472,13 +486,15 @@ def get_ZZcands_from_myleps_OSmethod(
         # Return either empty list or the only ZZ cand made.
         return ls_all_passing_zz
     assert n_zzcands < 3, (
-        f"  Houston, we have a problem ({n_zzcands} ZZ cands)."
+        f"  Houston, we have a problem...\n"
+        f"  Quartet of leptons built {n_zzcands} ZZ cands."
         )
     # Found two ZZ cands.
-    print(
-        f"  Found {n_zzcands} ZZ candidates in event "
-        f"{run} : {lumi} : {event} (entry {entry})."
-        )
+    if verbose:
+        print(
+            f"  Found {n_zzcands} ZZ candidates in event "
+            f"{run} : {lumi} : {event} (entry {entry})."
+            )
     zzcand1, zzcand2 = ls_all_passing_zz
     better_zz_cand = select_better_zzcand(zzcand1, zzcand2, verbose=verbose)
     return [better_zz_cand]

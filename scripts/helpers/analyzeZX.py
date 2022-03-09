@@ -6,17 +6,18 @@ This code selects events from Data/MC samples which pass either Z+L or Z+LL
 control regions (CR), separating them by CRs.
 
 The following histograms are produced:
-- 
+- TODO
 
 - Fake rates (the number of leptons which )
 
-NOTE:
-- Recommended MC samples: WZ, ZZ, ttbar, DY
+Use with MC samples:
+    WZ, ttbar, DY (reducible backgrounds)
 
 Syntax to run: `python <this_script>.py`
 Author: Jake Rosenzweig
 Original code: Vukasin Milosevic
-Updated: 2021-08-17
+Created: 2021-Mar-ish
+Updated: 2022-02-09
 """
 import os
 import sys
@@ -25,7 +26,7 @@ import ROOT as rt
 import numpy as np
 # from Utils_Python.Utils_Files import check_overwrite
 from scripts.helpers.MC_composition import PartOrigin
-from constants.analysis_params import xs_dct_jake, MZ_PDG, LUMI_INT_2018_Jake, n_sumgenweights_dataset_dct_jake
+from constants.analysis_params import dct_xs_jake, MZ_PDG, LUMI_INT_2018_Jake, n_sumgenweights_dataset_dct_jake
 # from HiggsMassMeasurement.Utils_ROOT.ROOT_classes import make_TH1F
 from Utils_ROOT.ROOT_classes import make_TH1F
 from Utils_Python.Utils_Files import check_overwrite
@@ -128,7 +129,7 @@ def get_expected_n_evts(xs, lumi, isMCzz, event):
     return n_exp
 
 def get_evt_weight(
-    xs_dct,
+    dct_xs,
     Nickname,
     lumi,
     event,
@@ -143,7 +144,7 @@ def get_evt_weight(
 
     Parameters
     ----------
-    xs_dct : dict
+    dct_xs : dict
         key (str) => nickname of physics process
         val (float) => cross section
     Nickname : str
@@ -151,6 +152,8 @@ def get_evt_weight(
     lumi : float
         Integrated luminosity (pb^{-1}).
     event : TTree event
+        The event object from which you can extract kinematics.
+        E.g., event.lep_pt
     n_dataset_tot : int
         The total number of events in the MC data set which you processed.
         Do: `crab report -d <dir>`.
@@ -172,7 +175,7 @@ def get_evt_weight(
         return 1
     else:
         # Sample is Monte Carlo.
-        xs = xs_dct[Nickname]
+        xs = dct_xs[Nickname]
         n_exp = get_expected_n_evts(xs, lumi, isMCzz, event)
         # newweight/oldweight = n_exp/n_obs = (L_int * xs * eff) / n_obs
         new_weight = orig_evt_weight * (n_exp / n_dataset_tot)
@@ -544,12 +547,15 @@ def calc_wgt_2p2f_cr(
     else:
         return (fr1 / (1-fr1)) * (fr2 / (1-fr2))
 
-def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi=59700, kinem_ls=['']):
+def analyzeZX(
+    tree, Nickname, outfile_dir, suffix="", overwrite=0, lumi=59700, kinem_ls=[''],
+    n_evts_to_process=-1
+    ):
     """Analyze each event in sample `Nickname` and create histograms.
 
     Parameters
     ----------
-    fTemplateTree : ROOT.TTree
+    tree : ROOT.TTree
         The TTree which holds events in each "row".
         Must have branches corresponding to elements in `kinem_ls`.
     Nickname : str
@@ -560,7 +566,7 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
         The names of the branches for which histograms will be made.
     """
     wgt_from_ntuple = False
-    study_particle_origins = False
+    study_particle_origins = True
     # max_events = 1E5 #-1
         
     # Name the outfile and check for overwrite.
@@ -658,21 +664,21 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
 
     print ("--- Initiating the analyzeZX procedure for file nicknamed as: "+ Nickname +".")
     
-    # if (varName=="mEt"):
-    #     var_plotHigh = 50
-    #     var_plotLow = 0
-    #     var_nBins = 10
-    #     varAxLabel = "E_{T,miss}"
+    if (varName == "mEt"):
+        var_plotHigh = 50
+        var_plotLow = 0
+        var_nBins = 10
+        varAxLabel = "E_{T,miss}"
     
     #initiate numerator and denominator histograms for FR computation
 
     binWidth = ((int) (100*(var_plotHigh - var_plotLow)/var_nBins))/100.
     sUnit = "GeV"
     
-    # Make pT hists for loose lepton.
+    # Make pT hists for non-prompt lepton that passes tight selection.
     # if (varName=="ptl3"):
-        # h1D_dummy = rt.TH1D("dummy", "dummy", len(PtlBins), PtlBins)
-        # setHistProperties(h1D_dummy,1,1,1,0,0,varAxLabel,"Misidentification rate")
+    #     h1D_dummy = rt.TH1D("dummy", "dummy", len(PtlBins), PtlBins)
+    #     setHistProperties(h1D_dummy,1,1,1,0,0,varAxLabel,"Misidentification rate")
         
     # Define FR numerator histograms.
     h1D_FRel_EB = rt.TH1D("h1D_FRel_EB","h1D_FRel_EB", len(PtlBins)-1, PtlBins) 
@@ -714,7 +720,7 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
     for h in all_FR_hist_ls + list(hist_dct.values()):
         h.Sumw2()
 
-    nentries = fTemplateTree.GetEntries()
+    nentries = tree.GetEntries()
     n_tot_failedleps = 0
 
     # Begin: Define histograms for uncertainty studies (separating fakes per type of fake) 
@@ -816,8 +822,15 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
     n_muon_barrel_passtight = 0
     n_muon_endcap = 0
     n_muon_endcap_passtight = 0
-    for iEvt, event in enumerate(fTemplateTree):
-        if (iEvt % 50000 == 0):
+
+    if n_evts_to_process == -1:
+        n_evts_to_process = tree.GetEntries()
+    # for iEvt, event in enumerate(tree):
+    for iEvt in range(n_evts_to_process):
+
+        tree.GetEntry(iEvt)
+        
+        if (iEvt % 1000000 == 0):
             print (f"Processing event: {iEvt}/{nentries}")
         # if iEvt == max_events:
         #     break
@@ -826,12 +839,19 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
         # Use the L_int and xs to determine n_expected and event weights.
         # n_dataset_tot = floa[Nickname])
         n_dataset_tot = float(n_sumgenweights_dataset_dct_jake[Nickname])
-        weight = get_evt_weight(xs_dct_jake, Nickname, lumi, event, n_dataset_tot, wgt_from_ntuple=wgt_from_ntuple)
-
+        weight = get_evt_weight(
+                    dct_xs_jake,
+                    Nickname,
+                    lumi,
+                    tree,
+                    n_dataset_tot,
+                    orig_evt_weight=tree.eventWeight
+                    )
+    
         #######################################
         #--- CR: Z+L for fake rate studies ---#
         #######################################
-        if event.passedZ1LSelection:
+        if tree.passedZ1LSelection:
             n_passedZ1LSelection += 1
             # We got some kind of Z+L event.
             # It should only be from Z+jets or Zgamma+jets.
@@ -842,29 +862,30 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
             # How frequently does this happen, i.e. what is the fake rate?
 
             # First, reconstruct Z candidate.
-            lep_1, lep_2 = reconstruct_Zcand_leptons(event)
+            lep_1, lep_2 = reconstruct_Zcand_leptons(tree)
             lep_3 = rt.TLorentzVector()
             massZ1 = (lep_1 + lep_2).M()
 
 
             # Get info about third lepton, which is at least loose.
-            ndx_loose = event.lep_Hindex[2]
-            lep_tight = event.lep_tightId[ndx_loose]
-            lep_iso = event.lep_RelIsoNoFSR[ndx_loose]
-            idL3 = event.lep_id[ndx_loose]
-            lep_3.SetPtEtaPhiM(event.lep_pt[ndx_loose],
-                             event.lep_eta[ndx_loose],
-                             event.lep_phi[ndx_loose],
-                             event.lep_mass[ndx_loose])
+            ndx_loose = tree.lep_Hindex[2]
+            lep_tight = tree.lep_tightId[ndx_loose]
+            lep_iso = tree.lep_RelIsoNoFSR[ndx_loose]
+            idL3 = tree.lep_id[ndx_loose]
+            lep_3.SetPtEtaPhiM(tree.lep_pt[ndx_loose],
+                             tree.lep_eta[ndx_loose],
+                             tree.lep_phi[ndx_loose],
+                             tree.lep_mass[ndx_loose])
             pTL3  = lep_3.Pt()
             etaL3 = lep_3.Eta()
             phiL3 = lep_3.Phi()
             
-            lep_matchedR03_PdgId = event.lep_matchedR03_PdgId
-            lep_matchedR03_MomId = event.lep_matchedR03_MomId
-            lep_matchedR03_MomMomId = event.lep_matchedR03_MomMomId
-            lep_id = event.lep_id
-            lep_Hindex = event.lep_Hindex
+            lep_id = tree.lep_id
+            lep_Hindex = tree.lep_Hindex
+            if study_particle_origins:
+                lep_matchedR03_PdgId = tree.lep_matchedR03_PdgId
+                lep_matchedR03_MomId = tree.lep_matchedR03_MomId
+                lep_matchedR03_MomMomId = tree.lep_matchedR03_MomMomId
 
             TestVar=False
             FillVar=0.
@@ -881,7 +902,7 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
             #     h1D_Z1L_pTL1_tightmZ.Fill(lep_1.Pt(), weight)
             #     h1D_Z1L_pTL2_tightmZ.Fill(lep_2.Pt(), weight)
             #     h1D_Z1L_pTL3_tightmZ.Fill(lep_3.Pt(), weight)
-            low_MET = event.met < 25
+            low_MET = tree.met < 25
 
             TestVar = tight_mZ_window and low_MET
             if tight_mZ_window and low_MET:
@@ -895,7 +916,8 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
             # Sort lep3 if electron.
             if ((abs(idL3) == 11) and (math.fabs(etaL3) < 1.497) and TestVar):
                 h1D_FRel_EB_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_d], Hist_fakes[barrel_endcap_region.EB_d], Hist_BDfakes[barrel_endcap_region.EB_d], Hist_conv[barrel_endcap_region.EB_d],False)
+                if study_particle_origins:
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_d], Hist_fakes[barrel_endcap_region.EB_d], Hist_BDfakes[barrel_endcap_region.EB_d], Hist_conv[barrel_endcap_region.EB_d],False)
                 # h1D_Z1L_e1_0eta1p497_pT.Fill(lep_1.Pt(), weight)
                 # h1D_Z1L_e1_0eta1p497_eta.Fill(lep_1.Eta(), weight)
                 # h1D_Z1L_e2_0eta1p497_pT.Fill(lep_2.Pt(), weight)
@@ -904,7 +926,8 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
                 # h1D_Z1L_e3_0eta1p497_eta.Fill(lep_3.Eta(), weight)
                 n_electron_barrel += 1
                 if (lep_tight and TestVar):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_n], Hist_fakes[barrel_endcap_region.EB_n],Hist_BDfakes[barrel_endcap_region.EB_n],Hist_conv[barrel_endcap_region.EB_n],False)
+                    if study_particle_origins:
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EB_n], Hist_fakes[barrel_endcap_region.EB_n],Hist_BDfakes[barrel_endcap_region.EB_n],Hist_conv[barrel_endcap_region.EB_n],False)
                     h1D_FRel_EB.Fill(FillVar, weight)
                     n_electron_barrel_passtight += 1
                     # h1D_Z1L_e1_0eta1p497_pT.Fill(lep_1.Pt(), weight)
@@ -916,7 +939,8 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
 
             if ((abs(idL3) == 11) and (math.fabs(etaL3) > 1.497) and TestVar):
                 h1D_FRel_EE_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_d], Hist_fakes[barrel_endcap_region.EE_d],Hist_BDfakes[barrel_endcap_region.EE_d], Hist_conv[barrel_endcap_region.EE_d],False)
+                if study_particle_origins:
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_d], Hist_fakes[barrel_endcap_region.EE_d],Hist_BDfakes[barrel_endcap_region.EE_d], Hist_conv[barrel_endcap_region.EE_d],False)
                 n_electron_endcap += 1
                 # h1D_Z1L_e1_0eta1p497_pT.Fill(lep_1.Pt(), weight)
                 # h1D_Z1L_e1_0eta1p497_eta.Fill(lep_1.Eta(), weight)
@@ -926,59 +950,64 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
                 # h1D_Z1L_e3_0eta1p497_eta.Fill(lep_3.Eta(), weight)
                 
                 if lep_tight and TestVar:
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_n], Hist_fakes[barrel_endcap_region.EE_n], Hist_BDfakes[barrel_endcap_region.EE_n], Hist_conv[barrel_endcap_region.EE_n],False)
+                    if study_particle_origins:
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.EE_n], Hist_fakes[barrel_endcap_region.EE_n], Hist_BDfakes[barrel_endcap_region.EE_n], Hist_conv[barrel_endcap_region.EE_n],False)
                     h1D_FRel_EE.Fill(FillVar, weight)
                     n_electron_endcap_passtight += 1 
 
             # Sort lep3 if muon.
             if ((abs(idL3) == 13) and (math.fabs(etaL3) < 1.2) and TestVar):
                 h1D_FRmu_EB_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_d], Hist_fakes[barrel_endcap_region.MB_d], Hist_BDfakes[barrel_endcap_region.MB_d], Hist_conv[barrel_endcap_region.MB_d],False)
+                if study_particle_origins:
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_d], Hist_fakes[barrel_endcap_region.MB_d], Hist_BDfakes[barrel_endcap_region.MB_d], Hist_conv[barrel_endcap_region.MB_d],False)
                 n_muon_barrel += 1
                 
                 if (lep_tight and (lep_iso < 0.35) and TestVar):
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_n], Hist_fakes[barrel_endcap_region.MB_n],Hist_BDfakes[barrel_endcap_region.MB_n], Hist_conv[barrel_endcap_region.MB_n],False)
+                    if study_particle_origins:
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.MB_n], Hist_fakes[barrel_endcap_region.MB_n],Hist_BDfakes[barrel_endcap_region.MB_n], Hist_conv[barrel_endcap_region.MB_n],False)
                     h1D_FRmu_EB.Fill(FillVar, weight)
                     n_muon_barrel_passtight += 1
 
             if ((abs(idL3) == 13) and (math.fabs(etaL3) > 1.2) and TestVar):
                 h1D_FRmu_EE_d.Fill(FillVar, weight)
-                PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_d], Hist_fakes[barrel_endcap_region.ME_d],Hist_BDfakes[barrel_endcap_region.ME_d], Hist_conv[barrel_endcap_region.ME_d],False)
+                if study_particle_origins:
+                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_d], Hist_fakes[barrel_endcap_region.ME_d],Hist_BDfakes[barrel_endcap_region.ME_d], Hist_conv[barrel_endcap_region.ME_d],False)
                 n_muon_endcap += 1
                 
                 if (lep_tight and (lep_iso < 0.35) and TestVar):
                     #PartOrigin(lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[ME_n], Hist_fakes[ME_n],Hist_BDfakes[ME_n], Hist_conv[ME_n],false)
-                    PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_n], Hist_fakes[barrel_endcap_region.ME_n],Hist_BDfakes[barrel_endcap_region.ME_n], Hist_conv[barrel_endcap_region.ME_n],False)
+                    if study_particle_origins:
+                        PartOrigin(isData, lep_matchedR03_PdgId, lep_matchedR03_MomId, lep_matchedR03_MomMomId,lep_Hindex,lep_id, FillVar,weight,Hist_prompt[barrel_endcap_region.ME_n], Hist_fakes[barrel_endcap_region.ME_n],Hist_BDfakes[barrel_endcap_region.ME_n], Hist_conv[barrel_endcap_region.ME_n],False)
                     h1D_FRmu_EE.Fill(FillVar, weight)
                     n_muon_endcap_passtight += 1
 
         #########################
         #--- CR: Z+LL (XPYF) ---#
         #########################
-        elif event.passedZXCRSelection:
+        elif tree.passedZXCRSelection:
             # Collect info about 4 leps from "H candidate".
             # We got at least 1 fake lepton.
             lep_tight = []
             lep_iso = []
             idL = []
             for k in range(4):
-                lep_tight.append(event.lep_tightId[event.lep_Hindex[k]])
-                lep_iso.append(event.lep_RelIsoNoFSR[event.lep_Hindex[k]])
-                idL.append(event.lep_id[event.lep_Hindex[k]])
+                lep_tight.append(tree.lep_tightId[tree.lep_Hindex[k]])
+                lep_iso.append(tree.lep_RelIsoNoFSR[tree.lep_Hindex[k]])
+                idL.append(tree.lep_id[tree.lep_Hindex[k]])
 
             #--- Not yet implemented. ---#
-            # lep_3.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[2]], event.lep_eta[event.lep_Hindex[2]], event.lep_phi[event.lep_Hindex[2]], event.lep_mass[event.lep_Hindex[2]])
+            # lep_3.SetPtEtaPhiM(tree.lep_pt[tree.lep_Hindex[2]], tree.lep_eta[tree.lep_Hindex[2]], tree.lep_phi[tree.lep_Hindex[2]], tree.lep_mass[tree.lep_Hindex[2]])
             # pTL3  = lep_3.Pt()
             # etaL3 = lep_3.Eta()
             # phiL3 = lep_3.Phi()
 
-            # lep_4.SetPtEtaPhiM(event.lep_pt[event.lep_Hindex[3]], event.lep_eta[event.lep_Hindex[3]], event.lep_phi[event.lep_Hindex[3]], event.lep_mass[event.lep_Hindex[3]])
+            # lep_4.SetPtEtaPhiM(tree.lep_pt[tree.lep_Hindex[3]], tree.lep_eta[tree.lep_Hindex[3]], tree.lep_phi[tree.lep_Hindex[3]], tree.lep_mass[tree.lep_Hindex[3]])
             # pTL4  = lep_4.Pt()
             # etaL4 = lep_4.Eta()
             # phiL4 = lep_4.Phi()
             # DR = math.sqrt((phiL3-phiL4)*(phiL3-phiL4) + (etaL3-etaL4)*(etaL3-etaL4))
             
-            lep_1, lep_2 = reconstruct_Zcand_leptons(event)
+            lep_1, lep_2 = reconstruct_Zcand_leptons(tree)
             massZ1 = (lep_1+lep_2).M()
 
             # failed lep = not (tight and good e/mu)
@@ -1010,7 +1039,7 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
                 raise ValueError(msg)
 
             fill_hists_in_controlreg(
-                event=event, weight=weight, hist_dct=hist_dct,
+                event=tree, weight=weight, hist_dct=hist_dct,
                 kinem_ls=kinem_ls, control_reg=conreg,
                 finalstate_4L=finalstate_4L, finalstate_2L=finalstate_2L)
                 
@@ -1141,7 +1170,10 @@ def analyzeZX(fTemplateTree, Nickname, outfile_dir, suffix="", overwrite=0, lumi
     h1D_FRmu_EE_n.SetName("Data_FRmu_EE") 
     h1D_FRmu_EE_n.Write()
     
-    print("...Storing kinematic histograms in '.root' file.\n")
+    print(
+        f"...Storing kinematic histograms in root file:\n"
+        f"{outfile_path}"
+        )
     for h in hist_dct.values():
         h.Write()
     
