@@ -3,8 +3,8 @@ from classes.zzpair import (
     get_ZZcands_from_myleps_OSmethod
     )
 from classes.mylepton import (
-    find_combos_2tight2loose,
-    find_combos_3tight1loose,
+    find_quartets_2pass2fail,
+    find_quartets_3pass1fail,
 )
 
 class QuartetCategorizer:
@@ -90,7 +90,9 @@ class QuartetCategorizer:
         
         In the returned list:
             ls_valid_zz_cand_OS = [
-                best_ZZ_quart1, best_ZZ_quart2, ...
+                best_ZZ_quart1,
+                best_ZZ_quart2,
+                ...
                 ]
 
         Leptons are sorted into quartets based on given control region `cr`.
@@ -109,11 +111,11 @@ class QuartetCategorizer:
         """
         cr = cr.upper()
         if cr == '3P1F':
-            fourlep_combos = find_combos_3tight1loose(mylep_ls)
+            ls_quartets = find_quartets_3pass1fail(mylep_ls)
         elif cr == '2P2F':
-            fourlep_combos = find_combos_2tight2loose(mylep_ls)
+            ls_quartets = find_quartets_2pass2fail(mylep_ls)
 
-        n_tot_combos = len(fourlep_combos)
+        n_tot_combos = len(ls_quartets)
         if n_tot_combos == 0:
             # No chance to make quartets.
             return []
@@ -122,7 +124,7 @@ class QuartetCategorizer:
             print(f"  Num of {cr} quartets to analyze: {n_tot_combos}")
         # List to hold valid ZZ cands that pass OS Method sel.
         ls_valid_zz_cand_OS = []
-        for n_quartet, quart in enumerate(fourlep_combos):
+        for n_quartet, quart in enumerate(ls_quartets):
             if verbose:
                 print_header_message(f"Analyzing quartet #{n_quartet}")
                 lep_ndcs = [mylep.ndx_lepvec for mylep in quart]

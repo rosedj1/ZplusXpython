@@ -135,7 +135,8 @@ explain_skipevent = 0
 smartcut_ZapassesZ1sel = False  # Literature sets this to False.
 keep_only_mass4lgt0 = 0
 match_lep_Hindex = 0  # Only keep quartets that perfectly match lep_Hindex.
-recalc_mass4l_vals = 1
+recalc_masses = 1
+sync_xBF_Ana = 1
 skip_passedFullSelection = 1  # To sync with BBF Ana, set to True.
 stop_when_found_3p1f = 1  # If a 3P1F ZZ candidate is found, don't look for 2P2F.
 keep_first_quartet = 1
@@ -226,10 +227,11 @@ if __name__ == '__main__':
             overwrite=overwrite,
             keep_only_mass4lgt0=keep_only_mass4lgt0,
             match_lep_Hindex=match_lep_Hindex,
-            recalc_mass4l_vals=recalc_mass4l_vals,
+            recalc_masses=recalc_masses,
             skip_passedFullSelection=skip_passedFullSelection,
             stop_when_found_3p1f=stop_when_found_3p1f,
-            keep_first_quartet=keep_first_quartet
+            keep_first_quartet=keep_first_quartet,
+            sync_xBF_Ana=sync_xBF_Ana
             )
         ls_all_outfiles.append(outfile_root)
 

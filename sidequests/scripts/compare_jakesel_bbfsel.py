@@ -54,7 +54,7 @@ print_every = 50000
 
 keep_only_mass4lgt0 = True
 match_lep_Hindex = True
-recalc_mass4l_vals = False
+recalc_masses = False
 stop_when_found_3p1f = 1
 keep_first_quartet = 1
 
@@ -223,7 +223,7 @@ if run_lumi_evt_row is not None:
         overwrite=False,
         keep_only_mass4lgt0=False,
         match_lep_Hindex=False,
-        recalc_mass4l_vals=False,
+        recalc_masses=False,
         skip_passedFullSelection=True,
         stop_when_found_3p1f=stop_when_found_3p1f,
         keep_first_quartet=keep_first_quartet,
@@ -255,7 +255,7 @@ else:
                 overwrite=False,
                 keep_only_mass4lgt0=False,
                 match_lep_Hindex=False,
-                recalc_mass4l_vals=False,
+                recalc_masses=False,
                 skip_passedFullSelection=True,
                 explain_skipevent=True,
                 verbose=True,

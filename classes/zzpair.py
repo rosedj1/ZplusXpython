@@ -47,13 +47,16 @@ class ZZPair:
         self.explain_skipevent = explain_skipevent
         self.ndx_in_zzpair_ls = None  # Will be assigned when forming ZZPairs.
         self.smartcut_ZapassesZ1sel = smartcut_ZapassesZ1sel
+        self.valid_cand_os_method = None # Set after passes_os_method_sel().
 
     def get_m4l(self):
         """Return the m(4l) of this ZZPair."""
         return self.get_LorentzVector().M()
 
-    def passes_cjlst_sel(self):
-        """Return True if this ZZ pair forms a CJLST ZZ candidate.
+    def passes_os_method_sel(self):
+        """Return True if this ZZ passes OS Method selections.
+        
+        NOTE: If ZZ does pass, then it is a valid OS Method ZZ cand.
         
         Step 1: Check that Z_fir and Z_sec have no overlapping leptons.
         
@@ -83,6 +86,7 @@ class ZZPair:
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Failed m(4l) > 70 GeV.")
                 if self.verbose: self.print_info()
+            self.valid_cand_os_method = False
             return False
         
         # Step 1. Should already be taken into account, but just in case.
@@ -90,6 +94,7 @@ class ZZPair:
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Z's have overlapping leptons.")
                 if self.verbose: self.print_info()
+            self.valid_cand_os_method = False
             return False
         
         # Step 2.
@@ -99,6 +104,7 @@ class ZZPair:
                     f"  {skip_msg_prefix}: z_fir does not pass Z1 selections."
                 )
                 if self.verbose: self.print_info()
+            self.valid_cand_os_method = False
             return False
         # Check if Z2 also comes from tight leptons.
         # If so, make sure m(Z1) is closer to PDG mass.
@@ -110,6 +116,7 @@ class ZZPair:
                         f"m(Z2) closer to PDG than m(Z1) is."
                         )
                     if self.verbose: self.print_info()
+                self.valid_cand_os_method = False
                 return False
         
         # Step 3.
@@ -118,24 +125,38 @@ class ZZPair:
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Leptons not separated in dR.")
                 if self.verbose: self.print_info()
+            self.valid_cand_os_method = False
             return False
         if not check_leps_pass_leadsublead_pTcuts(mylep_ls):
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Leptons fail lead/sublead cuts.")
                 if self.verbose: self.print_info()
+            self.valid_cand_os_method = False
             return False
         if not leps_pass_lowmass_dilep_res(mylep_ls, min_mass=4):
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Low-mass dilep resonance found.")
                 if self.verbose: self.print_info()
+            self.valid_cand_os_method = False
             return False
         if not self.passes_smart_cut():
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Failed smart cut.")
                 if self.verbose: self.print_info()
+            self.valid_cand_os_method = False
             return False
+
+        self.valid_cand_os_method = True
         return True
         
+    def check_valid_cand_os_3p1f(cr):
+        """Return True if ZZ cand passed OS Method sel and is 3P1F."""
+        return self.valid_cand_os_method and (self.get_num_failing_leps == 1)
+
+    def check_valid_cand_os_2p2f(cr):
+        """Return True if ZZ cand passed OS Method sel and is 2P2F."""
+        return self.valid_cand_os_method and (self.get_num_failing_leps == 2)
+
     def get_mylep_ls(self):
         """Return a list of all myleps that built this ZZPair."""
         return self.z_fir.get_mylep_ls() + self.z_sec.get_mylep_ls()
@@ -280,6 +301,22 @@ class ZZPair:
         Note: "Passing" means passing tight selection.
         """
         return sum([lep.is_tight for lep in self.get_mylep_ls()])
+
+    def get_str_cr_os_method(self):
+        """Return str corresponding to OS method control region.
+        
+        Returns either '3P1F' or '2P2F'.
+        """
+        if self.check_valid_cand_os_3p1f():
+            return '3P1F'
+        elif self.check_valid_cand_os_2p2f():
+            return '2P2F'
+        else:
+            n_fail = self.get_num_failing_leps()
+            raise ValueError(
+                f"Valid OS Method ZZ cand has {n_fail} leptons "
+                f"failing tight selection.\n  Is it truly valid?"
+                )
 # End of ZZPair.
     
 def make_all_zz_pairs(zcand_ls, explain_skipevent=False, smartcut_ZapassesZ1sel=False):
@@ -413,7 +450,7 @@ def get_all_ZZcands_passing_cjlst(zz_pair_ls):
         (Z2, Z1), (Z2, Z3),
         (Z3, Z1), (Z3, Z2)
     """
-    return [zz for zz in zz_pair_ls if zz.passes_cjlst_sel()]
+    return [zz for zz in zz_pair_ls if zz.passes_os_method_sel()]
 
 def get_ZZcands_from_myleps_OSmethod(
     mylep_ls, verbose=False, explain_skipevent=False,
