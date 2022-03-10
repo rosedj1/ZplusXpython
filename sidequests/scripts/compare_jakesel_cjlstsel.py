@@ -20,7 +20,7 @@ from sidequests.funcs.evt_comparison import analyze_single_evt
 from Utils_Python.Utils_Files import (
     open_json, save_to_pkl, open_pkl, check_overwrite
     )
-from Utils_Python.printing import print_header_message
+from Utils_Python.printing import announce
 
 verbose = 1
 explain_skipevent = 0
@@ -121,10 +121,10 @@ if __name__ == '__main__':
                 f"CJLST unique 3P1F event {run}:{lumi}:{event} "
                 f"({ct+1}/{n_tot})"
                 )
-        print_header_message(evt_msg, pad_char="@", n_center_pad_chars=5)
+        announce(evt_msg, pad_char="@", n_center_pad_chars=5)
 
         if use_analyzer_cjlst:
-            print_header_message("ANALYZER: CJLST")
+            announce("ANALYZER: CJLST")
             if scan_all_evts:
                 evt_start = 0
                 evt_end = -1
@@ -141,7 +141,7 @@ if __name__ == '__main__':
             print("Writing to CJLST log file...")
             with open(outlog_cjlst, write_mode) as f:
                 with redirect_stdout(f):
-                    print_header_message(evt_msg, pad_char="@", n_center_pad_chars=5)
+                    announce(evt_msg, pad_char="@", n_center_pad_chars=5)
                     for ndx in ls_cjlst_evt_ndx:
                         _ = analyze_single_evt(tree_cjlst, run, lumi, event, fw="cjlst", which="all",
                                     evt_start=ndx, evt_end=ndx+1, print_every=10000)
@@ -162,7 +162,7 @@ if __name__ == '__main__':
                 with open(outlog_jake, write_mode) as f:
                     f.write(msg)
                 continue
-            print_header_message("ANALYZER: BBF")
+            announce("ANALYZER: BBF")
             if scan_all_evts:
                 evt_start = 0
                 evt_end = -1
@@ -176,7 +176,7 @@ if __name__ == '__main__':
             print("Writing to BBF log file...")
             with open(outlog_bbf, write_mode) as f:
                 with redirect_stdout(f):
-                    print_header_message(evt_msg, pad_char="@", n_center_pad_chars=5)
+                    announce(evt_msg, pad_char="@", n_center_pad_chars=5)
                     _ = analyze_single_evt(tree_bbf, run, lumi, event, fw="bbf", which="first",
                             evt_start=ndx_bbf, evt_end=ndx_bbf+1, print_every=500000)
 
@@ -195,7 +195,7 @@ if __name__ == '__main__':
                 evt_end = -1
             else:
                 raise ValueError("Confusing if statements...")
-            print_header_message("ANALYZER: Jake")
+            announce("ANALYZER: Jake")
             evt_loop_evtselcjlst_atleast4leps(tree_jake, outfile_root=None, outfile_json=None,
                                               start_at_evt=evt_start, break_at_evt=evt_end, fill_hists=False,
                                               explain_skipevent=explain_skipevent, verbose=verbose, print_every=50000,
@@ -204,7 +204,7 @@ if __name__ == '__main__':
             evt_key = f"{run}:{lumi}:{event}"
             with open(outlog_jake, write_mode) as f:
                 with redirect_stdout(f):
-                    print_header_message(evt_msg, pad_char="@", n_center_pad_chars=5)
+                    announce(evt_msg, pad_char="@", n_center_pad_chars=5)
                     print(f"Searching for event ID {evt_key} in JAKE framework")
                     print(f"Event {evt_key} found. Index: {evt_start}")
                     evt_loop_evtselcjlst_atleast4leps(tree_jake, outfile_root=None, outfile_json=None,

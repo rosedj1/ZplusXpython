@@ -3,7 +3,7 @@ from classes.mylepton import (check_leps_separated_in_DeltaR,
                               leps_pass_lowmass_dilep_res,
                               has_2p2f_leps, has_3p1f_leps)
 from classes.myzboson import MyZboson, make_all_zcands
-from Utils_Python.printing import print_header_message
+from Utils_Python.printing import announce
 
 class ZZPair:
     """NOT the same thing as a 'ZZ Candidate' (which passes selections)."""
@@ -149,13 +149,15 @@ class ZZPair:
         self.valid_cand_os_method = True
         return True
         
-    def check_valid_cand_os_3p1f(cr):
+    def check_valid_cand_os_3p1f(self):
         """Return True if ZZ cand passed OS Method sel and is 3P1F."""
-        return self.valid_cand_os_method and (self.get_num_failing_leps == 1)
+        n_fail = self.get_num_failing_leps()
+        return self.valid_cand_os_method and (n_fail == 1)
 
-    def check_valid_cand_os_2p2f(cr):
+    def check_valid_cand_os_2p2f(self):
         """Return True if ZZ cand passed OS Method sel and is 2P2F."""
-        return self.valid_cand_os_method and (self.get_num_failing_leps == 2)
+        n_fail = self.get_num_failing_leps()
+        return self.valid_cand_os_method and (n_fail == 2)
 
     def get_mylep_ls(self):
         """Return a list of all myleps that built this ZZPair."""
@@ -306,6 +308,9 @@ class ZZPair:
         """Return str corresponding to OS method control region.
         
         Returns either '3P1F' or '2P2F'.
+
+        Assumes that ZZ pairing has passed OS Method selections,
+        i.e. is a "valid" candidate.
         """
         if self.check_valid_cand_os_3p1f():
             return '3P1F'
@@ -317,6 +322,20 @@ class ZZPair:
                 f"Valid OS Method ZZ cand has {n_fail} leptons "
                 f"failing tight selection.\n  Is it truly valid?"
                 )
+        # """Return str corresponding to OS method control region.
+        
+        # Returns either '3P1F' or '2P2F'.
+        # """
+        # n_fail = self.get_num_failing_leps()
+        # if n_fail == 1:
+        #     return '3P1F'
+        # elif n_fail == 2:
+        #     return '2P2F':
+        # else:
+        #     raise ValueError(
+        #         f"ZZ pairing has {n_fail} leptons "
+        #         f"failing tight selection.\n  Is it truly valid?"
+        #         )
 # End of ZZPair.
     
 def make_all_zz_pairs(zcand_ls, explain_skipevent=False, smartcut_ZapassesZ1sel=False):

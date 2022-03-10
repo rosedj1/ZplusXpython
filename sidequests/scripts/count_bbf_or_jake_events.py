@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 from ROOT import TFile
 # Local imports.
 from Utils_Python.printing import (
-    print_header_message, print_periodic_evtnum,
+    announce, print_periodic_evtnum,
     pretty_print_dict
     )
 

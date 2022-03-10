@@ -16,7 +16,7 @@ UPDATED: 2021-10-27
 import sys
 from pprint import pprint
 from Utils_Python.Utils_Files import save_to_json, check_overwrite
-from Utils_Python.printing import print_header_message
+from Utils_Python.printing import announce
 from sidequests.data.datasets import dataset_tup_2018
 from sidequests.classes.datasetfinder import DataSetFinder
 
@@ -100,7 +100,7 @@ def make_evtid2rootfile_dct(evt_lsoftup, dataset_tup, evt_start=1, evt_stop=-1):
     
     for ct, evt_id in enumerate(evt_lsoftup[(evt_start-1):evt_stop], 1):
         if (ct % 10) == 0:
-            print_header_message(
+            announce(
                 f"Processing event {ct}/{n_evts_to_proc}",
                 pad_char="#",
                 n_center_pad_chars=5

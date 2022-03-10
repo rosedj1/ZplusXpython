@@ -1,4 +1,4 @@
-from Utils_Python.printing import print_header_message
+from Utils_Python.printing import announce
 from classes.zzpair import (
     get_ZZcands_from_myleps_OSmethod
     )
@@ -126,7 +126,7 @@ class QuartetCategorizer:
         ls_valid_zz_cand_OS = []
         for n_quartet, quart in enumerate(ls_quartets):
             if verbose:
-                print_header_message(f"Analyzing quartet #{n_quartet}")
+                announce(f"Analyzing quartet #{n_quartet}")
                 lep_ndcs = [mylep.ndx_lepvec for mylep in quart]
                 print(f"  Lepton indices: {lep_ndcs}")
             # For this quartet, use OS Method logic to pick best ZZ cand.

@@ -9,7 +9,7 @@
 from sidequests.funcs.evt_comparison import write_tree_evtID_to_txt
 from sidequests.data.filepaths import infile_filippo_data_2018_fromhpg
 from constants.finalstates import dct_finalstates_int2str
-from Utils_Python.printing import print_header_message
+from Utils_Python.printing import announce
 
 inroot = infile_filippo_data_2018_fromhpg
 # inroot = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/data2018_2P2plusF_3P1plusF_syncwithfilippo_updatedmZvals_2018_Data.root"
@@ -35,7 +35,7 @@ if __name__ == '__main__':
         for switch in (0,):
             # A goofy way to trigger 3P1F=True and 2P2F=False, then vice versa.
             str_fs = dct_finalstates_int2str[fs]
-            print_header_message(
+            announce(
                 f"Processing {'3P1F' if switch == 1 else '2P2F'}: {str_fs}"
                 )
             write_tree_evtID_to_txt(

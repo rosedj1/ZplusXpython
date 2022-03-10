@@ -9,7 +9,7 @@
 """
 from ROOT import TFile
 #=== Local imports. ===#
-from Utils_Python.printing import print_header_message, print_periodic_evtnum
+from Utils_Python.printing import announce, print_periodic_evtnum
 from constants.finalstates import dct_finalstates_int2str
 from sidequests.classes.filecomparer import FileRunLumiEvent
 from sidequests.funcs.evt_comparison import make_ls_evtIDs_OSmethod
@@ -103,7 +103,7 @@ def print_commonanduniqueevts_jakvsbbf(
                 f"CR = {cr_str}, "
                 f"{m4l_lim[0]} < mass4l < {m4l_lim[1]} GeV"
                 )
-            print_header_message(msg=msg, pad_char="-", n_center_pad_chars=3)
+            announce(msg=msg, pad_char="-", n_center_pad_chars=3)
 
             ls_evtID = make_ls_evtIDs_OSmethod(
                 tree=t,

@@ -52,11 +52,11 @@ start_at = 0
 end_at = -1  #start_at + 1
 print_every = 50000
 
-keep_only_mass4lgt0 = True
+skip_mass4l_lessthan0 = True
 match_lep_Hindex = True
 recalc_masses = False
 stop_when_found_3p1f = 1
-keep_first_quartet = 1
+keep_one_quartet = 1
 
 # Either give a 4-tuple into `run_lumi_evt_row` or
 # put `None` and fill in `ls_tup_unique` with 3-tuples.
@@ -221,12 +221,12 @@ if run_lumi_evt_row is not None:
         LUMI_INT=lumi_int,
         smartcut_ZapassesZ1sel=False,
         overwrite=False,
-        keep_only_mass4lgt0=False,
+        skip_mass4l_lessthan0=False,
         match_lep_Hindex=False,
         recalc_masses=False,
         skip_passedFullSelection=True,
         stop_when_found_3p1f=stop_when_found_3p1f,
-        keep_first_quartet=keep_first_quartet,
+        keep_one_quartet=keep_one_quartet,
         explain_skipevent=True,
         verbose=True,
         )
@@ -253,7 +253,7 @@ else:
                 LUMI_INT=lumi_int,
                 smartcut_ZapassesZ1sel=False,
                 overwrite=False,
-                keep_only_mass4lgt0=False,
+                skip_mass4l_lessthan0=False,
                 match_lep_Hindex=False,
                 recalc_masses=False,
                 skip_passedFullSelection=True,

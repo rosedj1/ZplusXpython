@@ -2,7 +2,7 @@ import os
 import numpy as np
 from ROOT import TFile
 
-from Utils_Python.printing import print_periodic_evtnum, print_header_message
+from Utils_Python.printing import print_periodic_evtnum, announce
 from Utils_Python.Utils_Files import check_overwrite
 from sidequests.classes.cjlstflag import CjlstFlag
 from sidequests.classes.filecomparer import evtID_as_str
@@ -18,7 +18,7 @@ def print_evt_info_bbf(evt):
     TODO:
     - [ ] Print only up to 6 decimals for all floats.
     """
-    print_header_message("Analyzer: BBF")
+    announce("Analyzer: BBF")
     d_branch = {
         "passedFullSelection" : "",
         "passedZXCRSelection" : "",
@@ -132,12 +132,12 @@ def analyze_single_evt(
     LUMI_INT=59830,
     smartcut_ZapassesZ1sel=False,
     overwrite=False,
-    keep_only_mass4lgt0=False,
+    skip_mass4l_lessthan0=False,
     match_lep_Hindex=False,
     recalc_masses=False,
     skip_passedFullSelection=True,
     stop_when_found_3p1f=True,
-    keep_first_quartet=False,
+    keep_one_quartet=False,
     explain_skipevent=True,
     verbose=True,
     ):
@@ -193,7 +193,7 @@ def analyze_single_evt(
         if fw == "bbf":
             print_evt_info_bbf(tree)
         elif fw == "jake":
-            print_header_message("ANALYZER: Jake")
+            announce("ANALYZER: Jake")
             select_evts_2P2F_3P1F_multiquartets(
                 tree,
                 infile_fakerates=infile_fakerates,
@@ -211,12 +211,12 @@ def analyze_single_evt(
                 print_every=1,
                 smartcut_ZapassesZ1sel=False,
                 overwrite=False,
-                keep_only_mass4lgt0=False,
+                skip_mass4l_lessthan0=False,
                 match_lep_Hindex=match_lep_Hindex,
                 recalc_masses=False,
                 skip_passedFullSelection=skip_passedFullSelection,
                 stop_when_found_3p1f=stop_when_found_3p1f,
-                keep_first_quartet=keep_first_quartet,
+                keep_one_quartet=keep_one_quartet,
                 )
             # store_evt = True
         elif fw == "cjlst":

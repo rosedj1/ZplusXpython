@@ -1,5 +1,5 @@
 from constants.particleprops import ZMASS_PDG
-from Utils_Python.printing import print_header_message
+from Utils_Python.printing import announce
 
 class MyZboson:
     
@@ -53,10 +53,13 @@ class MyZboson:
         header_footer = '#' * 67
         name = "" if name is None else f": name={name}"
         zvec = self.get_LorentzVector()
-        if self.made_from_tight_leps:
-            lep_tightness_info = "Made from 2 tight leptons."
-        else:
-            lep_tightness_info = "Made from at least 1 loose lepton."
+        n_pass = self.get_num_passing_leps()
+        n_fail = self.get_num_failing_leps()
+        lep_info = f"Made from: {n_pass} passing lepton, {n_fail} failing lepton."
+        if n_pass > 1:
+            lep_info = lep_info.replace("lepton,", "leptons,")
+        if n_fail > 1:
+            lep_info = lep_info.replace("lepton.", "leptons.")
         print(
             f"{header_footer}\n"
             f"# Z CANDIDATE INFO{name}\n"
@@ -65,7 +68,7 @@ class MyZboson:
             f"Z made from pT-ordered leptons at indices: "
             f"{self.get_mylep_idcs_pTorder()}\n"
             f"Passes Z1 selections: {self.passes_z1_kinematic_selec()}\n"
-            f"{lep_tightness_info}\n"
+            f"{lep_info}\n"
             f"{header_footer.replace('#', '-')}"
         )
         # self.mylep1.print_info()
@@ -121,6 +124,20 @@ class MyZboson:
         their_abs_dist = abs(other_z.get_distance_from_PDG_mass())
         i_am_closer = ((my_abs_dist - their_abs_dist) < 0)
         return True if i_am_closer else False
+
+    def get_num_passing_leps(self):
+        """Return the number of passing leptons in this Z boson.
+        
+        Note: "Passing" means passing tight selection.
+        """
+        return sum([lep.is_tight for lep in self.get_mylep_ls()])
+
+    def get_num_failing_leps(self):
+        """Return the number of failing leptons in this Z boson.
+        
+        Note: "Failing" means failing tight selection.
+        """
+        return sum([lep.is_loose for lep in self.get_mylep_ls()])
 # End of MyZboson.
 
 def makes_valid_zcand(lep1, lep2, verbose=False):
@@ -189,7 +206,7 @@ def make_all_zcands(
                 ):
             these_lep_idcs = [mylep1.ndx_lepvec, mylep2.ndx_lepvec]
             if verbose:
-                print_header_message(
+                announce(
                     f"  Considering leptons: {these_lep_idcs}",
                     n_center_pad_chars=1
                     )

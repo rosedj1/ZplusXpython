@@ -16,7 +16,7 @@ from pprint import pprint
 from Utils_ROOT.Printer import CanvasPrinter
 from Utils_ROOT.ROOT_classes import make_pave, set_neg_bins_to_zero
 from Utils_Python.printing import (
-    print_periodic_evtnum, print_header_message
+    print_periodic_evtnum, announce
     )
 from sidequests.data.filepaths import (
     infile_matteo_data2018_fromhpg,
@@ -73,7 +73,7 @@ def print_totalredbkg_estimate(
     if neg_bin_removal:
         msg = msg.replace("before", "AFTER")
 
-    print_header_message(msg)
+    announce(msg)
     h1_final_estimate = h1_data_3p1fpred_m4l.Clone()
     h1_final_estimate.Add(h1_data_2p2fpred_m4l, -1)
     print(f"total integral (3P1F - 2P2F) = {h1_final_estimate.Integral()}")
@@ -204,19 +204,19 @@ if __name__ == '__main__':
 
     printer.canv.Print(outpdf_path + "]")
 
-    print_header_message("3P1F Raw Data")
+    announce("3P1F Raw Data")
     # print(f"integral = {h1_data_3p1f_m4l.Integral():.2f}")
     print_integral_dict_hist(d_data_3p1f_fs_hists)
 
-    print_header_message("2P2F Raw Data")
+    announce("2P2F Raw Data")
     # print(f"integral = {h1_data_2p2f_m4l.Integral():.2f}")
     print_integral_dict_hist(d_data_2p2f_fs_hists)
 
-    print_header_message("3P1F Data Pred")
+    announce("3P1F Data Pred")
     # print(f"integral = {h1_data_3p1fpred_m4l.Integral():.2f}")
     print_integral_dict_hist(d_data_3p1fpred_fs_hists)
 
-    print_header_message("2P2F Data Pred")
+    announce("2P2F Data Pred")
     # print(f"integral = {h1_data_2p2fpred_m4l.Integral():.2f}")
     print_integral_dict_hist(d_data_2p2fpred_fs_hists)
 
@@ -238,6 +238,6 @@ if __name__ == '__main__':
         neg_bin_removal=True
         )
 
-    print_header_message("2P2F Contribution to 3P1F Pred")
+    announce("2P2F Contribution to 3P1F Pred")
     # print(f"integral = {h1_data_2p2fin3p1f_m4l.Integral():.2f}")
     print_integral_dict_hist(d_data_2p2fin3p1f_fs_hists)

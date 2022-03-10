@@ -6,7 +6,7 @@ from array import array
 from Utils_Python.Utils_Physics import perc_diff, calc_mass4l_from_idcs
 from Utils_Python.printing import (
     print_periodic_evtnum, print_skipevent_msg, pretty_print_dict,
-    print_header_message
+    announce
     )
 from Utils_Python.Utils_Files import save_to_json, check_overwrite
 from classes.zzpair import (
@@ -275,13 +275,14 @@ def select_evts_2P2F_3P1F_multiquartets(
     explain_skipevent=False, verbose=False, print_every=50000,
     smartcut_ZapassesZ1sel=False,
     overwrite=False,
-    keep_only_mass4lgt0=False,
+    skip_mass4l_lessthan0=False,
     match_lep_Hindex=False,
     recalc_masses=False,
     skip_passedFullSelection=True,
     stop_when_found_3p1f=True,
-    keep_first_quartet=False,
-    sync_xBF_Ana=False,
+    keep_one_quartet=False,
+    use_multiquart_sel=True,
+    sync_with_xBFAna=False,
     ):
     """Apply RedBkg multi-lepton quartet selection to all events in tree.
 
@@ -319,7 +320,7 @@ def select_evts_2P2F_3P1F_multiquartets(
             However, literature doesn't check for Za passing Z1 selections!
             Set this to True if you require Za to pass Z1 selections.
             Default is False.
-        keep_only_mass4lgt0 (bool, optional):
+        skip_mass4l_lessthan0 (bool, optional):
             If True, then skip events whose tree.mass4l <= 0.
             This is useful when you need to use the values that are already
             stored in the BBF NTuple.
@@ -340,23 +341,80 @@ def select_evts_2P2F_3P1F_multiquartets(
             corresponding massZ1 and massZ2 values.
         stop_when_found_3p1f (bool, optional):
             If True, if at least one valid 3P1F ZZ candidate was found,
-            do not look for any 2P2F candidates. Defaults to True.
+            do not build any 2P2F candidates. Defaults to True.
+        use_multiquart_sel (bool, optional):
+            If True, use the updated reducible background event selection
+            logic ("multi-quartet").
+
     """
-    if match_lep_Hindex:
-        msg = f"match_lep_Hindex = True. Forcing these bools:"
-        print_header_message(msg)
+    assert not (use_multiquart_sel and sync_with_xBFAna), (
+        f"Can't have use_multiquart_sel=True and sync_with_xBFAna=True."
+    )
+
+    if use_multiquart_sel:
+        msg = f"use_multiquart_sel = True. Forcing these bools:"
+        announce(msg, pad_char='#')
         print(
-            f"  keep_only_mass4lgt0 = True\n"
+            f"  stop_when_found_3p1f = True\n"
+            f"  match_lep_Hindex = False\n"
+            f"  keep_one_quartet = False\n"
+            f"  recalc_masses = True\n"
+            f"  skip_mass4l_lessthan0 = False\n"
+            f"  skip_passedFullSelection = True\n"
+            )
+        stop_when_found_3p1f = True
+        match_lep_Hindex = False
+        keep_one_quartet = False
+        recalc_masses = True
+        skip_mass4l_lessthan0 = False
+        skip_passedFullSelection = True
+
+    if sync_with_xBFAna:
+        msg = f"sync_with_xBFAna = True. Forcing these bools:"
+        announce(msg, pad_char='#')
+        print(
+            f"  stop_when_found_3p1f = False\n"
+            f"  match_lep_Hindex = True\n"
+            f"  keep_one_quartet = True\n"
+            f"  skip_mass4l_lessthan0 = True\n"
             f"  skip_passedFullSelection = True\n"
             f"  recalc_masses = False\n"
-            f"  stop_when_found_3p1f = False\n"
-            f"  keep_first_quartet = False"
             )
-        keep_only_mass4lgt0 = True
+        stop_when_found_3p1f = False
+        match_lep_Hindex = True
+        keep_one_quartet = True
+        skip_mass4l_lessthan0 = True
         skip_passedFullSelection = True
         recalc_masses = False
-        stop_when_found_3p1f = False
-        keep_first_quartet = False
+
+    if keep_one_quartet and not recalc_masses:
+        warnings.warn(
+            f"!!! You are keeping one quartet per event "
+            f"(keep_one_quartet=True) "
+            f"without recalculating masses(recalc_masses=False).\n"
+            f"!!! Therefore, mass info (mass4l, massZ1, massZ2) "
+            f"in tree may not correspond to saved quartet!"
+            )
+            
+    if stop_when_found_3p1f:
+        print("A valid 3P1F quartet will ignore all 2P2F quartets.")
+
+    if keep_one_quartet:
+        announce("Saving only one quartet per event.")
+        if match_lep_Hindex:
+            print(
+                f"  Since match_lep_Hindex=True, the one quartet saved\n"
+                f"  must have lepton indices from Z1 and Z2 agree with\n"
+                f"  those in lep_Hindex."
+                )
+            if not stop_when_found_3p1f:
+                print("  A valid 2P2F quartet can be chosen over valid 3P1F.")
+        else:
+            print(
+                f"  Since match_lep_Hindex=False, "
+                f"not sure which quartet to save!\n"
+                f"  Saving the first valid ZZ cand arbitrarily!."
+                )
 
     if fill_hists:
         raise ValueError(f"fill_hists = True, but must review code first.")
@@ -496,7 +554,7 @@ def select_evts_2P2F_3P1F_multiquartets(
             evt_info_d["n_evts_passedFullSelection"] += 1
             continue
 
-        if keep_only_mass4lgt0 and (tree.mass4l <= 0):
+        if skip_mass4l_lessthan0 and (tree.mass4l <= 0):
             evt_info_d["n_evts_skip_mass4l_le0"] += 1
             continue
 
@@ -573,12 +631,12 @@ def select_evts_2P2F_3P1F_multiquartets(
         found_matching_lep_Hindex = False
         overall_evt_label = ''  # Either '3P1F' or '2P2F'.
         for ndx_zzcand, zzcand in enumerate(ls_valid_ZZcands_OS, 1):
-            cr_str = zzcand.get_str_cr_os_method()
+            cr_str = zzcand.get_str_cr_os_method().upper()
 
             # Sanity checks.
-            if cr_str.lower() == '3p1f':
+            if cr_str == '3P1F':
                 assert zzcand.check_valid_cand_os_3p1f()
-            elif cr_str.lower() == '2p2f':
+            elif cr_str == '2P2F':
                 assert zzcand.check_valid_cand_os_2p2f()
             else:
                 raise ValueError(f"cr_str is not in ('3P1F', '2P2F').")
@@ -626,14 +684,14 @@ def select_evts_2P2F_3P1F_multiquartets(
             mylep2_fromz1 = zzcand.z_fir.mylep2
             mylep1_fromz2 = zzcand.z_sec.mylep1
             mylep2_fromz2 = zzcand.z_sec.mylep2
-            #=== 3P1F subevent. ===#
+            #=== 3P1F quartet. ===#
             if n_fail_code == 2:
                 # First lep from Z2 failed.
                 # NOTE: Turns out this will never trigger for OS Method!
                 # This is due to the way that the 3P1F quartets are built.
                 # The 1 failing lepton is always placed as the 4th lepton.
                 # Therefore, fr3 (the 4th lepton) will always be != 0.
-                assert cr_str.lower() == '3p1f'
+                assert cr_str == '3P1F'
                 assert mylep1_fromz2.is_loose
                 fr2, fr2_err = get_fakerate_and_error_mylep(
                     mylep1_fromz2,
@@ -652,7 +710,7 @@ def select_evts_2P2F_3P1F_multiquartets(
                 new_weight_up = (fr2_up / (1-fr2_up)) * evt_weight_calcd
             elif n_fail_code == 3:
                 # Second lep from Z2 failed.
-                assert cr_str.lower() == '3p1f'
+                assert cr_str == '3P1F'
                 assert mylep2_fromz2.is_loose
                 fr2 = 0
                 fr2_err = 0
@@ -669,10 +727,10 @@ def select_evts_2P2F_3P1F_multiquartets(
                 new_weight_down = (fr3_down / (1-fr3_down)) * evt_weight_calcd
                 new_weight = (fr3 / (1-fr3)) * evt_weight_calcd
                 new_weight_up = (fr3_up / (1-fr3_up)) * evt_weight_calcd
-            #=== 2P2F subevent. ===#
+            #=== 2P2F quartet. ===#
             elif n_fail_code == 5:
                 # Both leps failed.
-                assert cr_str.lower() == '2p2f'
+                assert cr_str == '2P2F'
                 fr2, fr2_err = get_fakerate_and_error_mylep(
                     mylep1_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
@@ -693,7 +751,7 @@ def select_evts_2P2F_3P1F_multiquartets(
                 new_weight_up = (fr2_up / (1-fr2_up)) * (fr3_up / (1-fr3_up)) * evt_weight_calcd
 
             if verbose:
-                print_header_message(f"Valid ZZ cand is {cr_str}")
+                announce(f"Valid ZZ cand is {cr_str}")
                 print(
                     f"  This fail code: {n_fail_code}\n"
                     f"  Z2 lep codes FOR DEBUGGING:\n"
@@ -744,21 +802,19 @@ def select_evts_2P2F_3P1F_multiquartets(
             ptr_lep_RedBkgindex[2] = lep_idcs[2]
             ptr_lep_RedBkgindex[3] = lep_idcs[3]
 
-            # Label entire event as either 3P1F or 2P2F based on last ZZcand.
+            # Label entire event as either 3P1F or 2P2F.
             # The new RedBkg logic gives 3P1F priority over 2P2F,
-            # i.e. if there are 3P1F and 2P2F quartets, label event as 3P1F.
-            # However when finding the quartet whose lep indices match
-            # lep_Hindex (i.e., when syncing with the xBF Analyzer),
-            # then choose the quartet (ZZ) with the highest D_kin_bkg.
-            # In this case, 2P2F may take priority over 3P1F.
-            if 
-            if match_lep_Hindex:
-                # Have the chance to override 3P1F with 2P2F.
-                overall_evt_label = zzcand.get_str_cr_os_method().upper()
+            # i.e. if there are 3P1F and 2P2F quartets, label event 3P1F.
+            #### However when finding the quartet whose lep indices match
+            #### lep_Hindex (i.e., when syncing with the xBF Analyzer),
+            #### then choose the quartet (ZZ) with the highest D_kin_bkg.
+            #### In this case, 2P2F may override 3P1F.
+            if stop_when_found_3p1f and (overall_evt_label == '3P1F') \
+                                    and (cr_str == '2P2F'):
+                # DON'T label as 2P2F!
+                pass
             else:
-                # So 2P2F cannot override 3P1F.
-
-
+                overall_evt_label = cr_str
 
             n_saved_quartets_3p1f += zzcand.check_valid_cand_os_3p1f()
             n_saved_quartets_2p2f += zzcand.check_valid_cand_os_2p2f()
@@ -783,18 +839,16 @@ def select_evts_2P2F_3P1F_multiquartets(
             if verbose:
                 print(
                     f"** ZZ cand {ndx_zzcand} passed OS Method Sel: **\n"
-                    f"   CR {cr_str.upper()}: {evt_id}, (row {evt_num})"
+                    f"   CR {cr_str}: {evt_id}, (row {evt_num})"
                     )
 
             if found_matching_lep_Hindex:
                 # Matching quartet info has been saved. Done with event.
+                # Current zzcand is retained for further analysis.
                 break
 
-            if keep_first_quartet:
-                warnings.warn(
-                    f'Keeping only the first (arbitrary!) '
-                    f'lepton quartet found in the event.'
-                    )
+            if keep_one_quartet and not match_lep_Hindex:
+                # Save first valid ZZ cand.
                 break
         # End loop over quartets.
 
@@ -802,8 +856,8 @@ def select_evts_2P2F_3P1F_multiquartets(
         evt_info_d["n_sel_redbkg_evts"] += 1
         evt_info_d["n_saved_quartets_3p1f"] += n_saved_quartets_3p1f
         evt_info_d["n_saved_quartets_2p2f"] += n_saved_quartets_2p2f
-        evt_info_d["n_saved_evts_3p1f"] += 1 if overall_evt_label == '' zzcand.check_valid_cand_os_3p1f()
-        evt_info_d["n_saved_evts_2p2f"] += zzcand.check_valid_cand_os_2p2f()
+        evt_info_d["n_saved_evts_3p1f"] += (overall_evt_label == '3P1F')
+        evt_info_d["n_saved_evts_2p2f"] += (overall_evt_label == '2P2F')
 
         # if fill_hists:
         #     d_hists[name][cr]["mass4l"].Fill(tree.mass4l, new_weight)

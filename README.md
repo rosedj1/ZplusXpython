@@ -18,6 +18,7 @@ This repo contains scripts to:
       - `sidequests/scripts/print_commonanduniqueevts_jakevsbbf.py`
       - `sidequests/scripts/compare_jakesel_bbfsel.py`
       - `sidequests/scripts/run_bbfana_using_runlumievent.py`
+      - `sidequests/scripts/count_bbf_or_jake_events.py`
 
    Run Sequentially:
 

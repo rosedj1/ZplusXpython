@@ -1,6 +1,6 @@
 import numpy as np
 # Local imports.
-from Utils_Python.printing import print_header_message
+from Utils_Python.printing import announce
 from sidequests.classes.cjlstflag import CjlstFlag
 
 def is_tight_cjlst_lep(lep_pdgID, lep_is_tightID, lep_iso):
@@ -44,7 +44,7 @@ def print_evt_info_cjlst(tree):
     #             # Branch doesn't exist.
     #             pass
 
-    print_header_message("Analyzer: CJLST")
+    announce("Analyzer: CJLST")
 
     raise RuntimeWarning(
         f"Modify this func to include proper handling of tight CJLST lep\n"
