@@ -3,8 +3,10 @@ from classes.zzpair import (
     get_ZZcands_from_myleps_OSmethod
     )
 from classes.mylepton import (
-    find_quartets_2pass2fail,
-    find_quartets_3pass1fail,
+    # find_quartets_2pass2fail,
+    # find_quartets_3pass1fail,
+    make_all_quartets_3p1f,
+    make_all_quartets_2p2f
 )
 
 class QuartetCategorizer:
@@ -23,6 +25,7 @@ class QuartetCategorizer:
         smartcut_ZapassesZ1sel=False,
         run=None, lumi=None, event=None, entry=None,
         stop_when_found_3p1f=True,
+        allow_z1_failing_leps=True
         ):
         """Make categorizer with sorted MyLepton quartets for one event.
 
@@ -51,11 +54,14 @@ class QuartetCategorizer:
             stop_when_found_3p1f (bool, optional):
                 If True, if at least one valid 3P1F ZZ candidate was found,
                 do not look for any 2P2F candidates. Defaults to True.
+            allow_z1_failing_leps (bool, optional):
+                If True,
         """
         # Categorize mylep_ls into OS Method 3P1F and 2P2F quartets.
         self.ls_valid_ZZcands_OS_3p1f = \
             self.get_best_ZZcand_per_quart(
                 mylep_ls, cr='3P1F',
+                allow_z1_failing_leps=allow_z1_failing_leps,
                 verbose=verbose,
                 explain_skipevent=explain_skipevent,
                 smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
@@ -70,6 +76,7 @@ class QuartetCategorizer:
             self.ls_valid_ZZcands_OS_2p2f = \
                 self.get_best_ZZcand_per_quart(
                     mylep_ls, cr='2P2F',
+                    allow_z1_failing_leps=allow_z1_failing_leps,
                     verbose=verbose,
                     explain_skipevent=explain_skipevent,
                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
@@ -82,6 +89,7 @@ class QuartetCategorizer:
     def get_best_ZZcand_per_quart(
         self,
         mylep_ls, cr,
+        allow_z1_failing_leps=True,
         verbose=False, explain_skipevent=False,
         smartcut_ZapassesZ1sel=False,
         run=None, lumi=None, event=None, entry=None
@@ -111,27 +119,28 @@ class QuartetCategorizer:
         """
         cr = cr.upper()
         if cr == '3P1F':
-            ls_quartets = find_quartets_3pass1fail(mylep_ls)
+            ls_quartets = make_all_quartets_3p1f(mylep_ls)
         elif cr == '2P2F':
-            ls_quartets = find_quartets_2pass2fail(mylep_ls)
+            ls_quartets = make_all_quartets_2p2f(mylep_ls)
 
-        n_tot_combos = len(ls_quartets)
-        if n_tot_combos == 0:
+        n_tot_quart = len(ls_quartets)
+        if n_tot_quart == 0:
             # No chance to make quartets.
             return []
             
         if verbose:
-            print(f"  Num of {cr} quartets to analyze: {n_tot_combos}")
+            print(f"  Num of {cr} quartets to analyze: {n_tot_quart}")
         # List to hold valid ZZ cands that pass OS Method sel.
         ls_valid_zz_cand_OS = []
-        for n_quartet, quart in enumerate(ls_quartets):
+        for n_quart, quart in enumerate(ls_quartets, 1):
             if verbose:
-                announce(f"Analyzing quartet #{n_quartet}")
+                announce(f"Analyzing quartet #{n_quart}/{n_tot_quart}")
                 lep_ndcs = [mylep.ndx_lepvec for mylep in quart]
                 print(f"  Lepton indices: {lep_ndcs}")
             # For this quartet, use OS Method logic to pick best ZZ cand.
             ls_zzcand = get_ZZcands_from_myleps_OSmethod(
                     quart,
+                    allow_z1_failing_leps=allow_z1_failing_leps,
                     verbose=verbose, explain_skipevent=explain_skipevent,
                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
                     run=run, lumi=lumi, event=event, entry=entry

@@ -1,4 +1,5 @@
 from ROOT import Math
+from itertools import combinations
 from Utils_Python.Utils_Physics import calc_dphi, calc_dR
 class MyLepton:
     
@@ -252,64 +253,121 @@ def has_3p1f_leps(mylep_ls):
         return False
     return True
 
-def has_atleastone_2p2f_comb(mylep_ls):
-    """Return True if AT LEAST 2 leps are tight and AT LEAST 2 are loose."""
-    if get_n_myleps_passing(mylep_ls) < 2:
-        return False
-    if get_n_myleps_failing(mylep_ls) < 2:
-        return False
-    return True
+# def has_atleastone_2p2f_comb(mylep_ls):
+#     """Return True if AT LEAST 2 leps are tight and AT LEAST 2 are loose."""
+#     if get_n_myleps_passing(mylep_ls) < 2:
+#         return False
+#     if get_n_myleps_failing(mylep_ls) < 2:
+#         return False
+#     return True
 
-def has_atleastone_3p1f_comb(mylep_ls):
-    """Return True if AT LEAST 3 leps are tight and AT LEAST 1 is loose."""
-    if get_n_myleps_passing(mylep_ls) < 3:
-        return False
-    if get_n_myleps_failing(mylep_ls) < 1:
-        return False
-    return True
+# def has_atleastone_3p1f_comb(mylep_ls):
+#     """Return True if AT LEAST 3 leps are tight and AT LEAST 1 is loose."""
+#     if get_n_myleps_passing(mylep_ls) < 3:
+#         return False
+#     if get_n_myleps_failing(mylep_ls) < 1:
+#         return False
+#     return True
 
-def find_quartets_2pass2fail(mylep_ls):
-    """Return a list of all possible 4-tuples of 2pass2fail MyLeptons.
+# def find_quartets_2pass2fail(mylep_ls):
+#     """Return a list of all possible 4-tuples of 2pass2fail MyLeptons.
     
-    Example:
-        Suppose you have 5 leptons:
-            mu-    mu+    e-     e+     e2+
-            pass   pass   fail   fail   fail (tight selection)
-        Then this ONE event can yield 2 different 2P2F quartets:
-            2P2Fa = mu-  mu+  e-   e+
-            2P2Fb = mu-  mu+  e-   e2+
+#     Example:
+#         Suppose you have 5 leptons:
+#             mu-    mu+    e-     e+     e2+
+#             pass   pass   fail   fail   fail (tight selection)
+#         Then this ONE event can yield 2 different 2P2F quartets:
+#             2P2Fa = mu-  mu+  e-   e+
+#             2P2Fb = mu-  mu+  e-   e2+
         
-    Returns:
-        list of 4-tuples:
-            Each 4-tuple contains 2 leps passing tight sel and 2 failing.
-            Returns an empty list if no 2P2F quartets are found.
+#     Returns:
+#         list of 4-tuples:
+#             Each 4-tuple contains 2 leps passing tight sel and 2 failing.
+#             Returns an empty list if no 2P2F quartets are found.
 
-    Will return (each object is a MyLepton):
-    [
-        (mu-, mu+, e-, e+),
-        (mu-, mu+, e-, e2+),
-        ...
-    ]
+#     Will return (each object is a MyLepton):
+#     [
+#         (mu-, mu+, e-, e+),
+#         (mu-, mu+, e-, e2+),
+#         ...
+#     ]
         
+#     NOTE:
+#     - The MyLeptons in `mylep_ls` have already been indexed according to
+#         original order in "lep_kinematic" vectors.
+#     - Leptons passing tight selection are in the first 2 elements.
+#         Failing leptons are in the last 2 elements.
+#     """
+#     raise RuntimeError(
+#         f"Function has been superceded by make_all_quartets_2p2f."
+#         )
+#     fourlep_combos_2pass2fail = []
+#     pair_ls_tight = find_all_pairs_leps_tight(mylep_ls)
+#     pair_ls_loose = find_all_pairs_leps_loose(mylep_ls)
+#     for tpair in pair_ls_tight:
+#         for lpair in pair_ls_loose:
+#             fourlep_tup = tuple(tpair + lpair)
+#             # After appending to list: [(2P2F_a), (2P2F_b), ... ].
+#             fourlep_combos_2pass2fail.append(fourlep_tup)
+#     return fourlep_combos_2pass2fail
+
+# def find_quartets_3pass1fail(mylep_ls):
+#     """Return a list of all possible 4-tuples of 3pass1fail MyLeptons.
+    
+#     Args:
+#         mylep_ls (list): Contains MyLepton objects.
+#     Returns:
+#         list of 4-tuples:
+#             Each 4-tuple contains 3 leps passing tight sel and 1 failing.
+#             Returns an empty list if no 3P1F quartets are found.
+#     """
+#     raise RuntimeError(
+#         f"Function has been superceded by make_all_quartets_3p1f."
+#         )
+#     myleps_combos_3pass1fail = []
+#     if len(mylep_ls) < 4:
+#         return myleps_combos_3pass1fail
+#     # Make all possible triplets of tight leptons:
+#     triple_tight_leps = find_all_triplets_leps_tight(mylep_ls)
+#     # Join each triplet with each loose lepton:
+#     for triplet in triple_tight_leps:
+#         # NOTE: if triple_tight_leps is empty, then for loop is skipped.
+#         for lep in mylep_ls:
+#             if not lep.is_loose:
+#                 continue
+#             fourlep_tup = triplet + tuple([lep])
+#             myleps_combos_3pass1fail.append(fourlep_tup)
+#     return myleps_combos_3pass1fail
+
+# def find_combos_4tight(mylep_ls):
+#     """Return a list of all possible 4-tuples of 4tight MyLeptons.
+    
+#     FIXME: Finish function.
+
+#     Args:
+#         mylep_ls (list): Contains MyLepton objects.
+#     """
+#     raise RuntimeError("Finish this function!")
+#     assert len(mylep_ls) >= 4
+#     myleps_combos_4loose = []
+#     # Make all possible triplets of tight leptons:
+#     triple_tight_leps = find_all_triplets_leps_tight(mylep_ls)
+#     # Join each triplet with each loose lepton:
+#     for triplet in triple_tight_leps:
+#         for lep in mylep_ls:
+#             if not lep.is_loose:
+#                 continue
+#             fourlep_tup = triplet + tuple([lep])
+#             myleps_combos_4loose.append(fourlep_tup)
+#     return myleps_combos_4loose
+
+def make_all_quartets_3p1f(mylep_ls):
+    """Return a list of all 4-tuple combinations of 3P1F MyLeptons.
+    
     NOTE:
-    - The MyLeptons in `mylep_ls` have already been indexed according to
-        original order in "lep_kinematic" vectors.
-    - Leptons passing tight selection are in the first 2 elements.
-        Failing leptons are in the last 2 elements.
-    """
-    fourlep_combos_2pass2fail = []
-    pair_ls_tight = find_all_pairs_leps_tight(mylep_ls)
-    pair_ls_loose = find_all_pairs_leps_loose(mylep_ls)
-    for tpair in pair_ls_tight:
-        for lpair in pair_ls_loose:
-            fourlep_tup = tuple(tpair + lpair)
-            # After appending to list: [(2P2F_a), (2P2F_b), ... ].
-            fourlep_combos_2pass2fail.append(fourlep_tup)
-    return fourlep_combos_2pass2fail
+        - Does not consider any Z or ZZ selections.
+        - Not permutations!
 
-def find_quartets_3pass1fail(mylep_ls):
-    """Return a list of all possible 4-tuples of 3pass1fail MyLeptons.
-    
     Args:
         mylep_ls (list): Contains MyLepton objects.
     Returns:
@@ -317,41 +375,29 @@ def find_quartets_3pass1fail(mylep_ls):
             Each 4-tuple contains 3 leps passing tight sel and 1 failing.
             Returns an empty list if no 3P1F quartets are found.
     """
-    assert len(mylep_ls) >= 4
-    myleps_combos_3pass1fail = []
-    # Make all possible triplets of tight leptons:
-    triple_tight_leps = find_all_triplets_leps_tight(mylep_ls)
-    # Join each triplet with each loose lepton:
-    for triplet in triple_tight_leps:
-        # NOTE: if triple_tight_leps is empty, then for loop is skipped.
-        for lep in mylep_ls:
-            if not lep.is_loose:
-                continue
-            fourlep_tup = triplet + tuple([lep])
-            myleps_combos_3pass1fail.append(fourlep_tup)
-    return myleps_combos_3pass1fail
+    if len(mylep_ls) < 4:
+        return []
+    combos = list(combinations(mylep_ls, r=4))
+    return [tup for tup in combos if has_3p1f_leps(tup)]
 
-def find_combos_4tight(mylep_ls):
-    """Return a list of all possible 4-tuples of 4tight MyLeptons.
+def make_all_quartets_2p2f(mylep_ls):
+    """Return a list of all 4-tuple combinations of 2P2F MyLeptons.
     
-    FIXME: Finish function.
+    NOTE:
+        - Does not consider any Z or ZZ selections.
+        - Not permutations!
 
     Args:
         mylep_ls (list): Contains MyLepton objects.
+    Returns:
+        list of 4-tuples:
+            Each 4-tuple contains 2 leps passing tight sel and 2 failing.
+            Returns an empty list if no 2P2F quartets are found.
     """
-    raise RuntimeError("Finish this function!")
-    assert len(mylep_ls) >= 4
-    myleps_combos_4loose = []
-    # Make all possible triplets of tight leptons:
-    triple_tight_leps = find_all_triplets_leps_tight(mylep_ls)
-    # Join each triplet with each loose lepton:
-    for triplet in triple_tight_leps:
-        for lep in mylep_ls:
-            if not lep.is_loose:
-                continue
-            fourlep_tup = triplet + tuple([lep])
-            myleps_combos_4loose.append(fourlep_tup)
-    return myleps_combos_4loose
+    if len(mylep_ls) < 4:
+        return []
+    combos = list(combinations(mylep_ls, r=4))
+    return [tup for tup in combos if has_2p2f_leps(tup)]
 
 def find_all_triplets_leps_tight(mylep_ls, debug=False):
     """Return a list of all possible 3-tup of tight MyLeptons."""

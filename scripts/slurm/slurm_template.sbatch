@@ -6,8 +6,8 @@
 #SBATCH --mail-user=rosedj1@ufl.edu
 #SBATCH --time=08:00:00
 #SBATCH --account=avery
-#SBATCH --qos=avery
-#SBATCH --mem=64gb
+#SBATCH --qos=avery-b
+#SBATCH --mem=16gb
 #SBATCH --partition=bigmem
 #SBATCH --nodes=1
 
@@ -26,6 +26,7 @@ export X509_USER_PROXY=/cmsuf/data/store/user/t2/users/rosedj1/myproxy
 export X509_CERT_DIR=/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client/certificates
 
 # Code here.
+
 
 err_code=$?
 if [ ${err_code} -eq 0 ]; then

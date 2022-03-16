@@ -1,3 +1,4 @@
+from itertools import permutations
 from classes.mylepton import (check_leps_separated_in_DeltaR,
                               check_leps_pass_leadsublead_pTcuts,
                               leps_pass_lowmass_dilep_res,
@@ -47,24 +48,22 @@ class ZZPair:
         self.explain_skipevent = explain_skipevent
         self.ndx_in_zzpair_ls = None  # Will be assigned when forming ZZPairs.
         self.smartcut_ZapassesZ1sel = smartcut_ZapassesZ1sel
-        self.valid_cand_os_method = None # Set after passes_os_method_sel().
+        self.valid_cand_osmethod = None # After passes_redbkg_osmethod_sel().
 
     def get_m4l(self):
         """Return the m(4l) of this ZZPair."""
         return self.get_LorentzVector().M()
 
-    def passes_os_method_sel(self):
+    def passes_redbkg_osmethod_sel(self, allow_z1_failing_leps=True):
         """Return True if this ZZ passes OS Method selections.
-        
+
         NOTE: If ZZ does pass, then it is a valid OS Method ZZ cand.
-        
+
         Step 1: Check that Z_fir and Z_sec have no overlapping leptons.
         
         Step 2: See if Z_fir is a valid Z1 candidate.
-        - Z1 must be built from 2 tight leptons.
+        - Z1 MAY be built from 2 tight leptons.
         - m(Z1) > 40 GeV.
-        - If Z_fir and Z_sec both have only tight leptons, then whichever is
-          closer to m(Z_PDG) is Z1.
         
         Step 3: Kinematic selections.
         - Ghost removal: All 4 leptons must have DeltaR > 0.02.
@@ -79,6 +78,11 @@ class ZZPair:
             - If Za (new possible Z1) is closer to PDG mass than old Z1,
               and if m(Zb) > 12 GeV, then this whole ZZ pair FAILS smart cut.
         - m(4l) > 70 GeV.
+
+        Args:
+            allow_z1_failing_leps (bool, optional):
+                If True, allow Z1 to be built from 0, 1, or 2 leptons failing
+                tight selection.
         """
         skip_msg_prefix = f"Invalid ZZ cand (#{self.ndx_in_zzpair_ls})"
         # NOTE: Doing m(4l) cut first since it is an efficient cut.
@@ -86,7 +90,7 @@ class ZZPair:
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Failed m(4l) > 70 GeV.")
                 if self.verbose: self.print_info()
-            self.valid_cand_os_method = False
+            self.valid_cand_osmethod = False
             return False
         
         # Step 1. Should already be taken into account, but just in case.
@@ -94,17 +98,19 @@ class ZZPair:
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Z's have overlapping leptons.")
                 if self.verbose: self.print_info()
-            self.valid_cand_os_method = False
+            self.valid_cand_osmethod = False
             return False
         
         # Step 2.
-        if not self.z_fir.passes_z1_kinematic_selec():
+        if not self.z_fir.passes_z1_kinematic_selec(
+                allow_z1_failing_leps=allow_z1_failing_leps
+                ):
             if self.explain_skipevent:
                 print(
                     f"  {skip_msg_prefix}: z_fir does not pass Z1 selections."
                 )
                 if self.verbose: self.print_info()
-            self.valid_cand_os_method = False
+            self.valid_cand_osmethod = False
             return False
         # Check if Z2 also comes from tight leptons.
         # If so, make sure m(Z1) is closer to PDG mass.
@@ -116,7 +122,7 @@ class ZZPair:
                         f"m(Z2) closer to PDG than m(Z1) is."
                         )
                     if self.verbose: self.print_info()
-                self.valid_cand_os_method = False
+                self.valid_cand_osmethod = False
                 return False
         
         # Step 3.
@@ -125,44 +131,57 @@ class ZZPair:
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Leptons not separated in dR.")
                 if self.verbose: self.print_info()
-            self.valid_cand_os_method = False
+            self.valid_cand_osmethod = False
             return False
         if not check_leps_pass_leadsublead_pTcuts(mylep_ls):
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Leptons fail lead/sublead cuts.")
                 if self.verbose: self.print_info()
-            self.valid_cand_os_method = False
+            self.valid_cand_osmethod = False
             return False
         if not leps_pass_lowmass_dilep_res(mylep_ls, min_mass=4):
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Low-mass dilep resonance found.")
                 if self.verbose: self.print_info()
-            self.valid_cand_os_method = False
+            self.valid_cand_osmethod = False
             return False
         if not self.passes_smart_cut():
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: Failed smart cut.")
                 if self.verbose: self.print_info()
-            self.valid_cand_os_method = False
+            self.valid_cand_osmethod = False
             return False
 
-        self.valid_cand_os_method = True
+        # Good redbkg ZZ candidate!
+        self.valid_cand_osmethod = True
         return True
         
     def check_valid_cand_os_3p1f(self):
         """Return True if ZZ cand passed OS Method sel and is 3P1F."""
         n_fail = self.get_num_failing_leps()
-        return self.valid_cand_os_method and (n_fail == 1)
+        return self.valid_cand_osmethod and (n_fail == 1)
 
     def check_valid_cand_os_2p2f(self):
         """Return True if ZZ cand passed OS Method sel and is 2P2F."""
         n_fail = self.get_num_failing_leps()
-        return self.valid_cand_os_method and (n_fail == 2)
+        return self.valid_cand_osmethod and (n_fail == 2)
 
     def get_mylep_ls(self):
         """Return a list of all myleps that built this ZZPair."""
         return self.z_fir.get_mylep_ls() + self.z_sec.get_mylep_ls()
 
+    def get_mylep_indices(self, in_pT_order=False):
+        """Return a list of 4 indices: [z1_lep1, z1_lep2, z2_lep1, z2_lep2].
+
+        Args:
+            in_pT_order (bool, optional):
+                If True, then each Z will have its lepton pTs sorted.
+                So the first 2 elements will still be Z1's leps
+                and the last 2 elements will still be Z2's leps.
+        """
+        return self.z_fir.get_mylep_indices(in_pT_order=in_pT_order) + \
+                self.z_sec.get_mylep_indices(in_pT_order=in_pT_order)
+        
     def get_LorentzVector(self):
         """Return a Lorentz vector version of this ZZ candidate."""
         return self.z_fir.get_LorentzVector() + self.z_sec.get_LorentzVector()
@@ -186,7 +205,7 @@ class ZZPair:
             zazb = self.build_zazb_pair()
             # Is m(Za) closer to m(Z_PDG) than m(Z1) is?
             # NOTE: BBF doesn't check if Za has tight leptons!
-            # TODO: Check if CJLST looks for Za built with tight leptons.
+            # TODO: Check if HIG-19-001 looks for Za built with tight leptons.
             # Now back up check Z1 check and lepton kinematics.
             # ...lepton kinematics have already been checked.
             pdg_dist_za = zazb.z_fir.get_distance_from_PDG_mass()
@@ -203,7 +222,7 @@ class ZZPair:
                     if not zazb.z_fir.passes_z1_kinematic_selec():
                         # RAISE ALL HELL.
                         print(
-                            f"CJLST goofed, y'all!\n"
+                            f"HIG-19-001 goofed, y'all!\n"
                             f"ZaZb DID look better than Z1Z2, except Za "
                             f"is not a valid Z1 candidate!"
                         )
@@ -284,11 +303,22 @@ class ZZPair:
                             other_zz.z_fir.get_mylep_indices() +
                             other_zz.z_sec.get_mylep_indices()
                             )
-        err_msg = "ZZ has overlapping leptons!"
-        assert len(my_lep_idxs) == 4, err_msg
-        assert len(other_lep_idxs) == 4, err_msg
-        n_overlap_leps = (my_lep_idxs & other_lep_idxs)
-        return True if len(n_overlap_leps) == 4 else False
+        # err_msg = "ZZ has overlapping leptons!"
+        # assert len(my_lep_idxs) == 4, err_msg
+        # assert len(other_lep_idxs) == 4, err_msg
+        # overlapping_leps = (my_lep_idxs & other_lep_idxs)
+        # return True if len(overlapping_leps) == 4 else False
+        return (my_lep_idxs == other_lep_idxs)
+
+    def has_same_z1z2(self, other_zz):
+        """Return True if other_zz has the same Z1 and Z2 as this ZZ."""
+        my_lep_idxs_z1 = set(self.z_fir.get_mylep_indices())
+        my_lep_idxs_z2 = set(self.z_sec.get_mylep_indices())
+        other_lep_idxs_z1 = set(other_zz.z_fir.get_mylep_indices())
+        other_lep_idxs_z2 = set(other_zz.z_sec.get_mylep_indices())
+        samez1 = (my_lep_idxs_z1 == other_lep_idxs_z1)
+        samez2 = (my_lep_idxs_z2 == other_lep_idxs_z2)
+        return (samez1 and samez2)
     
     def get_num_failing_leps(self):
         """Return the number of failing leptons in this ZZ pair.
@@ -322,90 +352,54 @@ class ZZPair:
                 f"Valid OS Method ZZ cand has {n_fail} leptons "
                 f"failing tight selection.\n  Is it truly valid?"
                 )
-        # """Return str corresponding to OS method control region.
-        
-        # Returns either '3P1F' or '2P2F'.
-        # """
-        # n_fail = self.get_num_failing_leps()
-        # if n_fail == 1:
-        #     return '3P1F'
-        # elif n_fail == 2:
-        #     return '2P2F':
-        # else:
-        #     raise ValueError(
-        #         f"ZZ pairing has {n_fail} leptons "
-        #         f"failing tight selection.\n  Is it truly valid?"
-        #         )
 # End of ZZPair.
     
-def make_all_zz_pairs(zcand_ls, explain_skipevent=False, smartcut_ZapassesZ1sel=False):
-    """Return a list of all possible ZZPair objects.
+def make_all_zz_pairs(
+    zcand_ls,
+    verbose=False, explain_skipevent=False,
+    smartcut_ZapassesZ1sel=False
+    ):
+    """Return a list of all ZZPair objects, skipping Z's with common leps.
     
     Notes:
-    - This accounts for ALL possible ZZ pairs:
+    - Build all permutations of ZZ pairs:
         So if you had Z cands (Zx, Zy) then it would form:
             (Zx, Zy) AND (Zy, Zx).
-    - Skip pairing a Z with itself.
     - Skip pairing two Z's if they share common leptons.
-    - This function does not impose "literature" selections on ZZ pairs.
-
-    Args:
-        smartcut_ZapassesZ1sel (bool, optional):
-            In the smart cut, the literature essentially says that if a Za
-            looks like a more on-shell Z boson than the Z1 AND if the Zb is a
-            low mass di-lep resonance, then veto the whole ZZ candidate.
-            However, literature doesn't check for Za passing Z1 selections!
-            Set this to True if you require Za to pass Z1 selections.
-            Default is False.
+    - This function does not impose any selections on ZZPairs.
+    - Stores index of ZZPair 
     """
-    zz_pair_ndx = 0
-    zz_pair_ls = []
-    for ndx1, z1 in enumerate(zcand_ls):
-        for ndx2, z2 in enumerate(zcand_ls):
-            if ndx1 == ndx2:
-                # Skip if they are the same Z.
-                continue
-            if z1.has_overlapping_leps(z2):
-                if explain_skipevent:
-                    print(
-                        f"  Z's contain overlapping leptons:\n"
-                        f"  z #{z1.ndx_zcand_ls}: {z1.get_mylep_indices()}, "
-                        f"  z #{z2.ndx_zcand_ls}: {z2.get_mylep_indices()}"
-                        )
-                # Skip if they share common leptons.
-                continue
-            # Build ZZPair with no selections imposed.
-            zz_pair = ZZPair(
-                z_fir=z1, z_sec=z2,
-                kin_discrim=None, explain_skipevent=explain_skipevent)
-            zz_pair.ndx_in_zzpair_ls = zz_pair_ndx
-            zz_pair_ls.extend((zz_pair,))
-            zz_pair_ndx += 1
-    return zz_pair_ls
-
-def make_zz_pairs(zcand_ls):
-    """Return a list of ALL possible non-overlapping ZZPair objects.
-
-    Notes:
-    - A non-overlapping ZZ pair means that they share no common leptons.
-    - This function does not impose any selections on ZZ candidates.
-    """
-    zz_pair_ls = []
-    for ndx1, z1 in enumerate(zcand_ls[:-1]):
-        start_ndx2 = ndx1 + 1
-        for ndx2, z2 in enumerate(zcand_ls[start_ndx2:]):
-            if z1.has_overlapping_leps(z2):
-                continue
-            zz_cand = ZZCandidate(z1, z2, kin_discrim=None)  # No selections.
-            zz_pair_ls.extend((zz_cand,))
+    if verbose:
+        print("  Making all ZZ permutations.")
+    # zcand_ls contains unique MyZbosons.
+    ls_zz_permut = list(permutations(zcand_ls, 2))
+    for ndx, (z1, z2) in enumerate(ls_zz_permut):
+        if z1.has_overlapping_leps(z2):
+            # Skip if they share common leptons.
+            if explain_skipevent:
+                print(
+                    f"  Z's contain overlapping leptons:"
+                    f" z#{z1.ndx_zcand_ls}{z1.get_mylep_indices()}, "
+                    f" z#{z2.ndx_zcand_ls}{z2.get_mylep_indices()}"
+                    )
+            continue
+        # Build ZZPair with no selections imposed.
+        zz_pair = ZZPair(
+            z_fir=z1, z_sec=z2,
+            kin_discrim=None, explain_skipevent=explain_skipevent
+            )
+        zz_pair.ndx_in_zzpair_ls = ndx
+        zz_pair_ls.extend((zz_pair,))
+    if verbose:
+        print(f"  Made {len(zz_pair_ls)} ZZ permutations.")
     return zz_pair_ls
 
 def select_better_zzcand(zzcand1, zzcand2, verbose=False):
     """Return better ZZPair (candidate) out of two.
     
     If the two ZZs share same leptons, choose the cand whose m(Z1) is
-    closer to the m(Z_PDG). --- WARNING though! Should check that winning Z1
-    still passes Z1 selections!!! CJLST and BBF do not do this.
+    closer to the m(Z_PDG). --- WARNING! Should check that winning Z1
+    still passes Z1 selections!!! CJLST and xBF do not do this.
     UPDATE:
         After running over millions of events,
         The second ZZ candidate is sometimes selected over the first.
@@ -454,35 +448,87 @@ def select_better_zzcand(zzcand1, zzcand2, verbose=False):
         zzcand2.print_info()
     return winning_zz
 
-def get_all_ZZcands_passing_cjlst(zz_pair_ls):
-    """Return a list subset of zz_pair_ls of the ZZs passing CJLST cuts.
-        
+def get_zz_passing_redbkg_osmethod_sel(
+    zz_pair_ls, allow_z1_failing_leps=True
+    ):
+    """Return a sub-list of `zz_pair_ls` with the ZZs passing OS Method cuts.
+    
     If no ZZ pairs pass selections, then return an empty list.
     Implements CJLST ZZ selection.
     
-    zz_pair_ls contains ZZPair objects.
-    
     NOTE:
-    - Be sure that zz_pair_ls provides ALL combinations ZZ pairings.
+        - Be sure that zz_pair_ls provides ALL permutations of ZZ pairings.
         E.g. If you have three Zs, then zz_pair_ls should have 6 ZZPair objs:
-        (Z1, Z2), (Z1, Z3),
-        (Z2, Z1), (Z2, Z3),
-        (Z3, Z1), (Z3, Z2)
+            (Z1, Z2),
+            (Z1, Z3),
+            (Z2, Z1),
+            (Z2, Z3),
+            (Z3, Z1),
+            (Z3, Z2)
+
+    Args:
+        zz_pair_ls (list): Contains ZZPair objects to test.
+        allow_z1_failing_leps (bool, optional):
+            TODO: Get docstring entry from other function.
+
+    - The reducible background event selection mentioned in HIG-19-001 has a
+        few suboptimal parts of its logic:
+        - Does not consider Multiple Quartets:
+            Different lepton quartets per event can contribute to the RBE.
+            So if there are 3 leptons passing tight sel and 2 failing, then
+            there are at least two 3P1F quartets that could be built.
+            Both should contribute to the RBE.
+        - All ZZ candidates considered:
+            For each quartet in an event, a (possibly different) Z1 is
+            selected, whereas in the current xBF analyzer the BEST Z1 is first
+            chosen among ALL Z candidates and then it is paired with the other
+            Z's one-by-one.
+        - 3P1F priority over 2P2F:
+            If an event has valid 3P1F and 2P2F candidates in an event, then
+            only consider the 3P1F quartets to the RBE. Currently, the xBF
+            analyzer selects the best ZZ candidate based on which has the
+            highest D_kin_bkg. Thus, it sometimes selects a 2P2F quartet over
+            a 3P1F one.
+        - Relaxed Z1 requirement:
+            Z1 can be built from failing leptons which should better estimate
+            ttbar contribution.
+
+    Learn about the HIG-19-001 RedBkg event selection:
+    - AN: AN-19-139v6, p.58.
+    - PAS: HIG-19-001v9, p.12.
+    - Paper: Eur. Phys. J. C (2021) 81:488, p.10.
     """
-    return [zz for zz in zz_pair_ls if zz.passes_os_method_sel()]
+    ls_zzcands = [zz for zz in zz_pair_ls if zz.passes_redbkg_osmethod_sel(
+            allow_z1_failing_leps=allow_z1_failing_leps
+            )
+        ]
+    # Since ZZ permutations are considered, it is possible that
+    # ZxZy passes and ZyZx passes selections - but these are the same ZZ!
+    # So must eliminate any duplicates like this.
+    set_unique_zz = set()
+    for zz in ls_zzcands:
+        if zz.has_same_z1z2()
+        set_unique_zz.add()
 
 def get_ZZcands_from_myleps_OSmethod(
-    mylep_ls, verbose=False, explain_skipevent=False,
+    mylep_ls, allow_z1_failing_leps=True,
+    verbose=False, explain_skipevent=False,
     smartcut_ZapassesZ1sel=False,
     run=None, lumi=None, event=None, entry=None):
-    """Return list of all valid ZZ candidates from `mylep_ls`.
+    """Return list of the best ZZ candidate from `mylep_ls` (a quartet).
     
     NOTE:
     - Imposes Z1, Z2, and ZZ selection criteria.
-    - `mylep_ls` should have exactly 4 leptons (lepton quartet).
+    - `mylep_ls` should have exactly 4 leptons (a quartet).
     - Should just return ONE ZZ candidate (but inside a list).
+    - Returns empty list if no ZZ candidates are found.
 
     Args:
+        TODO: Update below.
+        mylep_ls (list):
+        allow_z1_failing_leps (bool, optional):
+            If True, allow Z1 to be built from 0, 1, or 2 leptons failing
+            tight selection.
         smartcut_ZapassesZ1sel (bool, optional):
             In the smart cut, the literature essentially says that if a Za
             looks like a more on-shell Z boson than the Z1 AND if the Zb is a
@@ -498,7 +544,6 @@ def get_ZZcands_from_myleps_OSmethod(
     assert len(mylep_ls) == 4, "`mylep_ls` must have only 4 leptons."
     empty_ls = []
     # Need 2 tight + 2 loose leps (2P2F) or 3 tight + 1 loose leps (3P1F).
-    # This checks that leptons pass basic kinematic criteria (at least loose).
     if verbose:
         print(f"Event {run}:{lumi}:{event} (entry = {entry})")
     if (not has_2p2f_leps(mylep_ls)) and (not has_3p1f_leps(mylep_ls)):
@@ -510,25 +555,31 @@ def get_ZZcands_from_myleps_OSmethod(
     # 12 < mll < 120 GeV.
     # OSSF leptons.
     # Leptons at least loose.
-    if verbose: print("  Building all Z candidates...")
+    if verbose:
+        print("  Building all Z candidates...")
     zcand_ls = make_all_zcands(
         mylep_ls,
         explain_skipevent=explain_skipevent, verbose=verbose
         )
     n_zcands = len(zcand_ls)
-    if verbose: print(f"  Number of Z candidates: {n_zcands}")
     if n_zcands < 2:
         if verbose or explain_skipevent:
             print(f"  Found fewer than two Z candidates ({n_zcands}).")
         return empty_ls
     
-    # Build all ZZ candidates.
-    if verbose: print("  Making all ZZ candidates.")
-    zz_pair_ls = make_all_zz_pairs(zcand_ls,
-                     explain_skipevent=explain_skipevent,
-                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel)
+    # Build all permutations of ZZ candidates.
+    zz_pair_ls = make_all_zz_pairs(
+        zcand_ls,
+        verbose=verbose,
+        explain_skipevent=explain_skipevent,
+        smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel
+        )
+
     # Implement ZZ cuts.
-    ls_all_passing_zz = get_all_ZZcands_passing_cjlst(zz_pair_ls)
+    ls_all_passing_zz = get_zz_passing_redbkg_osmethod_sel(
+        zz_pair_ls, allow_z1_failing_leps=allow_z1_failing_leps
+        )
+    
     n_zzpairs = len(zz_pair_ls)
     n_zzcands = len(ls_all_passing_zz)
     if verbose:
@@ -536,15 +587,16 @@ def get_ZZcands_from_myleps_OSmethod(
             f"  Made {n_zzpairs} ZZ pairs (pair != candidate).\n"
             f"  Made {n_zzcands} ZZ cands."
             )
-    # Each lepton quartet can provide up to TWO ZZ cands: Z1Z2 and ZaZb.
     # Must decide which ZZ is the best.
     if n_zzcands <= 1:
         # Return either empty list or the only ZZ cand made.
         return ls_all_passing_zz
-    assert n_zzcands < 3, (
-        f"  Houston, we have a problem...\n"
-        f"  Quartet of leptons built {n_zzcands} ZZ cands."
-        )
+    if not allow_z1_failing_leps:
+        # Each lepton quartet can provide up to TWO ZZ cands: Z1Z2 and ZaZb.
+        assert n_zzcands < 3, (
+            f"  Houston, we have a problem...\n"
+            f"  Quartet of leptons built {n_zzcands} ZZ cands."
+            )
     # Found two ZZ cands.
     if verbose:
         print(

@@ -282,6 +282,7 @@ def select_evts_2P2F_3P1F_multiquartets(
     stop_when_found_3p1f=True,
     keep_one_quartet=False,
     use_multiquart_sel=True,
+    allow_z1_failing_leps=True,
     sync_with_xBFAna=False,
     ):
     """Apply RedBkg multi-lepton quartet selection to all events in tree.
@@ -345,6 +346,8 @@ def select_evts_2P2F_3P1F_multiquartets(
         use_multiquart_sel (bool, optional):
             If True, use the updated reducible background event selection
             logic ("multi-quartet").
+        allow_z1_failing_leps (bool, optional):
+            If True, a valid ZZ candidate can have its Z1 contain leptons which fail tight selection.
 
     """
     assert not (use_multiquart_sel and sync_with_xBFAna), (
@@ -361,6 +364,7 @@ def select_evts_2P2F_3P1F_multiquartets(
             f"  recalc_masses = True\n"
             f"  skip_mass4l_lessthan0 = False\n"
             f"  skip_passedFullSelection = True\n"
+            f"  allow_z1_failing_leps = True\n"
             )
         stop_when_found_3p1f = True
         match_lep_Hindex = False
@@ -368,6 +372,7 @@ def select_evts_2P2F_3P1F_multiquartets(
         recalc_masses = True
         skip_mass4l_lessthan0 = False
         skip_passedFullSelection = True
+        allow_z1_failing_leps = True
 
     if sync_with_xBFAna:
         msg = f"sync_with_xBFAna = True. Forcing these bools:"
@@ -598,7 +603,8 @@ def select_evts_2P2F_3P1F_multiquartets(
                 explain_skipevent=explain_skipevent,
                 smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
                 run=run, lumi=lumi, event=event, entry=evt_num,
-                stop_when_found_3p1f=stop_when_found_3p1f
+                stop_when_found_3p1f=stop_when_found_3p1f,
+                allow_z1_failing_leps=allow_z1_failing_leps
                 )
 
         ls_valid_ZZcands_OS = qtcat.ls_valid_ZZcands_OS_3p1f + \

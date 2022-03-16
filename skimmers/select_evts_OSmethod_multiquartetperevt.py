@@ -144,6 +144,7 @@ keep_one_quartet = 0
 recalc_masses = 1
 skip_mass4l_lessthan0 = 0
 skip_passedFullSelection = 1
+allow_z1_failing_leps = 1
 
 smartcut_ZapassesZ1sel = 0  # Literature sets this to False.
 fill_hists = 0
@@ -236,6 +237,7 @@ if __name__ == '__main__':
             stop_when_found_3p1f=stop_when_found_3p1f,
             keep_one_quartet=keep_one_quartet,
             use_multiquart_sel=use_multiquart_sel,
+            allow_z1_failing_leps=allow_z1_failing_leps,
             sync_with_xBFAna=sync_with_xBFAna,
             )
         ls_all_outfiles.append(outfile_root)
