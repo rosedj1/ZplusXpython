@@ -68,74 +68,31 @@ from ROOT import TFile
 from sidequests.funcs.evt_loops import (
     select_evts_2P2F_3P1F_multiquartets
     )
-from sidequests.data.filepaths import (
-    data_2016_UL_ge4lepskim,
-    data_2017_UL, data_2017_UL_ge3lepskim, data_2017_UL_ge4lepskim,
-    data_2018_UL, data_2018_UL_ge3lepskim, data_2018_UL_ge4lepskim,
-    mc_2016_UL_ZZ_ge4lepskim,
-    mc_2017_UL_ZZ, mc_2017_UL_ZZ_ge3lepskim,
-    mc_2018_UL_ZZ, mc_2018_UL_ZZ_ge3lepskim,
-    # infile_filippo_data_2018_fromhpg,
-    # infile_filippo_zz_2018_fromhpg,
-    # mc_2018_zz_hpg,
-    fakerates_WZremoved_2017_UL,
-    fakerates_WZremoved_2018_UL,
-    fakerates_WZremoved_2016_UL_woFSR,
-    fakerates_WZremoved_2017_UL_woFSR,
-    fakerates_WZremoved_2018_UL_woFSR
-    )
 from Utils_Python.Utils_Files import check_overwrite, make_dirs
 from Utils_Python.Commands import shell_cmd
-from constants.analysis_params import (
-    LUMI_INT_2016_UL, LUMI_INT_2017_UL, LUMI_INT_2018_UL,
-    dct_sumgenweights_2016_UL,
-    dct_sumgenweights_2017_UL,
-    dct_sumgenweights_2018_UL,
-    # n_sumgenweights_dataset_dct_jake,
-    # n_sumgenweights_dataset_dct_filippo,
-    dct_xs_jake
-    )
 
 #########################
 #--- User Parameters ---#
 #########################
 # Files to analyze.
 d_nicknames_files = {
-    'Data': data_2016_UL_ge4lepskim,
-    # 'ZZ': mc_2016_UL_ZZ,
-    # 'ZZ': mc_2016_UL_ZZ_ge4lepskim,
-
-    # 'Data': data_2017_UL,
-    # 'Data': data_2017_UL_ge3lepskim,
-    # 'Data': data_2017_UL_ge4lepskim,
-    # 'ZZ': mc_2017_UL_ZZ,
-    # 'ZZ': mc_2017_UL_ZZ_ge3lepskim,
-
-    # 'Data': data_2018_UL,
-    # 'Data': data_2018_UL_ge3lepskim,
-    # 'Data': data_2018_UL_ge4lepskim,
-    # 'ZZ': mc_2018_UL_ZZ,
-    # 'ZZ': mc_2018_UL_ZZ_ge3lepskim,
-
-    # "Data" : infile_filippo_data_2018_fromhpg,
-    # "ZZ" : mc_2018_zz_hpg,
-    # "ZZ" : infile_filippo_zz_2018_fromhpg,
+    "REPLACE_NAME": "REPLACE_FILE",
 }
-year = 2016
-genwgts_dct = dct_sumgenweights_2016_UL
-int_lumi = LUMI_INT_2016_UL
-infile_FR_wz_removed = fakerates_WZremoved_2016_UL_woFSR
-dct_xs = dct_xs_jake
+year = REPLACE_YEAR
+genwgts_dct = REPLACE_DCT_SUMGENWGTS
+int_lumi = REPLACE_LUMI
+infile_FR_wz_removed = "REPLACE_FAKERATE_INFILE"
+dct_xs = REPLACE_DCT_XS
 
 start_at_evt = 0
-break_at_evt = -1  # Use -1 to run over all events.
-print_every = 100_000
+break_at_evt = REPLACE_BREAK_AT  # Use -1 to run over all events.
+print_every = REPLACE_PRINT_EVERY
 explain_skipevent = 0
 
 #=== Bools to control analysis flow. ===#
 # Choose one or the other, or neither.
 sync_with_xBFAna = 0  # If True, will override the bools below.
-use_multiquart_sel = 0
+use_multiquart_sel = 1
 
 #=== Alternatively, fine-tune the analyzer. ===#
 stop_when_found_3p1f = 1  # If a 3P1F ZZ cand is found, don't build 2P2F.
@@ -151,12 +108,12 @@ fill_hists = 0
 hadd_files = 0
 
 # outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/test/verify/"
-outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/"
-outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
+outdir_root = "REPLACE_OUTDIR_ROOTFILES"
+outdir_json = "REPLACE_OUTDIR_JSON"
 # Produces a root file with TTree and hists, and a json file with evtID info.
 # basename gets appended with file nickname:
 # outfile_basename = "osmethodnew_UL_somenegfrs_stopwhenfound3p1f_nomatchlepHindex_multiquart_recalcmasses_noskipmass4llt0_allowz1failleps"
-outfile_basename = "osmethodnew_UL"
+outfile_basename = "REPLACE_PREFIX"
 #=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

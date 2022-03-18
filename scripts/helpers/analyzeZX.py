@@ -358,7 +358,7 @@ def get_fakerate_and_error(
         info = (
             f"  PART in REG region:\n"
             f"    pt_NoFSR={lep_pt:.6f}, "
-            f"eta_NoFSR={lep_eta:.6f} SIGN BOUND gives"
+            f"abs(eta_NoFSR)=abs({lep_eta:.6f}) SIGN BOUND gives"
             f" fakerate=FR +- ERR"
         )
     # Electrons.
@@ -485,7 +485,7 @@ def calc_wgt_3p1f_cr(
         eta_bound_muon=eta_bound_muon,
         verbose=verbose,
         )
-    return (fr / (1-fr))
+    return calc_fr_ratio_3p1f(fr)
 
 def calc_wgt_2p2f_cr(
     fakelep_id1, fakelep_pt1, fakelep_eta1,
@@ -512,7 +512,7 @@ def calc_wgt_2p2f_cr(
                 f_2 = fake rate of lepton 2.
                 Fake rates depend on leptons' pT and eta.
         If in_3P1F=False:
-            Returns the pred contribution TO the 3P1F region:
+            Returns the 2P2F pred contribution to the 3P1F region:
             (f_1 / (1-f_1)) + (f_2 / (1-f_2))
         FIXME:
         * Only works for DATA right now.
@@ -543,9 +543,24 @@ def calc_wgt_2p2f_cr(
         verbose=verbose,
         )
     if in_3P1F:
-        return (fr1 / (1-fr1)) + (fr2 / (1-fr2))
+        return calc_fr_ratio_2p2f_sum(fr1, fr2)
     else:
-        return (fr1 / (1-fr1)) * (fr2 / (1-fr2))
+        return calc_fr_ratio_2p2f_prod(fr1, fr2)
+
+def calc_fr_ratio_3p1f(fr):
+    """Return fr / (1-fr)"""
+    return fr / (1-fr)
+    
+def calc_fr_ratio_2p2f_prod(fr1, fr2):
+    """Return (fr1 / (1-fr1)) * (fr2 / (1-fr2))"""
+    return (fr1 / (1-fr1)) * (fr2 / (1-fr2))
+    
+def calc_fr_ratio_2p2f_sum(fr1, fr2):
+    """Return (fr1 / (1-fr1)) + (fr2 / (1-fr2)).
+    
+    This is the contribution of 2P2F to the 3P1F CR.
+    """
+    return (fr1 / (1-fr1)) + (fr2 / (1-fr2))
 
 def analyzeZX(
     tree, Nickname, outfile_dir, suffix="", overwrite=0, lumi=59700, kinem_ls=[''],

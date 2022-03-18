@@ -1,4 +1,4 @@
-from Utils_ROOT.ROOT_classes import make_TH1F, make_TH2F
+from Utils_ROOT.ROOT_classes import make_TH1F
 
 h1_nleps_perevent = make_TH1F(internal_name="h1_nleps_perevent", title=None, n_bins=10, xlabel="Number of leptons per event", x_min=0, x_max=10, ylabel="Number of events", y_min=None, y_max=None, units=None)
 

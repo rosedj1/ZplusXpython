@@ -4,12 +4,21 @@ from Utils_Python.printing import announce
 
 class MyZboson:
     
-    def __init__(self, mylep1, mylep2, explain_skipevent=False):
+    def __init__(
+        self, mylep1, mylep2,
+        zleps_in_pT_order=True,
+        explain_skipevent=False
+        ):
         self.mylep1 = mylep1
         self.mylep2 = mylep2
         self.made_from_tight_leps = mylep1.is_tight * mylep2.is_tight
         self.ndx_zcand_ls = None  # Index of this Z in list of Z candidates.
         self.explain_skipevent = explain_skipevent
+
+        lep2pt_gt_lep1pt = (mylep2.lpt_NoFSR > mylep1.lpt_NoFSR)
+        if zleps_in_pT_order and lep2pt_gt_lep1pt:
+            self.mylep1 = mylep2
+            self.mylep2 = mylep1
         
     def get_LorentzVector(self):
         """Return a Lorentz vector version of this Z boson."""
@@ -192,6 +201,7 @@ def makes_valid_zcand(lep1, lep2, wcf_ok=False, verbose=False):
     
 def make_all_zcands(
     mylep_ls,
+    zleps_in_pT_order=True,
     explain_skipevent=False, verbose=False
     ):
     """Return list of valid Z candidates as MyZboson objects.
@@ -216,7 +226,11 @@ def make_all_zcands(
         if not makes_valid_zcand(mylep1, mylep2, verbose=verbose):
             continue
         # Found valid Z candidate.
-        zcand = MyZboson(mylep1, mylep2, explain_skipevent=explain_skipevent)
+        zcand = MyZboson(
+            mylep1, mylep2,
+            zleps_in_pT_order=zleps_in_pT_order,
+            explain_skipevent=explain_skipevent
+            )
         zcand.ndx_zcand_ls = ndx_zvec
         if verbose:
             print(

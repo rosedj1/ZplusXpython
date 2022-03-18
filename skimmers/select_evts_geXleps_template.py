@@ -37,9 +37,9 @@ def make_newtree(tree, n_keep, break_at=-1, print_every=500000):
 
     return new_tree
 
-def select_evts_ge3leps(
+def select_evts_geXleps(
     infile, tree_path, outfile,
-    keep_ge_leps=3, break_at=-1, print_every=500000,
+    keep_ge_leps, break_at=-1, print_every=500000,
     overwrite=False
     ):
 
@@ -67,7 +67,7 @@ def select_evts_ge3leps(
 
 if __name__ == '__main__':
 
-    select_evts_ge3leps(
+    select_evts_geXleps(
         infile=infile, tree_path=tree_path, outfile=outfile, 
         keep_ge_leps=keep_ge_leps, break_at=break_at, print_every=print_every,
         overwrite=overwrite

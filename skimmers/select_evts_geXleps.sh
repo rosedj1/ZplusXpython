@@ -1,14 +1,14 @@
 #!/bin/bash
 #=============================================================================
-# Purpose: Run the Python script `select_evts_geXleps.py` on SLURM.
+# Purpose: Copy and run `select_evts_geXleps_template.py` on SLURM.
 # Syntax: `./<this_script>.sh`
 # Notes: Only used on 1 root file at a time, so 1 SLURM job per root file.
 # Author: Jake Rosenzweig
 # Created: 2022-02-26
-# Updated: 2022-02-27
+# Updated: 2022-03-16 (Happy birthday, Willis!)
 #=============================================================================
-infile_root='root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/ZZTo4L_M125_20165_skimmed.root'
-outfile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge3leps/ZZTo4L_M125_20165_skimmed.root'
+infile_root='root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/DYJetsToLL_M-50_M125_20165_skimmed.root'
+outfile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge3leps/DYJetsToLL_M-50_M125_20165_skimmed.root'
 outdir_logs="/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output"
 
 py_template='/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/select_evts_geXleps_template.py'

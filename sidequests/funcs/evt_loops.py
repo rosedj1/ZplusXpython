@@ -1,5 +1,5 @@
 import warnings
-from ROOT import TFile
+from ROOT import TFile, gROOT
 import numpy as np
 from array import array
 # Local imports.
@@ -9,10 +9,7 @@ from Utils_Python.printing import (
     announce
     )
 from Utils_Python.Utils_Files import save_to_json, check_overwrite
-from classes.zzpair import (
-    # myleps_pass_cjlst_osmethod_selection,
-    get_ZZcands_from_myleps_OSmethod
-    )
+from Utils_ROOT.Printer import CanvasPrinter
 from classes.mylepton import (
     make_filled_mylep_ls,
     get_n_myleps_passing, get_n_myleps_failing, has_2p2f_leps, has_3p1f_leps,
@@ -40,13 +37,16 @@ from sidequests.containers.hists_th1 import (
     h1_zz_n2p2f_combos,
     h1_zz_n3p1f_combos,
     )
-from sidequests.containers.hists_th2 import h2_n3p1fcombos_n2p2fcombos
+from sidequests.containers.hists_th2 import (
+    h2_n3p1fcombos_n2p2fcombos, h2_nfaillepsz1_vs_nfaillepsz2
+    )
 from sidequests.classes.cjlstflag import CjlstFlag
 from scripts.helpers.analyzeZX import (
     get_evt_weight, check_which_Z2_leps_failed,
     retrieve_FR_hists, get_fakerate_and_error_mylep,
     calc_fakerate_up, calc_fakerate_down,
-    calc_wgt_2p2f_cr, calc_wgt_3p1f_cr
+    calc_wgt_2p2f_cr, calc_wgt_3p1f_cr,
+    calc_fr_ratio_2p2f_prod, calc_fr_ratio_2p2f_sum, calc_fr_ratio_3p1f
     )
 from constants.analysis_params import (
     dct_xs_jake, n_sumgenweights_dataset_dct_jake
@@ -84,7 +84,8 @@ def make_evt_info_d():
         "n_saved_quartets_3p1f",
         "n_saved_quartets_2p2f",
         "n_evts_skip_mass4l_le0",
-        "n_quartets_skip_lep_Hindex_mismatch"
+        "n_quartets_skip_lep_Hindex_mismatch",
+        "n_neg_fr",
     )
     return {s : 0 for s in tup}
 
@@ -347,7 +348,8 @@ def select_evts_2P2F_3P1F_multiquartets(
             If True, use the updated reducible background event selection
             logic ("multi-quartet").
         allow_z1_failing_leps (bool, optional):
-            If True, a valid ZZ candidate can have its Z1 contain leptons which fail tight selection.
+            If True, a valid ZZ candidate can have its Z1 contain leptons
+            which fail tight selection.
 
     """
     assert not (use_multiquart_sel and sync_with_xBFAna), (
@@ -384,6 +386,7 @@ def select_evts_2P2F_3P1F_multiquartets(
             f"  skip_mass4l_lessthan0 = True\n"
             f"  skip_passedFullSelection = True\n"
             f"  recalc_masses = False\n"
+            f"  allow_z1_failing_leps = False\n"
             )
         stop_when_found_3p1f = False
         match_lep_Hindex = True
@@ -391,6 +394,7 @@ def select_evts_2P2F_3P1F_multiquartets(
         skip_mass4l_lessthan0 = True
         skip_passedFullSelection = True
         recalc_masses = False
+        allow_z1_failing_leps = False
 
     if keep_one_quartet and not recalc_masses:
         warnings.warn(
@@ -421,7 +425,7 @@ def select_evts_2P2F_3P1F_multiquartets(
                 f"  Saving the first valid ZZ cand arbitrarily!."
                 )
 
-    if fill_hists:
+    if fill_hists and False:
         raise ValueError(f"fill_hists = True, but must review code first.")
         # Prep histograms.
         d_hists = {
@@ -464,16 +468,19 @@ def select_evts_2P2F_3P1F_multiquartets(
     ptr_is3P1F = np.array([0], dtype=int)
     ptr_isData = np.array([0], dtype=int)
     ptr_isMCzz = np.array([0], dtype=int)
-    ptr_fr2_down = array('f', [0.])
-    ptr_fr2 = array('f', [0.])
-    ptr_fr2_up = array('f', [0.])
-    ptr_fr3_down = array('f', [0.])
-    ptr_fr3 = array('f', [0.])
-    ptr_fr3_up = array('f', [0.])
+    ptr_eventWeightFR_2P2Fin3P1F_down = array('f', [0.])
+    ptr_eventWeightFR_2P2Fin3P1F = array('f', [0.])
+    ptr_eventWeightFR_2P2Fin3P1F_up = array('f', [0.])
     ptr_eventWeightFR_down = array('f', [0.])
     ptr_eventWeightFR = array('f', [0.])
     ptr_eventWeightFR_up = array('f', [0.])
     ptr_lep_RedBkgindex = array('i', [0, 0, 0, 0])
+    # ptr_fakerate_down = np.array([0., 0., 0., 0.], dtype=float)
+    # ptr_fakerate = np.array([0., 0., 0., 0.], dtype=float)
+    # ptr_fakerate_up = np.array([0., 0., 0., 0.], dtype=float)
+    ptr_fakerate_down = array('f', [0., 0., 0., 0.])
+    ptr_fakerate = array('f', [0., 0., 0., 0.])
+    ptr_fakerate_up = array('f', [0., 0., 0., 0.])
     ptr_mass4l = array('f', [0.])
     ptr_massZ1 = array('f', [0.])
     ptr_massZ2 = array('f', [0.])
@@ -491,21 +498,17 @@ def select_evts_2P2F_3P1F_multiquartets(
         new_tree.Branch("is3P1F", ptr_is3P1F, "is3P1F/I")
         new_tree.Branch("isData", ptr_isData, "isData/I")
         new_tree.Branch("isMCzz", ptr_isMCzz, "isMCzz/I")
-        new_tree.Branch("fr2_down", ptr_fr2_down, "fr2_down/F")
-        new_tree.Branch("fr2", ptr_fr2, "fr2/F")
-        new_tree.Branch("fr2_up", ptr_fr2_up, "fr2_up/F")
-        new_tree.Branch("fr3_down", ptr_fr3_down, "fr3_down/F")
-        new_tree.Branch("fr3", ptr_fr3, "fr3/F")
-        new_tree.Branch("fr3_up", ptr_fr3_up, "fr3_up/F")
+        new_tree.Branch("eventWeightFR_2P2Fin3P1F_down", ptr_eventWeightFR_2P2Fin3P1F_down, "eventWeightFR_2P2Fin3P1F_down/F")
+        new_tree.Branch("eventWeightFR_2P2Fin3P1F", ptr_eventWeightFR_2P2Fin3P1F, "eventWeightFR_2P2Fin3P1F/F")
+        new_tree.Branch("eventWeightFR_2P2Fin3P1F_up", ptr_eventWeightFR_2P2Fin3P1F_up, "eventWeightFR_2P2Fin3P1F_up/F")
         new_tree.Branch("eventWeightFR_down", ptr_eventWeightFR_down, "eventWeightFR_down/F")
         new_tree.Branch("eventWeightFR", ptr_eventWeightFR, "eventWeightFR/F")
         new_tree.Branch("eventWeightFR_up", ptr_eventWeightFR_up, "eventWeightFR_up/F")
         # Record the indices of the leptons in passing quartet.
-        new_tree.Branch(
-            "lep_RedBkgindex",
-            ptr_lep_RedBkgindex,
-            "lep_RedBkgindex[4]/I"
-            )
+        new_tree.Branch("lep_RedBkgindex", ptr_lep_RedBkgindex, "lep_RedBkgindex[4]/I")
+        new_tree.Branch("fakerate_down", ptr_fakerate_down, "fakerate_down[4]/F")
+        new_tree.Branch("fakerate", ptr_fakerate, "fakerate[4]/F")
+        new_tree.Branch("fakerate_up", ptr_fakerate_up, "fakerate_up[4]/F")
 
         # Modify existing values of branches.
         new_tree.SetBranchAddress("finalState", ptr_finalState)
@@ -560,6 +563,10 @@ def select_evts_2P2F_3P1F_multiquartets(
             continue
 
         if skip_mass4l_lessthan0 and (tree.mass4l <= 0):
+            if explain_skipevent:
+                print_skipevent_msg(
+                    "mass4l <= 0", evt_num, run, lumi, event
+                    )
             evt_info_d["n_evts_skip_mass4l_le0"] += 1
             continue
 
@@ -604,7 +611,8 @@ def select_evts_2P2F_3P1F_multiquartets(
                 smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
                 run=run, lumi=lumi, event=event, entry=evt_num,
                 stop_when_found_3p1f=stop_when_found_3p1f,
-                allow_z1_failing_leps=allow_z1_failing_leps
+                allow_z1_failing_leps=allow_z1_failing_leps,
+                zleps_in_pT_order=True
                 )
 
         ls_valid_ZZcands_OS = qtcat.ls_valid_ZZcands_OS_3p1f + \
@@ -647,6 +655,7 @@ def select_evts_2P2F_3P1F_multiquartets(
             else:
                 raise ValueError(f"cr_str is not in ('3P1F', '2P2F').")
 
+            # Better not be in both CRs.
             assert zzcand.check_valid_cand_os_3p1f() \
                     ^ zzcand.check_valid_cand_os_2p2f()  # xor.
 
@@ -665,8 +674,10 @@ def select_evts_2P2F_3P1F_multiquartets(
 
                 idcs_lepHindex_z1 = lep_Hindex_ls[:2]
                 idcs_lepHindex_z2 = lep_Hindex_ls[2:]
-                idcs_myz1 = zzcand.z_fir.get_mylep_indices()
-                idcs_myz2 = zzcand.z_sec.get_mylep_indices()
+                idcs_myz1 = zzcand.z_fir.get_mylep_indices(in_pT_order=True)
+                idcs_myz2 = zzcand.z_sec.get_mylep_indices(in_pT_order=True)
+                # The 2 leptons per Z don't need to be in the same order. E.g.
+                # Za(lep0, lep4) == Zb(lep4, lep0)
                 # When checking if two sets are equal, order doesn't matter! 
                 same_z1 = (set(idcs_lepHindex_z1) == set(idcs_myz1))
                 same_z2 = (set(idcs_lepHindex_z2) == set(idcs_myz2))
@@ -682,110 +693,140 @@ def select_evts_2P2F_3P1F_multiquartets(
                 dct_xs=dct_xs, Nickname=name, lumi=int_lumi, event=tree,
                 n_dataset_tot=n_dataset_tot, orig_evt_weight=tree.eventWeight
                 )
-            
-            # See which leptons from Z2 failed.
-            n_fail_code = check_which_Z2_leps_failed(zzcand)
 
-            mylep1_fromz1 = zzcand.z_fir.mylep1
-            mylep2_fromz1 = zzcand.z_fir.mylep2
-            mylep1_fromz2 = zzcand.z_sec.mylep1
-            mylep2_fromz2 = zzcand.z_sec.mylep2
-            #=== 3P1F quartet. ===#
-            if n_fail_code == 2:
-                # First lep from Z2 failed.
-                # NOTE: Turns out this will never trigger for OS Method!
-                # This is due to the way that the 3P1F quartets are built.
-                # The 1 failing lepton is always placed as the 4th lepton.
-                # Therefore, fr3 (the 4th lepton) will always be != 0.
-                assert cr_str == '3P1F'
-                assert mylep1_fromz2.is_loose
-                fr2, fr2_err = get_fakerate_and_error_mylep(
-                    mylep1_fromz2,
-                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
-                    verbose=verbose
+            # Calculate fake rates for all leptons.
+            # Leptons passing tight selection have fake rate = 0.
+            ntimes_fr_resettozero = 0
+            arr_all_frs = np.array([])
+            arr_all_frs_down = np.array([])
+            arr_all_frs_up = np.array([])
+            for ct, lep in enumerate(zzcand.get_mylep_ls()):
+                if lep.is_loose:
+                    fr, fr_err = get_fakerate_and_error_mylep(
+                        lep,
+                        h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
+                        verbose=verbose
+                        )
+                    fr_down = fr - fr_err
+                    fr_up = fr + fr_err
+                    if any(x < 0 for x in (fr, fr_down, fr_up)):
+                        print(
+                            f"!!! Negative fake rate found: !!!\n"
+                            f"!!!  fr_down={fr_down:.6f}, "
+                            f" fr={fr:.6f}, fr_up={fr_up:.6f} !!!\n"
+                            f"!!! Reseting to 0 for now !!!"
+                            )
+                        fr = 0
+                        fr_down = 0
+                        fr_up = 0
+                        evt_info_d["n_neg_fr"] += 1
+                        ntimes_fr_resettozero += 1
+                else:
+                    fr, fr_err = 0, 0
+                    fr_down = 0
+                    fr_up = 0
+                # Store values in TTree branch pointers.
+                ptr_fakerate[ct] = fr
+                ptr_fakerate_down[ct] = fr_down
+                ptr_fakerate_up[ct] = fr_up
+                # Also store values for further analysis.
+                arr_all_frs = np.append(arr_all_frs, fr)
+                arr_all_frs_down = np.append(arr_all_frs_down, fr_down)
+                arr_all_frs_up = np.append(arr_all_frs_up, fr_up)
+            
+            #################################
+            #=== Fake rate calculations. ===#
+            #################################
+            # Get nonzero fake rates for event reweighting.
+            array_fr = arr_all_frs[arr_all_frs > 0]
+            array_fr_down = arr_all_frs_down[arr_all_frs_down > 0]
+            array_fr_up = arr_all_frs_up[arr_all_frs_up > 0]
+            if zzcand.check_valid_cand_os_3p1f():
+                try:
+                    assert len(array_fr) == 1, f"array_fr={array_fr}"
+                except AssertionError:
+                    if (ntimes_fr_resettozero == 1) and len(array_fr) == 0:
+                        warnings.warn(
+                            f"3P1F event has 1 FR reset to 0.\n"
+                            f"Would normally throw exception here.\n"
+                            f"Once FRs are corrected, remove this try/except!"
+                            )
+                        array_fr_down = [0]
+                        array_fr = [0]
+                        array_fr_up = [0]
+                    else:
+                        raise ValueError(
+                            f"ntimes_fr_resettozero={ntimes_fr_resettozero}"
+                            )
+                new_weight_down = evt_weight_calcd * calc_fr_ratio_3p1f(*array_fr_down)
+                new_weight      = evt_weight_calcd * calc_fr_ratio_3p1f(*array_fr)
+                new_weight_up   = evt_weight_calcd * calc_fr_ratio_3p1f(*array_fr_up)
+                # The 2P2F contribution in 3P1F CR.
+                new_weight_2p2fin3p1f_down = 0
+                new_weight_2p2fin3p1f = 0
+                new_weight_2p2fin3p1f_up = 0
+            elif zzcand.check_valid_cand_os_2p2f():
+                try:
+                    assert len(array_fr) == 2, (
+                        f"evt_num={evt_num}, evt_id={evt_id}\n"
+                        f"array_fr={array_fr}"
+                        )
+                except AssertionError:
+                    if (ntimes_fr_resettozero == 1):
+                        warnings.warn(
+                            f"2P2F event has 1 FR reset to 0.\n"
+                            f"Would normally throw exception here.\n"
+                            f"Once FRs are corrected, remove this try/except!"
+                            )
+                        array_fr_down = np.append(array_fr_down, 0)
+                        array_fr = np.append(array_fr, 0)
+                        array_fr_up = np.append(array_fr_up, 0)
+                    elif (ntimes_fr_resettozero == 2):
+                        array_fr_down = [0, 0]
+                        array_fr = [0, 0]
+                        array_fr_up = [0, 0]
+                    else:
+                        raise ValueError(
+                            f"ntimes_fr_resettozero={ntimes_fr_resettozero}"
+                            )
+                try:
+                    new_weight_down = evt_weight_calcd * calc_fr_ratio_2p2f_prod(*array_fr_down)
+                    new_weight      = evt_weight_calcd * calc_fr_ratio_2p2f_prod(*array_fr)
+                    new_weight_up   = evt_weight_calcd * calc_fr_ratio_2p2f_prod(*array_fr_up)
+                    # The 2P2F contribution in 3P1F CR.
+                    new_weight_2p2fin3p1f_down = evt_weight_calcd * calc_fr_ratio_2p2f_sum(*array_fr_down)
+                    new_weight_2p2fin3p1f = evt_weight_calcd * calc_fr_ratio_2p2f_sum(*array_fr)
+                    new_weight_2p2fin3p1f_up = evt_weight_calcd * calc_fr_ratio_2p2f_sum(*array_fr_up)
+                except TypeError:
+                    raise TypeError(
+                    f"evt_num={evt_num}, evt_id={evt_id}\n"
+                    f"CR: {cr_str}\n"
+                    f"  array_fr_down: {array_fr_down}\n"
+                    f"  array_fr: {array_fr}\n"
+                    f"  array_fr_up: {array_fr_up}"
                     )
-                fr2_down = calc_fakerate_down(fr2, fr2_err)  # Scale down.
-                fr2_up = calc_fakerate_up(fr2, fr2_err)  # Scale up.
-                fr3 = 0
-                fr3_err = 0
-                fr3_down = 0
-                fr3_up = 0
-                # Use fake rates to calculate new event weight.
-                new_weight_down = (fr2_down / (1-fr2_down)) * evt_weight_calcd
-                new_weight = (fr2 / (1-fr2)) * evt_weight_calcd
-                new_weight_up = (fr2_up / (1-fr2_up)) * evt_weight_calcd
-            elif n_fail_code == 3:
-                # Second lep from Z2 failed.
-                assert cr_str == '3P1F'
-                assert mylep2_fromz2.is_loose
-                fr2 = 0
-                fr2_err = 0
-                fr2_down = 0
-                fr2_up = 0
-                fr3, fr3_err = get_fakerate_and_error_mylep(
-                    mylep2_fromz2,
-                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
-                    verbose=verbose
-                    )
-                fr3_down = calc_fakerate_down(fr3, fr3_err)  # Scale down.
-                fr3_up = calc_fakerate_up(fr3, fr3_err)  # Scale up.
-                # Use fake rates to calculate new event weight.
-                new_weight_down = (fr3_down / (1-fr3_down)) * evt_weight_calcd
-                new_weight = (fr3 / (1-fr3)) * evt_weight_calcd
-                new_weight_up = (fr3_up / (1-fr3_up)) * evt_weight_calcd
-            #=== 2P2F quartet. ===#
-            elif n_fail_code == 5:
-                # Both leps failed.
-                assert cr_str == '2P2F'
-                fr2, fr2_err = get_fakerate_and_error_mylep(
-                    mylep1_fromz2,
-                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
-                    verbose=verbose
-                    )
-                fr3, fr3_err = get_fakerate_and_error_mylep(
-                    mylep2_fromz2,
-                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
-                    verbose=verbose
-                    )
-                fr2_down = calc_fakerate_down(fr2, fr2_err)  # Scale down.
-                fr2_up = calc_fakerate_up(fr2, fr2_err)  # Scale up.
-                fr3_down = calc_fakerate_down(fr3, fr3_err)  # Scale down.
-                fr3_up = calc_fakerate_up(fr3, fr3_err)  # Scale up.
-                # Use fake rates to calculate new event weight.
-                new_weight_down = (fr2_down / (1-fr2_down)) * (fr3_down / (1-fr3_down)) * evt_weight_calcd
-                new_weight = (fr2 / (1-fr2)) * (fr3 / (1-fr3)) * evt_weight_calcd
-                new_weight_up = (fr2_up / (1-fr2_up)) * (fr3_up / (1-fr3_up)) * evt_weight_calcd
+            else:
+                raise ValueError("wut.")
 
             if verbose:
-                announce(f"Valid ZZ cand is {cr_str}")
+                announce(f"Valid ZZ cand is {cr_str}.")
                 print(
-                    f"  This fail code: {n_fail_code}\n"
-                    f"  Z2 lep codes FOR DEBUGGING:\n"
-                    f"  ===========================\n"
-                    f"  0, if neither lep from Z2 failed\n"
-                    f"  2, if first lep from Z2 failed\n"
-                    f"  3, if second lep from Z2 failed\n"
-                    f"  5, if both leps from Z2 failed\n"
-                    f"  ===========================\n"
-                    f"  fr2_down={fr2_down:.6f}, fr3_down={fr3_down:.6f}\n"
-                    f"       fr2={fr2:.6f},      fr3={fr3:.6f}\n"
-                    f"    fr2_up={fr2_up:.6f},   fr3_up={fr3_up:.6f}\n"
-                    f"         tree.eventWeight = {tree.eventWeight:.6f}\n"
-                    f"         evt_weight_calcd = {evt_weight_calcd:.6f}\n"
-                    f"          new_weight_down = {new_weight_down:.6f}\n"
-                    f"               new_weight = {new_weight:.6f}\n"
-                    f"            new_weight_up = {new_weight_up:.6f}"
+                    f" fakerates_down: {[f'{x:.6f}' for x in arr_all_frs_down]}\n"
+                    f"      fakerates: {[f'{x:.6f}' for x in arr_all_frs]}\n"
+                    f"   fakerates_up: {[f'{x:.6f}' for x in arr_all_frs_up]}\n"
+                    f"           tree.eventWeight = {tree.eventWeight:.6f}\n"
+                    f"           evt_weight_calcd = {evt_weight_calcd:.6f}\n"
+                    f"            new_weight_down = {new_weight_down:.6f}\n"
+                    f"                 new_weight = {new_weight:.6f}\n"
+                    f"              new_weight_up = {new_weight_up:.6f}\n"
+                    f" new_weight_2P2Fin3P1F_down = {new_weight_2p2fin3p1f_down:.6f}\n"
+                    f"      new_weight_2P2Fin3P1F = {new_weight_2p2fin3p1f:.6f}\n"
+                    f"   new_weight_2P2Fin3P1F_up = {new_weight_2p2fin3p1f_up:.6f}"
                     )
                 zzname=f"SELECTED ZZ CAND ({ndx_zzcand}/{n_valid_ZZcands_OS})"
                 zzcand.print_info(name=zzname)
             
             # Save this quartet in TTree. Fill branches.
-            lep_idcs = [
-                mylep1_fromz1.ndx_lepvec,
-                mylep2_fromz1.ndx_lepvec,
-                mylep1_fromz2.ndx_lepvec,
-                mylep2_fromz2.ndx_lepvec,
-                ]
             ptr_finalState[0] = dct_finalstates_str2int[
                                     zzcand.get_finalstate()
                                     ]
@@ -794,20 +835,24 @@ def select_evts_2P2F_3P1F_multiquartets(
             ptr_is2P2F[0] = zzcand.check_valid_cand_os_2p2f()
             ptr_isData[0] = isData
             ptr_isMCzz[0] = isMCzz
-            ptr_fr2_down[0] = fr2_down
-            ptr_fr2[0] = fr2
-            ptr_fr2_up[0] = fr2_up
-            ptr_fr3_down[0] = fr3_down
-            ptr_fr3[0] = fr3
-            ptr_fr3_up[0] = fr3_up
             ptr_eventWeightFR_down[0] = new_weight_down
             ptr_eventWeightFR[0] = new_weight
             ptr_eventWeightFR_up[0] = new_weight_up
+            ptr_eventWeightFR_2P2Fin3P1F_down[0] = new_weight_2p2fin3p1f_down
+            ptr_eventWeightFR_2P2Fin3P1F[0] = new_weight_2p2fin3p1f
+            ptr_eventWeightFR_2P2Fin3P1F_up[0] = new_weight_2p2fin3p1f_up
+            lep_idcs = zzcand.get_mylep_indices(in_pT_order=True)
             ptr_lep_RedBkgindex[0] = lep_idcs[0]
             ptr_lep_RedBkgindex[1] = lep_idcs[1]
             ptr_lep_RedBkgindex[2] = lep_idcs[2]
             ptr_lep_RedBkgindex[3] = lep_idcs[3]
 
+            if fill_hists:
+                h2_nfaillepsz1_vs_nfaillepsz2.Fill(
+                    zzcand.z_fir.get_num_failing_leps(),
+                    zzcand.z_sec.get_num_failing_leps(),
+                    1
+                )
             # Label entire event as either 3P1F or 2P2F.
             # The new RedBkg logic gives 3P1F priority over 2P2F,
             # i.e. if there are 3P1F and 2P2F quartets, label event 3P1F.
@@ -891,14 +936,22 @@ def select_evts_2P2F_3P1F_multiquartets(
         print(f"Writing tree to root file:\n{outfile_root}")
         new_tree.Write()
 
-        if fill_hists:
-            print(f"Writing hists to root file:\n{outfile_root}")
-            for d_name in d_hists.values():
-                for d_cr in d_name.values():
-                    for h in d_cr.values():
-                        h.Write()
-            h2_n3p1fcombos_n2p2fcombos.Write()
+        # if fill_hists:
+        #     print(f"Writing hists to root file:\n{outfile_root}")
+        #     for d_name in d_hists.values():
+        #         for d_cr in d_name.values():
+        #             for h in d_cr.values():
+        #                 h.Write()
+        #     h2_n3p1fcombos_n2p2fcombos.Write()
 
+        if fill_hists:
+
+            gROOT.SetBatch(True)
+            printer = CanvasPrinter()
+            h2_nfaillepsz1_vs_nfaillepsz2.Draw("colz text")
+            printer.canv.Print(outfile_root.replace(".root", ".pdf"))
+
+            h2_nfaillepsz1_vs_nfaillepsz2.Write()
         new_file.Close()
 
     if outfile_json is not None:

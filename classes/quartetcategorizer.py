@@ -1,6 +1,6 @@
 from Utils_Python.printing import announce
 from classes.zzpair import (
-    get_ZZcands_from_myleps_OSmethod
+    get_best_zzcand_single_quartet
     )
 from classes.mylepton import (
     # find_quartets_2pass2fail,
@@ -16,7 +16,8 @@ class QuartetCategorizer:
 
     NOTE:
         By default, if a 3P1F ZZ cand is found, then 2P2F cands will NOT
-        be searched for. To find 
+        be searched for. To also search for 2P2F, then set:
+            `stop_when_found_3p1f = False`
     """
 
     def __init__(
@@ -25,7 +26,8 @@ class QuartetCategorizer:
         smartcut_ZapassesZ1sel=False,
         run=None, lumi=None, event=None, entry=None,
         stop_when_found_3p1f=True,
-        allow_z1_failing_leps=True
+        allow_z1_failing_leps=True,
+        zleps_in_pT_order=True
         ):
         """Make categorizer with sorted MyLepton quartets for one event.
 
@@ -56,12 +58,16 @@ class QuartetCategorizer:
                 do not look for any 2P2F candidates. Defaults to True.
             allow_z1_failing_leps (bool, optional):
                 If True,
+            zleps_in_pT_order (bool, optional):
+                Build Z's with leading lepton at index 0 and subleading at 1.
+                Default is True.
         """
         # Categorize mylep_ls into OS Method 3P1F and 2P2F quartets.
         self.ls_valid_ZZcands_OS_3p1f = \
-            self.get_best_ZZcand_per_quart(
+            self.get_best_zzcands_all_quartets(
                 mylep_ls, cr='3P1F',
                 allow_z1_failing_leps=allow_z1_failing_leps,
+                zleps_in_pT_order=zleps_in_pT_order,
                 verbose=verbose,
                 explain_skipevent=explain_skipevent,
                 smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
@@ -74,9 +80,10 @@ class QuartetCategorizer:
             self.ls_valid_ZZcands_OS_2p2f = []
         else:
             self.ls_valid_ZZcands_OS_2p2f = \
-                self.get_best_ZZcand_per_quart(
+                self.get_best_zzcands_all_quartets(
                     mylep_ls, cr='2P2F',
                     allow_z1_failing_leps=allow_z1_failing_leps,
+                    zleps_in_pT_order=zleps_in_pT_order,
                     verbose=verbose,
                     explain_skipevent=explain_skipevent,
                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
@@ -86,18 +93,20 @@ class QuartetCategorizer:
         self.n_valid_ZZcands_OS_2p2f = len(self.ls_valid_ZZcands_OS_2p2f)
         self.has_valid_ZZcand_OS_2p2f = (self.n_valid_ZZcands_OS_2p2f > 0)
 
-    def get_best_ZZcand_per_quart(
+    def get_best_zzcands_all_quartets(
         self,
         mylep_ls, cr,
         allow_z1_failing_leps=True,
+        zleps_in_pT_order=True,
         verbose=False, explain_skipevent=False,
         smartcut_ZapassesZ1sel=False,
         run=None, lumi=None, event=None, entry=None
         ):
-        """Return a list of best ZZ cands that pass OS method selections.
+        """Return a list of all best ZZ cands that pass OS method selections.
         
-        In the returned list:
-            ls_valid_zz_cand_OS = [
+        Each valid quartet has an associated ZZ cand returned in the list:
+
+            ls_all_valid_zzcands_OS = [
                 best_ZZ_quart1,
                 best_ZZ_quart2,
                 ...
@@ -131,16 +140,17 @@ class QuartetCategorizer:
         if verbose:
             print(f"  Num of {cr} quartets to analyze: {n_tot_quart}")
         # List to hold valid ZZ cands that pass OS Method sel.
-        ls_valid_zz_cand_OS = []
+        ls_all_valid_zzcands_OS = []
         for n_quart, quart in enumerate(ls_quartets, 1):
             if verbose:
                 announce(f"Analyzing quartet #{n_quart}/{n_tot_quart}")
                 lep_ndcs = [mylep.ndx_lepvec for mylep in quart]
                 print(f"  Lepton indices: {lep_ndcs}")
             # For this quartet, use OS Method logic to pick best ZZ cand.
-            ls_zzcand = get_ZZcands_from_myleps_OSmethod(
+            ls_zzcand = get_best_zzcand_single_quartet(
                     quart,
                     allow_z1_failing_leps=allow_z1_failing_leps,
+                    zleps_in_pT_order=zleps_in_pT_order,
                     verbose=verbose, explain_skipevent=explain_skipevent,
                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
                     run=run, lumi=lumi, event=event, entry=entry
@@ -150,7 +160,8 @@ class QuartetCategorizer:
                 # No good ZZ candidate found.
                 continue
 
-            ls_valid_zz_cand_OS.append(
+            ls_all_valid_zzcands_OS.append(
                 ls_zzcand[0]  # Best ZZ cand.
                 )
-        return ls_valid_zz_cand_OS
+
+        return ls_all_valid_zzcands_OS
