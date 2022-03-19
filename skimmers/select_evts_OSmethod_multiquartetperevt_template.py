@@ -91,8 +91,8 @@ explain_skipevent = 0
 
 #=== Bools to control analysis flow. ===#
 # Choose one or the other, or neither.
-sync_with_xBFAna = 0  # If True, will override the bools below.
-use_multiquart_sel = 1
+sync_with_xBFAna = 1  # If True, will override the bools below.
+use_multiquart_sel = 0
 
 #=== Alternatively, fine-tune the analyzer. ===#
 stop_when_found_3p1f = 1  # If a 3P1F ZZ cand is found, don't build 2P2F.

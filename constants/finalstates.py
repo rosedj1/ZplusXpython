@@ -9,8 +9,8 @@ dct_finalstates_str2int = {
 dct_finalstates_latex = {
     "4mu" : r'4#mu',
     "4e" : r'4e',
-    "2e2mu" : r'2e#2mu',
-    "2mu2e" : r'#2mu2e',
+    "2e2mu" : r'2e2#mu',
+    "2mu2e" : r'2#mu2e',
     "4l" : r'4#ell',
 }
 

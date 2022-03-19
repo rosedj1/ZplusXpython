@@ -21,32 +21,32 @@ from Utils_Python.Utils_Files import make_dirs
 from sidequests.classes.templatemanager import TemplateManager
 
 # This script runs only over 1 year each time.
-year = 2018
-LUMI = LUMI_INT_2018_UL
-dct_sumgenwgts = dct_sumgenweights_2018_UL
-infile_fakerates = fakerates_WZremoved_2018_UL_woFSR
+year = 2016
+LUMI = LUMI_INT_2016_UL
+dct_sumgenwgts = dct_sumgenweights_2016_UL
+infile_fakerates = fakerates_WZremoved_2016_UL_woFSR
 dct_xs = dct_xs_jake
 dct_infile_name = {
-    'Data' : data_2018_UL_ge4lepskim,
-    'DY50' : mc_2018_UL_DY_ge4lepskim,
-    'TT'   : mc_2018_UL_TT_ge4lepskim,
-    'WZ'   : mc_2018_UL_WZ_ge4lepskim,
-    'ZZ'   : mc_2018_UL_ZZ_ge4lepskim,
+    'Data' : data_2016_UL_ge4lepskim,
+    'DY50' : mc_2016_UL_DY_ge4lepskim,
+    'TT'   : mc_2016_UL_TT_ge4lepskim,
+    'WZ'   : mc_2016_UL_WZ_ge4lepskim,
+    'ZZ'   : mc_2016_UL_ZZ_ge4lepskim,
 }
 
 break_at = -1
 print_every = 100_000
-overwrite = 1
-verbose = 1
+overwrite = 0
+verbose = 0
 
 py_template = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/select_evts_OSmethod_multiquartetperevt_template.py"
 outdir_logfiles  = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output/"
-outdir_rootfiles = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/test/"
-outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/test/"
+outdir_rootfiles = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/"
+outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 
 # Don't include nickname or year.
-prefix = "skim_osmethodnew"
-suffix = "test01"
+prefix = "skim_osmethod_perfectxBFsync"
+suffix = ""
 
 for d in (outdir_rootfiles, outdir_logfiles, outdir_json):
     make_dirs(d)
