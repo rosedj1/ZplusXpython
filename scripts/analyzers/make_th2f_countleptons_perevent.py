@@ -62,8 +62,8 @@ def make_two_filledTH2_hists(tree):
         n_tightId_per_event = 0
         n_tightId_and_RelIso_per_event = 0
         for ndx in range(n_tot_leps):
-            is_tight = lep_ls_tightId[ndx]
-            if is_tight:
+            is_tightID = lep_ls_tightId[ndx]
+            if is_tightID:
                 n_tightId_per_event += 1
 
                 # If we have a muon, see if it passed RelIso:

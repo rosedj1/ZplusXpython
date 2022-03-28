@@ -67,8 +67,9 @@ class ZZPair:
 
         More notes:
         - The reducible background event selection mentioned in HIG-19-001 has
-            a few suboptimal parts of its logic:
-        - Does not consider Multiple Quartets:
+            a few suboptimal parts of its logic. This function implements the
+            improvements as follows:
+        - Considers Multiple Quartets:
             Different lepton quartets per event can contribute to the RBE.
             So if there are 3 leptons passing tight sel and 2 failing, then
             there are at least two 3P1F quartets that could be built.
@@ -93,7 +94,7 @@ class ZZPair:
         Step 1: Check that Z_fir and Z_sec have no overlapping leptons.
         
         Step 2: See if Z_fir is a valid Z1 candidate.
-        - Z1 MAY be built from 2 tight leptons,
+        - Z1 MAY be built from 2 leptons passing tight selection,
             depending on the value of `allow_z1_failing_leps`.
         - m(Z1) > 40 GeV.
         - See which Z is closer to PDG mass value of Z boson.
@@ -146,7 +147,8 @@ class ZZPair:
                 if self.verbose: self.print_info()
             self.valid_cand_osmethod = False
             return False
-        # If m(Z2) is closer to PDG mass, then it MAY supercede current Z1.
+        # If m(Z2) is closer to PDG mass, then it MAY supercede current Z1
+        # (but only check if both Z's are built from passing leptons).
         if self.z_sec.has_closer_mass_to_ZPDG(self.z_fir):
             if allow_z1_failing_leps or self.z_sec.made_from_tight_leps:
                 if self.explain_skipevent:
@@ -185,10 +187,143 @@ class ZZPair:
             self.valid_cand_osmethod = False
             return False
 
-        # Good redbkg ZZ candidate!
+        # Good redbkg ZZ candidate for OS Method!
         self.valid_cand_osmethod = True
         return True
         
+    def passes_redbkg_wcfmethod_sel(self):
+        """Return True if this ZZ passes WCF selections.
+
+        NOTE:
+            - WCF is "wrong charge/flavor".
+            - If ZZ does pass, then it is a valid WCF Method ZZ cand.
+
+        More notes:
+        - The reducible background event selection mentioned in HIG-19-001 has
+            a few suboptimal parts of its logic. This function implements the
+            improvements as follows:
+        - Considers Multiple Quartets:
+            Different lepton quartets per event can contribute to the RBE.
+            So if there are 3 leptons passing tight sel and 2 failing, then
+            there are at least two 3P1F quartets that could be built.
+            Both should contribute to the RBE.
+        - All ZZ candidates considered:
+            For each quartet in an event, a (possibly different) Z1 is
+            selected, whereas in the current xBF analyzer the BEST Z1 is first
+            chosen among ALL Z candidates and then it is paired with the other
+            Z's one-by-one.
+        - 3P1F priority over 2P2F:
+            If an event has valid 3P1F and 2P2F candidates in an event, then
+            only consider the 3P1F quartets to the RBE. Currently, the xBF
+            analyzer selects the best ZZ candidate based on which has the
+            highest D_kin_bkg. Thus, it sometimes selects a 2P2F quartet over
+            a 3P1F one.
+        - Relaxed Z1 requirement:
+            Z1 can be built from failing leptons which should better estimate
+            ttbar contribution.
+
+        ======================================================================
+        EVENT SELECTION
+        Step 1: Check that Z_fir and Z_sec have no overlapping leptons.
+        
+        Step 2: See if Z_fir is a valid Z1 candidate.
+        - Z1 MAY be built from 2 leptons passing tight selection,
+            depending on the value of `allow_z1_failing_leps`.
+        - m(Z1) > 40 GeV.
+        - See which Z is closer to PDG mass value of Z boson.
+        
+        Step 3: Kinematic selections.
+        - Ghost removal: All 4 leptons must have DeltaR > 0.02.
+        - Lep pT cuts:
+            - At least 2 leps must have pT > 10 GeV.
+            - At least 1 lep must have pT > 20 GeV.
+        - QCD Suppression:
+            - m(ll) > 4 GeV for all OS leptons, neglect flavor and FSR.
+        - Smart Cut:
+            - If fs = 4mu/4e, check alternate ZaZb cand from other OSSF leps.
+            - m(Za) is closer to m(Z_PDG) than m(Zb) is.
+            - If Za (new possible Z1) is closer to PDG mass than old Z1,
+              and if m(Zb) < 12 GeV, then this whole ZZ pair FAILS smart cut.
+        - m(4l) > 70 GeV.
+        ======================================================================
+
+        Args:
+            allow_z1_failing_leps (bool, optional):
+                If True, allow Z1 to be built from 0, 1, or 2 leptons failing
+                tight selection.
+        """
+        skip_msg_prefix = f"Invalid ZZ cand (#{self.ndx_zzpair_ls})"
+        # NOTE: Doing m(4l) cut first since it is an efficient cut.
+        if self.get_m4l() < 70:
+            if self.explain_skipevent:
+                print(f"  {skip_msg_prefix}: Failed m(4l) > 70 GeV.")
+                if self.verbose: self.print_info()
+            self.valid_cand_wcfmethod = False
+            return False
+        
+        # Step 1. Should already be taken into account, but just in case.
+        if self.z_fir.has_overlapping_leps(self.z_sec):
+            if self.explain_skipevent:
+                print(f"  {skip_msg_prefix}: Z's have overlapping leptons.")
+                if self.verbose: self.print_info()
+            self.valid_cand_wcfmethod = False
+            return False
+        
+        # Step 2.
+        if not self.z_fir.passes_z1_kinematic_selec(
+                allow_z1_failing_leps=allow_z1_failing_leps
+                ):
+            if self.explain_skipevent:
+                print(
+                    f"  {skip_msg_prefix}: z_fir does not pass Z1 selections."
+                )
+                if self.verbose: self.print_info()
+            self.valid_cand_wcfmethod = False
+            return False
+        # If m(Z2) is closer to PDG mass, then it MAY supercede current Z1
+        # (but only check if both Z's are built from passing leptons).
+        if self.z_sec.has_closer_mass_to_ZPDG(self.z_fir):
+            if allow_z1_failing_leps or self.z_sec.made_from_tight_leps:
+                if self.explain_skipevent:
+                    print(
+                        f"  {skip_msg_prefix}: "
+                        f"m(Z2) closer to PDG than m(Z1) is."
+                        )
+                    if self.verbose: self.print_info()
+                self.valid_cand_wcfmethod = False
+                return False
+        
+        # Step 3.
+        mylep_ls = self.get_mylep_ls()
+        if not check_leps_separated_in_DeltaR(mylep_ls, min_sep=0.02):
+            if self.explain_skipevent:
+                print(f"  {skip_msg_prefix}: Leptons not separated in dR.")
+                if self.verbose: self.print_info()
+            self.valid_cand_wcfmethod = False
+            return False
+        if not check_leps_pass_leadsublead_pTcuts(mylep_ls):
+            if self.explain_skipevent:
+                print(f"  {skip_msg_prefix}: Leptons fail lead/sublead cuts.")
+                if self.verbose: self.print_info()
+            self.valid_cand_wcfmethod = False
+            return False
+        if not leps_pass_lowmass_dilep_res(mylep_ls, min_mass=4):
+            if self.explain_skipevent:
+                print(f"  {skip_msg_prefix}: Low-mass dilep resonance found.")
+                if self.verbose: self.print_info()
+            self.valid_cand_wcfmethod = False
+            return False
+        if not self.passes_smart_cut():
+            if self.explain_skipevent:
+                print(f"  {skip_msg_prefix}: Failed smart cut.")
+                if self.verbose: self.print_info()
+            self.valid_cand_wcfmethod = False
+            return False
+
+        # Good redbkg ZZ candidate for WCF Method!
+        self.valid_cand_wcfmethod = True
+        return True
+
     def check_valid_cand_os_3p1f(self):
         """Return True if ZZ cand passed OS Method sel and is 3P1F."""
         n_fail = self.get_num_failing_leps()
@@ -199,9 +334,17 @@ class ZZPair:
         n_fail = self.get_num_failing_leps()
         return self.valid_cand_osmethod and (n_fail == 2)
 
-    def get_mylep_ls(self):
-        """Return a list of all myleps that built this ZZPair."""
-        return self.z_fir.get_mylep_ls() + self.z_sec.get_mylep_ls()
+    def get_mylep_ls(self, in_pT_order=False):
+        """Return a list of all myleps that built this ZZPair.
+        
+        Args:
+            in_pT_order (bool, optional):
+                If True, then each Z will have its lepton pTs sorted.
+                So the first 2 elements will still be Z1's leps
+                and the last 2 elements will still be Z2's leps.
+        """
+        return self.z_fir.get_mylep_ls(in_pT_order=in_pT_order) + \
+                self.z_sec.get_mylep_ls(in_pT_order=in_pT_order)
 
     def get_mylep_indices(self, in_pT_order=False):
         """Return a list of 4 indices: [z1_lep1, z1_lep2, z2_lep1, z2_lep2].
@@ -219,7 +362,7 @@ class ZZPair:
         """Return a Lorentz vector version of this ZZ candidate."""
         return self.z_fir.get_LorentzVector() + self.z_sec.get_LorentzVector()
 
-    def get_finalstate(self, as_int=False):
+    def get_finalstate(self):
         """Return str of 4-lepton final state:
 
         One of: '4e', '4mu', '2e2mu', '2mu2e'
@@ -355,14 +498,14 @@ class ZZPair:
         
         Note: "Failing" means failing tight selection.
         """
-        return sum([lep.is_loose for lep in self.get_mylep_ls()])
+        return sum([lep.fail_tight_sel() for lep in self.get_mylep_ls()])
 
     def get_num_passing_leps(self):
         """Return the number of passing leptons in this ZZ pair.
         
         Note: "Passing" means passing tight selection.
         """
-        return sum([lep.is_tight for lep in self.get_mylep_ls()])
+        return sum([lep.pass_tight_sel() for lep in self.get_mylep_ls()])
 
     def get_str_cr_os_method(self):
         """Return str corresponding to OS method control region.
@@ -382,6 +525,23 @@ class ZZPair:
                 f"Valid OS Method ZZ cand has {n_fail} leptons "
                 f"failing tight selection.\n  Is it truly valid?"
                 )
+
+    def get_bools_lepsfailtightsel(self, in_pT_order=True):
+        """Return a list of bools of the leptons which fail tight selection.
+
+        Returns:
+            4-elem list:
+                A `1` indicates that the lepton failed tight sel.
+                The order of the list is:
+                    [z1_lep1, z1_lep2, z2_lep1, z2_lep2]
+                Example:
+                    [0, 1, 1, 0]
+                So here z1_lep2 and z2_lep1 failed tight selection.
+        """
+        return [
+            lep.fail_tight_sel() for lep in \
+                self.get_mylep_ls(in_pT_order=in_pT_order)
+        ]
 # End of ZZPair.
     
 def make_all_zz_pairs(
@@ -575,6 +735,7 @@ def get_best_zzcand_single_quartet(
         print("  Building all Z candidates...")
     zcand_ls = make_all_zcands(
         mylep_ls,
+        method=method,
         zleps_in_pT_order=zleps_in_pT_order,
         explain_skipevent=explain_skipevent, verbose=verbose
         )
@@ -593,14 +754,19 @@ def get_best_zzcand_single_quartet(
         )
 
     # Implement ZZ cuts.
-    ls_all_passing_zz = get_zz_passing_redbkg_osmethod_sel(
-        zz_pair_ls, allow_z1_failing_leps=allow_z1_failing_leps
-        )
+    if cr in ("2P2F", "3P1F"):
+        ls_all_passing_zz = get_zz_passing_redbkg_osmethod_sel(
+            zz_pair_ls, allow_z1_failing_leps=allow_z1_failing_leps
+            )
+    elif cr == "WCF":
+        ls_all_passing_zz = get_zz_passing_redbkg_wcf_sel(
+            zz_pair_ls, allow_z1_failing_leps=allow_z1_failing_leps
+            )
     
     n_zzpairs = len(zz_pair_ls)
     n_zzcands = len(ls_all_passing_zz)
     if verbose:
-        print(f"  Made {n_zzcands} ZZ cands from {n_zzpairs} ZZ pairs.")
+        print(f"  Made {n_zzcands} {cr} ZZ cands from {n_zzpairs} ZZ pairs.")
     if n_zzcands <= 1:
         # Return either empty list or the only ZZ cand made.
         return ls_all_passing_zz
@@ -619,40 +785,40 @@ def get_best_zzcand_single_quartet(
         )
     return [better_zz_cand]
 
-# def myleps_pass_cjlst_osmethod_selection(
-#     mylep_ls, verbose=False, explain_skipevent=False,
-#     smartcut_ZapassesZ1sel=False,
-#     run=None, lumi=None, event=None, entry=None):
-#     """Return True if myleps form at least 1 valid ZZ candidate.
+def myleps_pass_cjlst_osmethod_selection(
+    mylep_ls, verbose=False, explain_skipevent=False,
+    smartcut_ZapassesZ1sel=False,
+    run=None, lumi=None, event=None, entry=None):
+    """Return True if myleps form at least 1 valid ZZ candidate.
     
-#     NOTE:
-#     - Checks that they pass all Z1, Z2, and ZZ selection criteria.
-#     - `mylep_ls` should have exactly 4 leptons. 
+    NOTE:
+    - Checks that they pass all Z1, Z2, and ZZ selection criteria.
+    - `mylep_ls` should have exactly 4 leptons. 
 
-#     Args:
-#         smartcut_ZapassesZ1sel (bool, optional):
-#             In the smart cut, the literature essentially says that if a Za
-#             looks like a more on-shell Z boson than the Z1 AND if the Zb is a
-#             low mass di-lep resonance, then veto the whole ZZ candidate.
-#             However, literature doesn't check for Za passing Z1 selections!
-#             Set this to True if you require Za to pass Z1 selections.
-#             Default is False.
-#         run (int): The run number, used for debugging.
-#         lumi (int): The lumi number, used for debugging.
-#         event (int): The event number, used for debugging.
-#         entry (int): The row of tree containing event, used for debugging.
-#     """
-#     all_passing_zzcands = get_best_zzcand_single_quartet(
-#         mylep_ls=mylep_ls,
-#         zleps_in_pT_order=zleps_in_pT_order,
-#         verbose=verbose,
-#         explain_skipevent=explain_skipevent,
-#         smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
-#         run=run, lumi=lumi, event=event, entry=entry
-#         )
-#     n_zzcands = len(all_passing_zzcands)
-#     if n_zzcands == 0:
-#         if verbose or explain_skipevent:
-#             print(f"  No ZZ candidates formed! ({n_zzcands} candidates)")
-#         return False
-#     return True
+    Args:
+        smartcut_ZapassesZ1sel (bool, optional):
+            In the smart cut, the literature essentially says that if a Za
+            looks like a more on-shell Z boson than the Z1 AND if the Zb is a
+            low mass di-lep resonance, then veto the whole ZZ candidate.
+            However, literature doesn't check for Za passing Z1 selections!
+            Set this to True if you require Za to pass Z1 selections.
+            Default is False.
+        run (int): The run number, used for debugging.
+        lumi (int): The lumi number, used for debugging.
+        event (int): The event number, used for debugging.
+        entry (int): The row of tree containing event, used for debugging.
+    """
+    all_passing_zzcands = get_best_zzcand_single_quartet(
+        mylep_ls=mylep_ls,
+        zleps_in_pT_order=zleps_in_pT_order,
+        verbose=verbose,
+        explain_skipevent=explain_skipevent,
+        smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
+        run=run, lumi=lumi, event=event, entry=entry
+        )
+    n_zzcands = len(all_passing_zzcands)
+    if n_zzcands == 0:
+        if verbose or explain_skipevent:
+            print(f"  No ZZ candidates formed! ({n_zzcands} candidates)")
+        return False
+    return True

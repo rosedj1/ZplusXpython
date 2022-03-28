@@ -198,8 +198,8 @@ def check_which_Z2_leps_failed(zz_pair):
     5, if both leps from Z2 failed.
     """
     # See if leps 3 and 4 failed.
-    lep3_failed = zz_pair.z_sec.mylep1.is_loose
-    lep4_failed = zz_pair.z_sec.mylep2.is_loose
+    lep3_failed = zz_pair.z_sec.mylep1.fail_tight_sel()
+    lep4_failed = zz_pair.z_sec.mylep2.fail_tight_sel()
 
     if lep3_failed and (not lep4_failed):
         return 2
@@ -325,10 +325,10 @@ def get_fakerate_and_error_mylep(
             fake_rate (float),
             fake_rate_err (float)
             )
-    NOTE: Get fake rates based on lep pT and eta WITHOUT reco!
+    NOTE: Get fake rates based on lep pT and eta WITHOUT FSR recovery!
     """
     fr, fr_err = get_fakerate_and_error(
-        mylep.lid, mylep.lpt_NoFSR, mylep.leta_NoFSR,
+        mylep.lid, mylep.lpt, mylep.leta,
         h1D_FRel_EB, h1D_FRel_EE, h1D_FRmu_EB, h1D_FRmu_EE,
         eta_bound_elec=eta_bound_elec,
         eta_bound_muon=eta_bound_muon,

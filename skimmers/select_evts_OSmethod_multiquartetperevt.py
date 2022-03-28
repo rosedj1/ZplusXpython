@@ -140,11 +140,11 @@ use_multiquart_sel = 0
 #=== Alternatively, fine-tune the analyzer. ===#
 stop_when_found_3p1f = 1  # If a 3P1F ZZ cand is found, don't build 2P2F.
 match_lep_Hindex = 0  # Only keep quartets whose Z1 and Z2 match lep_Hindex.
-keep_one_quartet = 0
+keep_one_quartet = 1
 recalc_masses = 1
-skip_mass4l_lessthan0 = 0
+skip_mass4l_lessthan0 = 1
 skip_passedFullSelection = 1
-allow_z1_failing_leps = 1
+allow_z1_failing_leps = 0
 
 smartcut_ZapassesZ1sel = 0  # Literature sets this to False.
 fill_hists = 0
@@ -156,7 +156,7 @@ outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
 # basename gets appended with file nickname:
 # outfile_basename = "osmethodnew_UL_somenegfrs_stopwhenfound3p1f_nomatchlepHindex_multiquart_recalcmasses_noskipmass4llt0_allowz1failleps"
-outfile_basename = "osmethodnew_UL"
+outfile_basename = "osmethod_UL_stopwhenfound3p1f_nomatchlepHindex_recalcmasses"
 #=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

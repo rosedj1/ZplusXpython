@@ -12,7 +12,8 @@ from Utils_Python.Utils_Files import save_to_json, check_overwrite
 from Utils_ROOT.Printer import CanvasPrinter
 from classes.mylepton import (
     make_filled_mylep_ls,
-    get_n_myleps_passing, get_n_myleps_failing, has_2p2f_leps, has_3p1f_leps,
+    get_n_myleps_passtightsel, get_n_myleps_failtightsel,
+    has_2p2f_leps, has_3p1f_leps,
     )
 from classes.quartetcategorizer import QuartetCategorizer
 from sidequests.funcs.cjlst_handling import (
@@ -68,7 +69,7 @@ def make_evt_info_d():
         # "n_evts_lt2tightleps",
         # "n_evts_gt3tightleps",
         # "n_evts_not2or3tightleps",
-        "n_evts_novalid2P2For3P1F_ZZcands",
+        "n_evts_novalid2P2F3P1FWCF_ZZcands",
         # "n_quartets_zerogoodZZcands",
         # "n_evts_nosubevtspassingsel",
         "n_evts_passedFullSelection",
@@ -160,8 +161,8 @@ def make_evt_info_d():
             
 #         # Initialize ALL leptons (there can be more than 4 leptons).
 #         mylep_ls = make_filled_mylep_ls(tree)
-#         n_leps_passing = get_n_myleps_passing(mylep_ls)
-#         n_leps_failing = get_n_myleps_failing(mylep_ls)
+#         n_leps_passing = get_n_myleps_passtightsel(mylep_ls)
+#         n_leps_failing = get_n_myleps_failtightsel(mylep_ls)
 
 #         # Preliminary checks.
 #         if n_leps_passing < 2:
@@ -207,7 +208,7 @@ def make_evt_info_d():
 #                     run=run, lumi=lumi, event=event, entry=evt_num):
 #                 continue
 #             # Make sure it's not a SR event:
-#             if get_n_myleps_passing(fourlep_tup) == 4:
+#             if get_n_myleps_passtightsel(fourlep_tup) == 4:
 #                 evt_info_d["n_combos_4tightleps"] += 1
 #                 if explain_skipevent:
 #                     print("Skipping 4-lep combo: 4 tight leptons.")
@@ -294,6 +295,11 @@ def select_evts_2P2F_3P1F_multiquartets(
         If an event has both a 3P1F quartet and a 2P2F quartet,
         then the 3P1F one takes priority. The 2P2F quartet will be skipped.
 
+        Selects events with quartets which pass OS Method or WC/F
+        (wrong charge/flavor) selections.
+        - A quartet can only belong to one of: 2P2F, 3P1F, WCF
+        These are orthogonal CRs.
+        
     TODO Update below:
     Select events with:
         - Exactly 3 leptons passing tight selection and at least 1 failing.
@@ -506,6 +512,7 @@ def select_evts_2P2F_3P1F_multiquartets(
         new_tree.Branch("eventWeightFR_up", ptr_eventWeightFR_up, "eventWeightFR_up/F")
         # Record the indices of the leptons in passing quartet.
         new_tree.Branch("lep_RedBkgindex", ptr_lep_RedBkgindex, "lep_RedBkgindex[4]/I")
+        new_tree.Branch("lep_failedTightSel", ptr_lep_failedTightSel, "lep_failedTightSel[4]/I")
         new_tree.Branch("fakerate_down", ptr_fakerate_down, "fakerate_down[4]/F")
         new_tree.Branch("fakerate", ptr_fakerate, "fakerate[4]/F")
         new_tree.Branch("fakerate_up", ptr_fakerate_up, "fakerate_up[4]/F")
@@ -584,8 +591,8 @@ def select_evts_2P2F_3P1F_multiquartets(
             
         # Initialize ALL leptons (possibly >=4 leptons).
         mylep_ls = make_filled_mylep_ls(tree)
-        n_leps_passing = get_n_myleps_passing(mylep_ls)
-        n_leps_failing = get_n_myleps_failing(mylep_ls)
+        n_leps_passing = get_n_myleps_passtightsel(mylep_ls)
+        n_leps_failing = get_n_myleps_failtightsel(mylep_ls)
         if verbose:
             print(
                 f"    Num leptons passing tight sel: {n_leps_passing}\n"
@@ -619,22 +626,27 @@ def select_evts_2P2F_3P1F_multiquartets(
                                 qtcat.ls_valid_ZZcands_OS_2p2f
         n_valid_ZZcands_OS = qtcat.n_valid_ZZcands_OS_3p1f + \
                                 qtcat.n_valid_ZZcands_OS_2p2f
+        ls_valid_ZZcands_WCF = qtcat.ls_valid_ZZcands_WCF
+        n_valid_ZZcands_WCF = qtcat.n_valid_ZZcands_WCF
 
-        if n_valid_ZZcands_OS == 0:
+        if (n_valid_ZZcands_OS == 0) and (n_valid_ZZcands_WCF == 0):
             if explain_skipevent:
                 print_skipevent_msg(
-                    "  No valid 2P2F or 3P1F ZZ candidates.",
+                    "  No valid 2P2F, 3P1F, or WCF ZZ candidates.",
                     evt_num, run, lumi, event
                     )
-            evt_info_d["n_evts_novalid2P2For3P1F_ZZcands"] += 1
+            evt_info_d["n_evts_novalid2P2F3P1FWCF_ZZcands"] += 1
             continue
 
         if verbose:
             print(
-                f"  Num valid OS ZZ cands 3P1F: "
-                f"{qtcat.n_valid_ZZcands_OS_3p1f}\n"
-                f"  Num valid OS ZZ cands 2P2F: "
-                f"{qtcat.n_valid_ZZcands_OS_2p2f}"
+                f"  Num valid ZZ cands:\n"
+                f"    OS 3P1F: "
+                f"{n_valid_ZZcands_OS_3p1f}\n"
+                f"    OS 2P2F: "
+                f"{n_valid_ZZcands_OS_2p2f}\n"
+                f"        WCF: "
+                f"{n_valid_ZZcands_WCF}"
                 )
 
         ##############################################################
@@ -643,7 +655,14 @@ def select_evts_2P2F_3P1F_multiquartets(
         n_saved_quartets_3p1f = 0
         n_saved_quartets_2p2f = 0
         found_matching_lep_Hindex = False
-        overall_evt_label = ''  # Either '3P1F' or '2P2F'.
+        overall_evt_label = ''  # Either '3P1F', '2P2F', or 'WCF'.
+
+        ###################
+        #=== OS Method ===#
+        ###################
+        #####################
+        #=== WC/F Method ===#
+        #####################
         for ndx_zzcand, zzcand in enumerate(ls_valid_ZZcands_OS, 1):
             cr_str = zzcand.get_str_cr_os_method().upper()
 
@@ -652,6 +671,7 @@ def select_evts_2P2F_3P1F_multiquartets(
                 assert zzcand.check_valid_cand_os_3p1f()
             elif cr_str == '2P2F':
                 assert zzcand.check_valid_cand_os_2p2f()
+            elif cr_str == 'WCF'
             else:
                 raise ValueError(f"cr_str is not in ('3P1F', '2P2F').")
 
@@ -833,6 +853,7 @@ def select_evts_2P2F_3P1F_multiquartets(
             ptr_nZXCRFailedLeptons[0] = zzcand.get_num_failing_leps()
             ptr_is3P1F[0] = zzcand.check_valid_cand_os_3p1f()
             ptr_is2P2F[0] = zzcand.check_valid_cand_os_2p2f()
+            ptr_isWCF[0] = zzcand.check_valid_cand_wcf()
             ptr_isData[0] = isData
             ptr_isMCzz[0] = isMCzz
             ptr_eventWeightFR_down[0] = new_weight_down
@@ -841,6 +862,11 @@ def select_evts_2P2F_3P1F_multiquartets(
             ptr_eventWeightFR_2P2Fin3P1F_down[0] = new_weight_2p2fin3p1f_down
             ptr_eventWeightFR_2P2Fin3P1F[0] = new_weight_2p2fin3p1f
             ptr_eventWeightFR_2P2Fin3P1F_up[0] = new_weight_2p2fin3p1f_up
+            fail_tight = zzcand.get_bools_lepsfailtightsel(in_pT_order=True)
+            ptr_lep_failedTightSel[0] = fail_tight[0]
+            ptr_lep_failedTightSel[1] = fail_tight[1]
+            ptr_lep_failedTightSel[2] = fail_tight[2]
+            ptr_lep_failedTightSel[3] = fail_tight[3]
             lep_idcs = zzcand.get_mylep_indices(in_pT_order=True)
             ptr_lep_RedBkgindex[0] = lep_idcs[0]
             ptr_lep_RedBkgindex[1] = lep_idcs[1]
