@@ -133,6 +133,27 @@ class MyLepton:
         assert self.get_flavor() in ('e', 'mu')
         return (-1 * self.lid / abs(self.lid))
         
+    def same_charge_as(self, other):
+        """Return True if this MyLepton has same charge as `other`."""
+        return (self.get_charge() == other.get_charge())
+
+    def same_flavor_as(self, other):
+        """Return True if this MyLepton has same flavor as `other`."""
+        return (self.get_flavor() == other.get_flavor())
+
+    def compare_chargeflavor(self, other):
+        """Return str comparing charge and flavor of MyLepton to `other`.
+
+        Returns one of:
+            * 'SSSF' (leptons are same sign, same flavor)
+            * 'SSDF' (leptons are same sign, diff flavor)
+            * 'OSSF' (leptons are opposite sign, same flavor)
+            * 'OSDF' (leptons are opposite sign, diff flavor)
+        """
+        q = 'SS' if self.same_charge_as(other) else 'OS'
+        f = 'SF' if self.same_flavor_as(other) else 'DF'
+        return q + f
+
 def make_filled_mylep_ls(tree):
     """Return list of MyLepton objs filled with lep info from this event."""
     assert len(tree.lep_pt) == \

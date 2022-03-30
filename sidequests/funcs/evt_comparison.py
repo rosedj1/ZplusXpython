@@ -7,7 +7,7 @@ from Utils_Python.Utils_Files import check_overwrite
 from sidequests.classes.cjlstflag import CjlstFlag
 from sidequests.classes.filecomparer import evtID_as_str
 from sidequests.funcs.evt_loops import (
-    select_evts_2P2F_3P1F_multiquartets,
+    select_redbkg_evts,
     make_ls_evtIDs_OSmethod
     )
 from constants.finalstates import dct_finalstates_int2str
@@ -194,7 +194,7 @@ def analyze_single_evt(
             print_evt_info_bbf(tree)
         elif fw == "jake":
             announce("ANALYZER: Jake")
-            select_evts_2P2F_3P1F_multiquartets(
+            select_redbkg_evts(
                 tree,
                 infile_fakerates=infile_fakerates,
                 genwgts_dct=genwgts_dct,

@@ -66,7 +66,7 @@ import argparse
 from ROOT import TFile
 # Local modules.
 from sidequests.funcs.evt_loops import (
-    select_evts_2P2F_3P1F_multiquartets
+    select_redbkg_evts
     )
 from Utils_Python.Utils_Files import check_overwrite, make_dirs
 from Utils_Python.Commands import shell_cmd
@@ -171,7 +171,7 @@ if __name__ == '__main__':
             f"  Processing: year={year}, name={name}"
             )
 
-        select_evts_2P2F_3P1F_multiquartets(
+        select_redbkg_evts(
             tree,
             infile_fakerates=infile_FR_wz_removed,
             genwgts_dct=genwgts_dct,

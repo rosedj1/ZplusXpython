@@ -7,10 +7,12 @@ class MyZboson:
     def __init__(
         self, mylep1, mylep2,
         zleps_in_pT_order=True,
+        allow_z1_failing_leps=True,
         explain_skipevent=False
         ):
         self.mylep1 = mylep1
         self.mylep2 = mylep2
+        self.allow_z1_failing_leps = allow_z1_failing_leps
         self.made_from_tight_leps = \
             mylep1.pass_tight_sel() * mylep2.pass_tight_sel()
         self.ndx_zcand_ls = None  # Index of this Z in list of Z candidates.
@@ -21,32 +23,97 @@ class MyZboson:
             self.mylep1 = mylep2
             self.mylep2 = mylep1
         
+    def get_chargeflav(self):
+        """Return str comparing charge and flavor of composite MyLeptons.
+
+        Returns one of:
+            * 'SSSF'
+            * 'SSDF'
+            * 'OSSF'
+            * 'OSDF'
+        """
+        return self.mylep1.compare_chargeflavor(self.mylep2)
+
     def get_LorentzVector(self):
         """Return a Lorentz vector version of this Z boson."""
         return self.mylep1.get_LorentzVector(include_FSR=True) + \
                 self.mylep2.get_LorentzVector(include_FSR=True)
+
+    def passes_generic_zcand_sel(
+        self, mass_min=12, mass_max=120, verbose=False
+        ):
+        """Return True if `self` makes a valid generic Z candidate.
         
-    def passes_z1_kinematic_selec(self, allow_z1_failing_leps=True):
+        SELECTIONS:
+        - Lepton pair must be one of:
+            * OSSF
+            * SSSF
+            * OSDF
+            But not SSDF since this is JUST crazy. :-)
+        - mass_min < mZ(including FSR) < mass_max GeV.
+        
+        NOTE:
+        - This is NOT necessarily a valid Z1 or Z2 candidate, as Z1 and Z2 can
+        have their own selections.
+        - Leptons comprising Z DO NOT NEED TO pass tight selection!
+        (loose+tightID+RelIso)
+        This will be checked for when forming the Z1.
+
+        Args:
+            z (MyZboson): Z candidate to consider.
+        """
+        # Must pass one of: OSSF, SSSF, OSDF.
+        # Thus, it just can't be same-sign, different-flavor.
+        if self.get_chargeflav() == 'SSDF':
+            if verbose:
+                print("  Z NOT BUILT: Leptons form same-sign, diff-flav pair")
+                for lep in self.get_mylep_ls:
+                    lep.print_info()
+            return False
+        # Check invariant mass cut:
+        m = self.get_mass()
+        if (m < mass_min):
+            if verbose:
+                print(f"  Z NOT BUILT: Zmass ({m:.6f}) < {mass_min} GeV.")
+            return False
+        if (m > mass_max):
+            if verbose:
+                print(f"  Z NOT BUILT: Zmass ({m:.6f}) > {mass_max} GeV.")
+            return False
+        return True
+
+    def passes_z1_kinematic_sel(self, min_mass=40):
         """Return True if this Z boson COULD pass as a Z1 candidate.
         
-        Checks Zmass > 40 GeV and whether it's OK to build the Z from
-        passing/failing leptons.
+        Checks for:
+        * Zmass > 40 GeV
+        * Whether it's OK to build the Z from passing/failing leptons.
+        * That leptons are OSSF (this should be true even for WCF method)!
 
         Doesn't mean that it has been SELECTED AS the Z1 candidate!
         """
-        mass = self.get_mass()
-        if (mass < 40):
+        msg = (
+            f"Z (from leps {self.get_mylep_indices()}) "
+            f"failed Z1 cut"
+            )
+        if not self.has_leps_OSSF():
             if self.explain_skipevent:
-                print(
-                    f"  Z (from leps {self.get_mylep_indices()}) "
-                    f"failed Z1 cut: mass ({mass:.6f}) < 40 GeV."
-                    )
+                print(f"{msg}: lepton pair is not OSSF.")
             return False
-        if (not allow_z1_failing_leps) and (not self.made_from_tight_leps):
+        mass = self.get_mass()
+        if (mass < min_mass):
+            if self.explain_skipevent:
+                print(f"{msg}: mass ({mass:.6f}) < {min_mass} GeV.")
+            return False
+        can_fail = self.allow_z1_failing_leps
+        all_leps_pass = self.made_from_tight_leps
+        if (not can_fail) and (not all_leps_pass):
             if self.explain_skipevent:
                 print(
                     f"  Z (from leps {self.get_mylep_indices()}) "
-                    f"failed Z1 cut: not built from leps passing tight sel."
+                    f"failed Z1 cut: not built from leps passing tight sel\n"
+                    f"  (allow_z1_failing_leps={can_fail}, "
+                    f"num_fail_leps={self.get_num_failing_leps()})"
                     )
             return False
         return True
@@ -69,19 +136,23 @@ class MyZboson:
         zvec = self.get_LorentzVector()
         n_pass = self.get_num_passing_leps()
         n_fail = self.get_num_failing_leps()
-        lep_info = f"Made from: {n_pass} passing lepton, {n_fail} failing lepton."
-        if n_pass > 1:
-            lep_info = lep_info.replace("lepton,", "leptons,")
-        if n_fail > 1:
-            lep_info = lep_info.replace("lepton.", "leptons.")
+        lep_info = (
+            f"Made from: {n_pass} passing leptons, "
+            f"{n_fail} failing leptons."
+            )
+        if n_pass == 1:
+            lep_info = lep_info.replace("leptons,", "lepton,")
+        if n_fail == 1:
+            lep_info = lep_info.replace("leptons.", "lepton.")
         print(
             f"{header_footer}\n"
-            f"# Z CANDIDATE INFO{name}\n"
-            f"Z_pt={zvec.Pt():.6f}, Z_eta={zvec.Eta():.6f}, "
-            f"Z_phi={zvec.Phi():.6f}, Z_mass={zvec.M():.6f}\n"
+            f"# Z INFO{name}\n"
             f"Z made from pT-ordered leptons at indices: "
             f"{self.get_mylep_indices(in_pT_order=True)}\n"
-            f"Passes Z1 selections: {self.passes_z1_kinematic_selec()}\n"
+            f"Z_pt={zvec.Pt():.6f}, Z_eta={zvec.Eta():.6f}, "
+            f"Z_phi={zvec.Phi():.6f}, Z_mass={zvec.M():.6f}\n"
+            f"Passes Z1 selections (mZ > 40 GeV and tightness check): "
+            f"{self.passes_z1_kinematic_sel(min_mass=40)}\n"
             f"{lep_info}\n"
             f"{header_footer.replace('#', '-')}"
         )
@@ -93,6 +164,24 @@ class MyZboson:
         """Return distance (float) this Z boson is from PDG Z mass value."""
         return self.get_mass() - ZMASS_PDG
     
+    def get_num_passing_leps(self):
+        """Return the number of passing leptons in this Z boson.
+        
+        Note: "Passing" means passing tight selection.
+        """
+        return sum([lep.pass_tight_sel() for lep in self.get_mylep_ls()])
+
+    def get_num_failing_leps(self):
+        """Return the number of failing leptons in this Z boson.
+        
+        Note: "Failing" means failing tight selection.
+
+        In retrospect, I probably could have just done:
+            return (2 - self.get_num_passing_leps())
+        lol
+        """
+        return sum([lep.fail_tight_sel() for lep in self.get_mylep_ls()])
+
     def get_mylep_ls(self, in_pT_order=False):
         """Return a list of mylep1 and mylep2."""
         lep1 = self.mylep1
@@ -160,82 +249,8 @@ class MyZboson:
         their_abs_dist = abs(other_z.get_distance_from_PDG_mass())
         i_am_closer = ((my_abs_dist - their_abs_dist) < 0)
         return True if i_am_closer else False
-
-    def get_num_passing_leps(self):
-        """Return the number of passing leptons in this Z boson.
-        
-        Note: "Passing" means passing tight selection.
-        """
-        return sum([lep.pass_tight_sel() for lep in self.get_mylep_ls()])
-
-    def get_num_failing_leps(self):
-        """Return the number of failing leptons in this Z boson.
-        
-        Note: "Failing" means failing tight selection.
-        """
-        return sum([lep.fail_tight_sel() for lep in self.get_mylep_ls()])
 # End of MyZboson.
 
-def makes_valid_zcand(
-    lep1, lep2, method, verbose=False
-    ):
-    """Return True if lep1 and lep2 will form a valid Z candidate.
-    
-    NOTE:
-    - This is NOT necessarily a valid Z1 or Z2 candidate.
-    
-    SELECTIONS:
-    - 12 < m(ll, including FSR) < 120 GeV.
-    - Leptons DO NOT HAVE TO pass tight selection! (loose+tightID+RelIso)
-        - This will be accounted for in forming the Z1.
-    Additionally, a valid Z candidate depends on `method` chosen:
-        * method == 'OS'
-            - Leptons necessarily must be OSSF.
-        * method == 'WCF'
-            - Z MAY have wrong charge/flavor (WCF) combo, but not required!
-            Can accept OSSF, or wrong charge (e.g. e+e+, mu-mu-, etc.),
-            or wrong flavor (e+mu- or e-mu+).
-            The final 4l quartet must have one OSSF Z and a WCF Z.
-            This will be handled in another function.
-
-    Args:
-        lep1 (MyLepton): Combines with lep2 to make Z cand.
-        lep2 (MyLepton): Combines with lep1 to make Z cand.
-        method (str): Can be 'OS', 'WCF'
-    """
-    z = MyZboson(
-        lep1, lep2,
-        zleps_in_pT_order=True,
-        explain_skipevent = False
-        )
-    method = method.upper()
-    # Check OSSF:
-    if (method == 'OS') and (not z.has_leps_OSSF()):
-        if verbose:
-            print("  PAIRING FAILED: Leptons are not OSSF")
-            for lep in (lep1, lep2):
-                lep.print_info()
-        return False
-    # Check WCF:
-    if (method == 'WCF'):
-        if (not z.has_leps_OSSF()) and (not z.has_leps_WCF()):
-            if verbose:
-                print("  PAIRING FAILED: Leptons are neither OSSF nor WCF")
-                for lep in (lep1, lep2):
-                    lep.print_info()
-            return False
-    # Check invariant mass cut:
-    z_mass = z.get_mass()
-    if (z_mass < 12):
-        if verbose:
-            print(f"  PAIRING FAILED: Zmass ({z_mass:.6f}) < 12 GeV.")
-        return False
-    if (z_mass > 120):
-        if verbose:
-            print(f"  PAIRING FAILED: Zmass ({z_mass:.6f}) > 120 GeV.")
-        return False
-    return True
-    
 def make_all_zcands(
     mylep_ls,
     method,
@@ -267,14 +282,15 @@ def make_all_zcands(
         mylep_ls (list):
         method (str): Can be 'OS', 'WCF'
     """
+    raise RuntimeError("Function deprecated. Use QuartetMaker.")
     zcand_ls = []
     # Make all dilepton combinations to find eligible Z candidates.
     ls_dileps = list(combinations(mylep_ls, 2))
     if verbose:
-        print(f"  Found {len(ls_dileps)} dilepton pairs.")
+        print(f"  Found {len(ls_dileps)} lepton pairs.")
     # Validate each pair.
     for ndx_zvec, (mylep1, mylep2) in enumerate(ls_dileps):
-        if not makes_valid_zcand(
+        if not passes_generic_zcand_sel(
             mylep1, mylep2, method=method, verbose=verbose
             ):
             continue

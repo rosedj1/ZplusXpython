@@ -15,7 +15,7 @@ from classes.mylepton import (
     get_n_myleps_passtightsel, get_n_myleps_failtightsel,
     has_2p2f_leps, has_3p1f_leps,
     )
-from classes.quartetcategorizer import QuartetCategorizer
+from classes.QuartetMaker import QuartetMaker
 from sidequests.funcs.cjlst_handling import (
     is_tight_cjlst_lep, convert_to_bbf_fs, print_evt_info_cjlst
     )
@@ -69,7 +69,6 @@ def make_evt_info_d():
         # "n_evts_lt2tightleps",
         # "n_evts_gt3tightleps",
         # "n_evts_not2or3tightleps",
-        "n_evts_novalid2P2F3P1FWCF_ZZcands",
         # "n_quartets_zerogoodZZcands",
         # "n_evts_nosubevtspassingsel",
         "n_evts_passedFullSelection",
@@ -90,182 +89,182 @@ def make_evt_info_d():
     )
     return {s : 0 for s in tup}
 
-# def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None,
-#                                       start_at_evt=0, break_at_evt=-1, fill_hists=True,
-#                                       explain_skipevent=False, verbose=False, print_every=50000,
-#                                       smartcut_ZapassesZ1sel=False):
-#     """Apply CJLST's RedBkg event selection to all events in tree.
+def evt_loop_evtselcjlst_atleast4leps(tree, outfile_root=None, outfile_json=None,
+                                      start_at_evt=0, break_at_evt=-1, fill_hists=True,
+                                      explain_skipevent=False, verbose=False, print_every=50000,
+                                      smartcut_ZapassesZ1sel=False):
+    """Apply CJLST's RedBkg event selection to all events in tree.
     
-#     NOTE:
-#         - Asks for AT LEAST 4 leptons per event.
-#         - When an event has >4 leptons, then multiple combinations
-#         of 2P2F/3P1F are possible.
-#         - Does NOT select the BEST ZZ candidate per event.
-#         If there are >1 ZZ candidates that pass ZZ selections,
-#         then it takes all possible valid 4-lepton combinations
-#         and analyzes each individually.
+    NOTE:
+        - Asks for AT LEAST 4 leptons per event.
+        - When an event has >4 leptons, then multiple combinations
+        of 2P2F/3P1F are possible.
+        - Does NOT select the BEST ZZ candidate per event.
+        If there are >1 ZZ candidates that pass ZZ selections,
+        then it takes all possible valid 4-lepton combinations
+        and analyzes each individually.
 
-#     New reducible background analyzer to bypass nZXCRFailedLeptons.
-#     # ============================================================================
-#     # Author: Jake Rosenzweig
-#     # Created: 2021-11-16
-#     # Updated: 2021-12-02
-#     # ============================================================================
+    New reducible background analyzer to bypass nZXCRFailedLeptons.
+    # ============================================================================
+    # Author: Jake Rosenzweig
+    # Created: 2021-11-16
+    # Updated: 2021-12-02
+    # ============================================================================
 
-#     Args:
-#         smartcut_ZapassesZ1sel (bool, optional):
-#             In the smart cut, the literature essentially says that if a Za
-#             looks like a more on-shell Z boson than the Z1 AND if the Zb is a
-#             low mass di-lep resonance, then veto the whole ZZ candidate.
-#             However, literature doesn't check for Za passing Z1 selections!
-#             Set this to True if you require Za to pass Z1 selections.
-#             Default is False.
-#     """
-#     evt_info_d = make_evt_info_d()
-#     evt_info_2p2f_3p1f_d = {}
+    Args:
+        smartcut_ZapassesZ1sel (bool, optional):
+            In the smart cut, the literature essentially says that if a Za
+            looks like a more on-shell Z boson than the Z1 AND if the Zb is a
+            low mass di-lep resonance, then veto the whole ZZ candidate.
+            However, literature doesn't check for Za passing Z1 selections!
+            Set this to True if you require Za to pass Z1 selections.
+            Default is False.
+    """
+    evt_info_d = make_evt_info_d()
+    evt_info_2p2f_3p1f_d = {}
 
-#     if outfile_root is not None:
-#         new_file = TFile.Open(outfile_root, "recreate")
-#     # new_tree = 
-#     n_tot = tree.GetEntries()
-#     if verbose:
-#         print(f"Total number of events: {n_tot}")
-#     print("Looking for AT LEAST 4 leptons per event.")
-#     for evt_num in range(start_at_evt, n_tot):
+    if outfile_root is not None:
+        new_file = TFile.Open(outfile_root, "recreate")
+    # new_tree = 
+    n_tot = tree.GetEntries()
+    if verbose:
+        print(f"Total number of events: {n_tot}")
+    print("Looking for AT LEAST 4 leptons per event.")
+    for evt_num in range(start_at_evt, n_tot):
 
-#         if evt_num == break_at_evt:
-#             break
+        if evt_num == break_at_evt:
+            break
 
-#         print_periodic_evtnum(evt_num, n_tot, print_every=print_every)
+        print_periodic_evtnum(evt_num, n_tot, print_every=print_every)
 
-#         tree.GetEntry(evt_num)
-#         run = tree.Run
-#         lumi = tree.LumiSect
-#         event = tree.Event
+        tree.GetEntry(evt_num)
+        run = tree.Run
+        lumi = tree.LumiSect
+        event = tree.Event
 
-#         # EVENTUALLY REMOVE THIS AND MAKE SURE RESULTS ARE THE SAME.
-#         # Don't want signal region events:
-#         # if tree.passedFullSelection:
-#         #     if verbose: print_skipevent_msg("SR", evt_num, run, lumi, event)
-#         #     evt_info_d["n_evts_passedFullSelection"] += 1
-#         #     continue
+        # EVENTUALLY REMOVE THIS AND MAKE SURE RESULTS ARE THE SAME.
+        # Don't want signal region events:
+        # if tree.passedFullSelection:
+        #     if verbose: print_skipevent_msg("SR", evt_num, run, lumi, event)
+        #     evt_info_d["n_evts_passedFullSelection"] += 1
+        #     continue
 
-#         # Check the number of leptons in this event.
-#         n_tot_leps = len(tree.lepFSR_pt)
+        # Check the number of leptons in this event.
+        n_tot_leps = len(tree.lepFSR_pt)
 
-#         # Ensure at least 4 leptons in event:
-#         if n_tot_leps < 4:
-#             if verbose: print_skipevent_msg("n_leps < 4", evt_num, run, lumi, event)
-#             evt_info_d["n_evts_lt4_leps"] += 1
-#             continue
+        # Ensure at least 4 leptons in event:
+        if n_tot_leps < 4:
+            if verbose: print_skipevent_msg("n_leps < 4", evt_num, run, lumi, event)
+            evt_info_d["n_evts_lt4_leps"] += 1
+            continue
             
-#         # Initialize ALL leptons (there can be more than 4 leptons).
-#         mylep_ls = make_filled_mylep_ls(tree)
-#         n_leps_passing = get_n_myleps_passtightsel(mylep_ls)
-#         n_leps_failing = get_n_myleps_failtightsel(mylep_ls)
+        # Initialize ALL leptons (there can be more than 4 leptons).
+        mylep_ls = make_filled_mylep_ls(tree)
+        n_leps_passing = get_n_myleps_passtightsel(mylep_ls)
+        n_leps_failing = get_n_myleps_failtightsel(mylep_ls)
 
-#         # Preliminary checks.
-#         if n_leps_passing < 2:
-#             evt_info_d["n_evts_lt2tightleps"] += 1
-#             if explain_skipevent:
-#                 msg = f"Number of tight leptons ({n_leps_passing}) < 2"
-#                 print_skipevent_msg(msg, evt_num, run, lumi, event)
-#             continue
-#         if n_leps_failing < 1:
-#             evt_info_d["n_evts_lt1looselep"] += 1
-#             if explain_skipevent:
-#                 msg = f"Number of loose leptons ({n_leps_failing}) < 1"
-#                 print_skipevent_msg(msg, evt_num, run, lumi, event)
-#             continue
+        # Preliminary checks.
+        if n_leps_passing < 2:
+            evt_info_d["n_evts_lt2tightleps"] += 1
+            if explain_skipevent:
+                msg = f"Number of tight leptons ({n_leps_passing}) < 2"
+                print_skipevent_msg(msg, evt_num, run, lumi, event)
+            continue
+        if n_leps_failing < 1:
+            evt_info_d["n_evts_lt1looselep"] += 1
+            if explain_skipevent:
+                msg = f"Number of loose leptons ({n_leps_failing}) < 1"
+                print_skipevent_msg(msg, evt_num, run, lumi, event)
+            continue
      
-#         # Check if any four-lep combos have 2P2F or 3P1F leptons.
-#         # NOTE: This does not mean they pass selection yet!
-#         fourlep_combos = []
-#         fourlep_combos.extend(find_quartets_2pass2fail(mylep_ls))
-#         fourlep_combos.extend(find_quartets_3pass1fail(mylep_ls))
-#         if len(fourlep_combos) == 0:
-#             evt_info_d["n_evts_no4lep_combos"] += 1
-#             if explain_skipevent:
-#                 msg = (
-#                     f"Found 0 four-lep combos of type 2P2F or 3P1F."
-#                     f"  n_leps_passing={n_leps_passing}, "
-#                     f"  n_leps_failing={n_leps_failing}"
-#                 )
-#                 print_skipevent_msg(msg, evt_num, run, lumi, event)
-#             continue
+        # Check if any four-lep combos have 2P2F or 3P1F leptons.
+        # NOTE: This does not mean they pass selection yet!
+        fourlep_combos = []
+        fourlep_combos.extend(find_quartets_2pass2fail(mylep_ls))
+        fourlep_combos.extend(find_quartets_3pass1fail(mylep_ls))
+        if len(fourlep_combos) == 0:
+            evt_info_d["n_evts_no4lep_combos"] += 1
+            if explain_skipevent:
+                msg = (
+                    f"Found 0 four-lep combos of type 2P2F or 3P1F."
+                    f"  n_leps_passing={n_leps_passing}, "
+                    f"  n_leps_failing={n_leps_failing}"
+                )
+                print_skipevent_msg(msg, evt_num, run, lumi, event)
+            continue
 
-#         print(f"WHAT THE HELL ARE YOU?")
-#         print(f"len(fourlep_combos) = {len(fourlep_combos)}")
-#         _ = [lep.print_info() for lep in fourlep_combos[0]]
+        print(f"WHAT THE HELL ARE YOU?")
+        print(f"len(fourlep_combos) = {len(fourlep_combos)}")
+        _ = [lep.print_info() for lep in fourlep_combos[0]]
 
-#         # Check which four-lep combos pass ZZ selections.
-#         n_tot_2p2f_quartets = 0
-#         n_tot_3p1f_quartets_this_event = 0
-#         for fourlep_tup in fourlep_combos:
-            # if not myleps_pass_cjlst_osmethod_selection(
-#                     fourlep_tup, verbose=verbose, explain_skipevent=explain_skipevent,
-#                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
-#                     run=run, lumi=lumi, event=event, entry=evt_num):
-#                 continue
-#             # Make sure it's not a SR event:
-#             if get_n_myleps_passtightsel(fourlep_tup) == 4:
-#                 evt_info_d["n_combos_4tightleps"] += 1
-#                 if explain_skipevent:
-#                     print("Skipping 4-lep combo: 4 tight leptons.")
-#                 continue
+        # Check which four-lep combos pass ZZ selections.
+        n_tot_2p2f_quartets = 0
+        n_tot_3p1f_quartets_this_event = 0
+        for fourlep_tup in fourlep_combos:
+            if not myleps_pass_cjlst_osmethod_selection(
+                    fourlep_tup, verbose=verbose, explain_skipevent=explain_skipevent,
+                    smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
+                    run=run, lumi=lumi, event=event, entry=evt_num):
+                continue
+            # Make sure it's not a SR event:
+            if get_n_myleps_passtightsel(fourlep_tup) == 4:
+                evt_info_d["n_combos_4tightleps"] += 1
+                if explain_skipevent:
+                    print("Skipping 4-lep combo: 4 tight leptons.")
+                continue
 
-#             # Good RedBkg event!
-#             if has_2p2f_leps(fourlep_tup):
-#                 n_tot_2p2f_quartets += 1
-#             elif has_3p1f_leps(fourlep_tup):
-#                 n_tot_3p1f_quartets_this_event += 1
-#             else:
-#                 raise ValueError("Something is wrong with event selection.")
-#         # End loop over all possible four-lepton combinations.
-#         evt_id = f"{run} : {lumi} : {event}"
-#         if verbose:
-#             print(
-#                 f"Event passed CJLST OS Method Selections:\n"
-#                 f"{evt_id} (entry {evt_num})"
-#                 )
+            # Good RedBkg event!
+            if has_2p2f_leps(fourlep_tup):
+                n_tot_2p2f_quartets += 1
+            elif has_3p1f_leps(fourlep_tup):
+                n_tot_3p1f_quartets_this_event += 1
+            else:
+                raise ValueError("Something is wrong with event selection.")
+        # End loop over all possible four-lepton combinations.
+        evt_id = f"{run} : {lumi} : {event}"
+        if verbose:
+            print(
+                f"Event passed CJLST OS Method Selections:\n"
+                f"{evt_id} (entry {evt_num})"
+                )
         
-#         has_good_2p2f_combos = (n_tot_2p2f_quartets > 0)
-#         has_good_3p1f_combos = (n_tot_3p1f_quartets_this_event > 0)
+        has_good_2p2f_combos = (n_tot_2p2f_quartets > 0)
+        has_good_3p1f_combos = (n_tot_3p1f_quartets_this_event > 0)
 
-#         evt_info_d["n_sel_redbkg_evts"] += 1
-#         if has_good_2p2f_combos:
-#             evt_info_d["n_good_2p2f_evts"] += 1
-#         if has_good_3p1f_combos:
-#             evt_info_d["n_saved_evts_3p1f"] += 1
+        evt_info_d["n_sel_redbkg_evts"] += 1
+        if has_good_2p2f_combos:
+            evt_info_d["n_good_2p2f_evts"] += 1
+        if has_good_3p1f_combos:
+            evt_info_d["n_saved_evts_3p1f"] += 1
         
-#         if fill_hists:
-#             if has_good_2p2f_combos or has_good_3p1f_combos:
-#                 h1_n2p2f_combos.Fill(n_tot_2p2f_quartets, 1)
-#                 h1_n3p1f_combos.Fill(n_tot_3p1f_quartets_this_event, 1)
-#                 h2_n3p1fcombos_n2p2fcombos.Fill(
-#                     n_tot_2p2f_quartets,
-#                     n_tot_3p1f_quartets_this_event,
-#                     1)
+        if fill_hists:
+            if has_good_2p2f_combos or has_good_3p1f_combos:
+                h1_n2p2f_combos.Fill(n_tot_2p2f_quartets, 1)
+                h1_n3p1f_combos.Fill(n_tot_3p1f_quartets_this_event, 1)
+                h2_n3p1fcombos_n2p2fcombos.Fill(
+                    n_tot_2p2f_quartets,
+                    n_tot_3p1f_quartets_this_event,
+                    1)
             
-#                 evt_info_2p2f_3p1f_d[evt_id] = {
-#                     "num_combos_2p2f" : n_tot_2p2f_quartets,
-#                     "num_combos_3p1f" : n_tot_3p1f_quartets_this_event,
-#                 }
-#     print("End loop over events.")
+                evt_info_2p2f_3p1f_d[evt_id] = {
+                    "num_combos_2p2f" : n_tot_2p2f_quartets,
+                    "num_combos_3p1f" : n_tot_3p1f_quartets_this_event,
+                }
+    print("End loop over events.")
 
-#     pretty_print_dict(evt_info_d)
-#     if outfile_root is not None:
-#         h1_n2p2f_combos.Write()
-#         h1_n3p1f_combos.Write()
-#         h2_n3p1fcombos_n2p2fcombos.Write()
-#         new_file.Close()
-#         print(f"Hists stored in root file:\n{outfile_root}")
+    pretty_print_dict(evt_info_d)
+    if outfile_root is not None:
+        h1_n2p2f_combos.Write()
+        h1_n3p1f_combos.Write()
+        h2_n3p1fcombos_n2p2fcombos.Write()
+        new_file.Close()
+        print(f"Hists stored in root file:\n{outfile_root}")
 
-#     if outfile_json is not None:
-#         save_to_json(evt_info_2p2f_3p1f_d, outfile_json, overwrite=True,
-#                     sort_keys=False)
+    if outfile_json is not None:
+        save_to_json(evt_info_2p2f_3p1f_d, outfile_json, overwrite=True,
+                    sort_keys=False)
 
-def select_evts_2P2F_3P1F_multiquartets(
+def select_redbkg_evts(
     tree,
     infile_fakerates,
     genwgts_dct,
@@ -289,17 +288,34 @@ def select_evts_2P2F_3P1F_multiquartets(
     ):
     """Apply RedBkg multi-lepton quartet selection to all events in tree.
 
-    NOTE:
-        A "quartet" is a combination of 4-leptons.
-        Each event may have multiple leptons quartets.
-        If an event has both a 3P1F quartet and a 2P2F quartet,
-        then the 3P1F one takes priority. The 2P2F quartet will be skipped.
+    Select quartets that fall into one of eight orthogonal control regions:
+        1. OS 2P2F
+        2. OS 3P1F
+        3. SS 2P2F
+        4. SS 3P1F
+        5. SS 4P
+        6. DF 2P2F
+        7. DF 3P1F
+        8. DF 4P
 
-        Selects events with quartets which pass OS Method or WC/F
-        (wrong charge/flavor) selections.
-        - A quartet can only belong to one of: 2P2F, 3P1F, WCF
-        These are orthogonal CRs.
+    Abbreviations:
+        * OS = Quartet made up of opposite-sign, same-flavor leptons.
+        * SS = Quartet made up of same-sign, same-flavor leptons.
+        * DF = Quartet made up of opposite-sign, different-flavor leptons.
         
+    A "quartet" is a combination of 4-leptons.
+    Each event may have multiple leptons quartets.
+    If an event has both a 3P1F quartet and a 2P2F quartet,
+    then the 3P1F will take priority when `stop_when_found_3p1f` is True.
+    In this case, the 2P2F quartets will not be saved.
+
+    In the literature, one will see "WCF" (wrong charge/flavor).
+    WCF is the same as SS + DF.
+
+    Selected events must also pass corresponding OS, SS, DF selections.
+
+
+
     TODO Update below:
     Select events with:
         - Exactly 3 leptons passing tight selection and at least 1 failing.
@@ -472,6 +488,10 @@ def select_evts_2P2F_3P1F_multiquartets(
     ptr_nZXCRFailedLeptons = np.array([0], dtype=int)
     ptr_is2P2F = np.array([0], dtype=int)  # Close enough to bool lol.
     ptr_is3P1F = np.array([0], dtype=int)
+    ptr_is4P = np.array([0], dtype=int)
+    ptr_isOS = np.array([0], dtype=int)  # Opposite-sign, same-flavor quartet.
+    ptr_isSS = np.array([0], dtype=int)  # Same-sign, same-flavor quartet.
+    ptr_isDF = np.array([0], dtype=int)  # Opposite-sign, diff-flavor quartet.
     ptr_isData = np.array([0], dtype=int)
     ptr_isMCzz = np.array([0], dtype=int)
     ptr_eventWeightFR_2P2Fin3P1F_down = array('f', [0.])
@@ -608,10 +628,10 @@ def select_evts_2P2F_3P1F_multiquartets(
                 print_skipevent_msg(msg, evt_num, run, lumi, event)
             continue
 
-        ####################################################
-        #=== Find best ZZ cand for each lepton quartet. ===#
-        ####################################################
-        qtcat = QuartetCategorizer(
+        ##################################################
+        #=== Form all valid quartets (ZZ candidates). ===#
+        ##################################################
+        qtmkr = QuartetMaker(
                 mylep_ls,
                 verbose=verbose,
                 explain_skipevent=explain_skipevent,
@@ -621,63 +641,27 @@ def select_evts_2P2F_3P1F_multiquartets(
                 allow_z1_failing_leps=allow_z1_failing_leps,
                 zleps_in_pT_order=True
                 )
-
-        ls_valid_ZZcands_OS = qtcat.ls_valid_ZZcands_OS_3p1f + \
-                                qtcat.ls_valid_ZZcands_OS_2p2f
-        n_valid_ZZcands_OS = qtcat.n_valid_ZZcands_OS_3p1f + \
-                                qtcat.n_valid_ZZcands_OS_2p2f
-        ls_valid_ZZcands_WCF = qtcat.ls_valid_ZZcands_WCF
-        n_valid_ZZcands_WCF = qtcat.n_valid_ZZcands_WCF
-
-        if (n_valid_ZZcands_OS == 0) and (n_valid_ZZcands_WCF == 0):
-            if explain_skipevent:
-                print_skipevent_msg(
-                    "  No valid 2P2F, 3P1F, or WCF ZZ candidates.",
-                    evt_num, run, lumi, event
-                    )
-            evt_info_d["n_evts_novalid2P2F3P1FWCF_ZZcands"] += 1
+        if len(qtmkr.ls_valid_zzcands) == 0:
             continue
+
+        ###########################################
+        #=== Save all valid quartets to TTree. ===#
+        ###########################################
+        ls_valid_zzcands = qtmkr.ls_valid_zzcands
+        n_valid_zzcands = len(ls_valid_zzcands)
 
         if verbose:
             print(
                 f"  Num valid ZZ cands:\n"
                 f"    OS 3P1F: "
-                f"{n_valid_ZZcands_OS_3p1f}\n"
+                f"{n_valid_ZZcands_OS_3p1f}\n"???
                 f"    OS 2P2F: "
-                f"{n_valid_ZZcands_OS_2p2f}\n"
+                f"{n_valid_ZZcands_OS_2p2f}\n"???
                 f"        WCF: "
-                f"{n_valid_ZZcands_WCF}"
+                f"{n_valid_ZZcands_WCF}"???
                 )
 
-        ##############################################################
-        #=== Record each valid ZZ cand per quartet in this event. ===#
-        ##############################################################
-        n_saved_quartets_3p1f = 0
-        n_saved_quartets_2p2f = 0
-        found_matching_lep_Hindex = False
-        overall_evt_label = ''  # Either '3P1F', '2P2F', or 'WCF'.
-
-        ###################
-        #=== OS Method ===#
-        ###################
-        #####################
-        #=== WC/F Method ===#
-        #####################
-        for ndx_zzcand, zzcand in enumerate(ls_valid_ZZcands_OS, 1):
-            cr_str = zzcand.get_str_cr_os_method().upper()
-
-            # Sanity checks.
-            if cr_str == '3P1F':
-                assert zzcand.check_valid_cand_os_3p1f()
-            elif cr_str == '2P2F':
-                assert zzcand.check_valid_cand_os_2p2f()
-            elif cr_str == 'WCF'
-            else:
-                raise ValueError(f"cr_str is not in ('3P1F', '2P2F').")
-
-            # Better not be in both CRs.
-            assert zzcand.check_valid_cand_os_3p1f() \
-                    ^ zzcand.check_valid_cand_os_2p2f()  # xor.
+        for ndx_zzcand, zzcand in enumerate(ls_valid_zzcands, 1):
 
             if match_lep_Hindex:
                 # Only save quartet if the lepton indices match lep_Hindex.
@@ -707,6 +691,9 @@ def select_evts_2P2F_3P1F_multiquartets(
                     evt_info_d["n_quartets_skip_lep_Hindex_mismatch"] += 1
                     continue
 
+            #################################
+            #=== Fake rate calculations. ===#
+            #################################
             # Event weight calculation.
             n_dataset_tot = float(genwgts_dct[name])
             evt_weight_calcd = get_evt_weight(
@@ -714,14 +701,13 @@ def select_evts_2P2F_3P1F_multiquartets(
                 n_dataset_tot=n_dataset_tot, orig_evt_weight=tree.eventWeight
                 )
 
-            # Calculate fake rates for all leptons.
             # Leptons passing tight selection have fake rate = 0.
             ntimes_fr_resettozero = 0
             arr_all_frs = np.array([])
             arr_all_frs_down = np.array([])
             arr_all_frs_up = np.array([])
             for ct, lep in enumerate(zzcand.get_mylep_ls()):
-                if lep.is_loose:
+                if lep.fail_tight_sel():
                     fr, fr_err = get_fakerate_and_error_mylep(
                         lep,
                         h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
@@ -754,14 +740,11 @@ def select_evts_2P2F_3P1F_multiquartets(
                 arr_all_frs_down = np.append(arr_all_frs_down, fr_down)
                 arr_all_frs_up = np.append(arr_all_frs_up, fr_up)
             
-            #################################
-            #=== Fake rate calculations. ===#
-            #################################
             # Get nonzero fake rates for event reweighting.
             array_fr = arr_all_frs[arr_all_frs > 0]
             array_fr_down = arr_all_frs_down[arr_all_frs_down > 0]
             array_fr_up = arr_all_frs_up[arr_all_frs_up > 0]
-            if zzcand.check_valid_cand_os_3p1f():
+            if zzcand.check_valid_cand_os_3p1f():???
                 try:
                     assert len(array_fr) == 1, f"array_fr={array_fr}"
                 except AssertionError:
@@ -785,7 +768,7 @@ def select_evts_2P2F_3P1F_multiquartets(
                 new_weight_2p2fin3p1f_down = 0
                 new_weight_2p2fin3p1f = 0
                 new_weight_2p2fin3p1f_up = 0
-            elif zzcand.check_valid_cand_os_2p2f():
+            elif zzcand.check_valid_cand_os_2p2f():???
                 try:
                     assert len(array_fr) == 2, (
                         f"evt_num={evt_num}, evt_id={evt_id}\n"
@@ -846,14 +829,16 @@ def select_evts_2P2F_3P1F_multiquartets(
                 zzname=f"SELECTED ZZ CAND ({ndx_zzcand}/{n_valid_ZZcands_OS})"
                 zzcand.print_info(name=zzname)
             
-            # Save this quartet in TTree. Fill branches.
+            ##############################################################
+            #=== Save this quartet in TTree. Fill remaining branches. ===#
+            ##############################################################
             ptr_finalState[0] = dct_finalstates_str2int[
                                     zzcand.get_finalstate()
                                     ]
             ptr_nZXCRFailedLeptons[0] = zzcand.get_num_failing_leps()
-            ptr_is3P1F[0] = zzcand.check_valid_cand_os_3p1f()
-            ptr_is2P2F[0] = zzcand.check_valid_cand_os_2p2f()
-            ptr_isWCF[0] = zzcand.check_valid_cand_wcf()
+            ptr_is3P1F[0] = zzcand.check_valid_cand_os_3p1f()???
+            ptr_is2P2F[0] = zzcand.check_valid_cand_os_2p2f()???
+            ptr_isWCF[0] = zzcand.check_valid_cand_wcf()???
             ptr_isData[0] = isData
             ptr_isMCzz[0] = isMCzz
             ptr_eventWeightFR_down[0] = new_weight_down
@@ -872,6 +857,57 @@ def select_evts_2P2F_3P1F_multiquartets(
             ptr_lep_RedBkgindex[1] = lep_idcs[1]
             ptr_lep_RedBkgindex[2] = lep_idcs[2]
             ptr_lep_RedBkgindex[3] = lep_idcs[3]
+
+
+
+
+
+
+
+
+
+        ls_valid_ZZcands_OS = qtmkr.ls_valid_ZZcands_OS_3p1f + \
+                                qtmkr.ls_valid_ZZcands_OS_2p2f
+        n_valid_ZZcands_OS = qtmkr.n_valid_ZZcands_OS_3p1f + \
+                                qtmkr.n_valid_ZZcands_OS_2p2f
+        ls_valid_ZZcands_WCF = qtmkr.ls_valid_ZZcands_WCF
+        n_valid_ZZcands_WCF = qtmkr.n_valid_ZZcands_WCF
+
+
+
+        n_saved_quartets_3p1f = 0
+        n_saved_quartets_2p2f = 0
+        found_matching_lep_Hindex = False
+        overall_evt_label = ''  # Either '3P1F', '2P2F', or 'WCF'.
+
+
+
+
+
+
+        for ndx_zzcand, zzcand in enumerate(ls_valid_ZZcands_OS, 1):
+            cr_str = zzcand.get_str_cr_os_method().upper()
+
+            # Sanity checks.
+            if cr_str == '3P1F':
+                assert zzcand.check_valid_cand_os_3p1f()
+            elif cr_str == '2P2F':
+                assert zzcand.check_valid_cand_os_2p2f()
+            elif cr_str == 'WCF'
+            else:
+                raise ValueError(f"cr_str is not in ('3P1F', '2P2F').")
+
+            # Better not be in both CRs.
+            assert zzcand.check_valid_cand_os_3p1f() \
+                    ^ zzcand.check_valid_cand_os_2p2f()  # xor.
+
+
+
+
+
+
+
+
 
             if fill_hists:
                 h2_nfaillepsz1_vs_nfaillepsz2.Fill(
