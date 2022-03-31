@@ -48,7 +48,7 @@ class ZZPair:
         self.explain_skipevent = explain_skipevent
         self.ndx_zzpair_ls = None  # Will be assigned when forming ZZPairs.
         self.smartcut_ZapassesZ1sel = smartcut_ZapassesZ1sel
-        # Filled after self.passes_redbkg_sel():
+        # Filled after self.check_passes_redbkg_sel():
         self.passed_method = None  # 'OS', 'WCF'.
 
     def get_m4l(self):
@@ -192,7 +192,10 @@ class ZZPair:
         self.valid_cand_osmethod = True
         return True
         
-    def passes_redbkg_sel(self, method, allow_z1_failing_leps=True):
+    def check_passes_redbkg_sel(
+        self, method, allow_z1_failing_leps=True,
+        min_mass_z1=40
+        ):
         """Return True if this ZZ passes `method` selections.
 
         Arg:
@@ -262,7 +265,7 @@ class ZZPair:
 
         # Check if ZZ agrees with specified method.
         zz_ossf = self.check_both_Zs_OSSF()
-        zz_wcf = self.check_z2_WCF()
+        zz_wcf = self.check_z1OSSF_z2WCF()
         if method == 'OS' and not zz_ossf:
             if self.explain_skipevent:
                 print(f"  {skip_msg_prefix}: not made from 2 OSSF Z's.")
@@ -279,8 +282,7 @@ class ZZPair:
                     print(f"  {skip_msg_prefix}: neither OSSF nor WCF.")
                     if self.verbose: self.print_info()
                 return False
-            else:
-                method = 'OS' if zz_ossf else 'WCF'
+            method = 'OS' if zz_ossf else 'WCF'
 
         # NOTE: Do m(4l) cut first since it is an efficient cut.
         if self.get_m4l() < 70:
@@ -298,7 +300,7 @@ class ZZPair:
         
         # Step 2.
         if not self.z_fir.passes_z1_kinematic_sel(
-                min_mass=40,
+                min_mass=min_mass_z1,
                 allow_z1_failing_leps=allow_z1_failing_leps
                 ):
             if self.explain_skipevent:
@@ -308,7 +310,7 @@ class ZZPair:
                 if self.verbose: self.print_info()
             return False
         # If m(Z2) is closer to PDG mass, then it MAY supercede current Z1
-        # (but only check if both Z's are built from passing leptons).
+        # (depending on requirement on leptons passing tight selection).
         if self.z_sec.has_closer_mass_to_ZPDG(self.z_fir):
             if allow_z1_failing_leps or self.z_sec.made_from_tight_leps:
                 if self.explain_skipevent:
@@ -363,6 +365,10 @@ class ZZPair:
     def check_z2_WCF(self):
         """Return True if `self.z_sec` has wrong charge/flavor leps."""
         return self.z_sec.has_leps_WCF()
+
+    def check_z1OSSF_z2WCF(self):
+        """Return True if z_fir is OSSF and z_sec is WCF."""
+        return (self.z_fir.has_leps_OSSF() and self.check_z2_WCF())
 
     def get_mylep_ls(self, in_pT_order=False):
         """Return a list of all myleps that built this ZZPair.
@@ -714,13 +720,6 @@ def get_zz_passing_redbkg_osmethod_sel(
             allow_z1_failing_leps=allow_z1_failing_leps
             )
         ]
-    # Since ZZ permutations are considered, it is possible that
-    # ZxZy passes and ZyZx passes selections - but these are the same ZZ!
-    # So must eliminate any duplicates like this.
-    # set_unique_zz = set()
-    # for zz in ls_zzcands:
-    #     if zz.has_same_z1z2()
-    #     set_unique_zz.add()
 
 def get_best_zzcand_single_quartet(
     mylep_ls, allow_z1_failing_leps=True,

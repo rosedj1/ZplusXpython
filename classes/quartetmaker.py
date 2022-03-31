@@ -78,6 +78,8 @@ class QuartetMaker:
         There are two main steps to forming a valid quartet (ZZ cand):
         1. Z Formation: Form all dilepton COMBINATIONS that pass selections.
         2. Z Pairing: Form all Z pair PERMUTATIONS that pass selections.
+            - If both ZxZy and ZyZx pass selections, the better is chosen.
+            - TODO: What makes one better?
 
         Args:
             mylep_ls (list):
@@ -177,73 +179,93 @@ class QuartetMaker:
             print(f"  Number of valid Z candidates: {len(zcand_ls)}")
         return zcand_ls
 
-    def pair_Zs(self, ls_zcand):
+    def pair_Zs(
+        self, ls_zcand, method, allow_z1_failing_leps=True
+        ):
         """Return list of all ZZ candidates that pass OS or WCF selections.
         
         OS Method:
             Z1 and Z2 are both OSSF.
         WCF Method:
             Z1 must be OSSF but Z2 is either SSSF or OSDF.
+
+        Args:
+            ls_zcand (list):
+                List of Z candidates passing general Z sel.
+            method (str):
+                RedBkg event selection method.
+                Can be: 'any', 'OS', 'WCF'
+            allow_z1_failing_leps (bool):
+                Default is True.
         """
-        # for ndx1, z1 in enumerate(ls_zcand):
-        #     for ndx2, z2 in enumerate(ls_zcand):
-        #         if ndx1 == ndx2:
-        #             # Skip if looking at the same Z.
-        #             continue
-        #         if z1.has_overlapping_leps(z2):
-        #             # Skip if they share common leptons.
-        #             if explain_skipevent:
-        #                 print(
-        #                     f"  Z's contain overlapping leptons:"
-        #                     f" z#{z1.ndx_zcand_ls}{z1.get_mylep_indices()}, "
-        #                     f" z#{z2.ndx_zcand_ls}{z2.get_mylep_indices()}"
-        #                     )
-        #             continue
-        #     # Build ZZPair with no selections imposed.
-        #     zz_pair = ZZPair(
-        #         z_fir=z1, z_sec=z2,
-        #         kin_discrim=None, explain_skipevent=explain_skipevent
-        #         )
-        #     if not zz_pair.passes_
+        for ndx1, z1 in enumerate(ls_zcand):
+            for ndx2, z2 in enumerate(ls_zcand):
+                if ndx1 == ndx2:
+                    # Skip pairing identical Z's.
+                    continue
+                if z1.has_overlapping_leps(z2):
+                    # Skip if they share common leptons.
+                    if explain_skipevent:
+                        print(
+                            f"  Z's contain overlapping leptons:"
+                            f" z#{z1.ndx_zcand_ls}{z1.get_mylep_indices()}, "
+                            f" z#{z2.ndx_zcand_ls}{z2.get_mylep_indices()}"
+                            )
+                    continue
+                # Build ZxZy. If both Z's are OSSF, then compare to ZyZx.
+                zz = build_better_zzcand(
+                    z1, z2,
+                    )
+                if zz is not None:
+                    ls_zz_cands.extend(
+                        [zz]
+                        )
 
 
-        #     zz_pair.ndx_zzpair_ls = ndx
-        #     zz_pair_ls.extend(
-        #         (zz_pair,)
-        #         )
-        # if verbose:
-        #     print(f"  Made {len(zz_pair_ls)} ZZ permutations.")
-        # return zz_pair_ls
+def build_better_zzcand():
+    """Return the better ZZPair object that passes RedBkg Selections."""
 
 
-        ls_zz_pairs = make_all_zz_pairs(
-            zcand_ls,
-            verbose=False, explain_skipevent=False,
-            smartcut_ZapassesZ1sel=False
+
+                # Build ZZPair with no selections imposed.
+                zz = ZZPair(
+                    z_fir=z1, z_sec=z2,
+                    kin_discrim=None, explain_skipevent=explain_skipevent
+                    )
+                # Check ZxZy pairing.
+                if zz.check_passes_redbkg_sel(
+                    method=method,
+                    allow_z1_failing_leps=allow_z1_failing_leps
+                    ):
+                # Check ZyZx pairing (other permutation). 
+                zz_pair.ndx_zzpair_ls = ndx
+
+
+
+
+            zz = choose_better_zz(
+                z1, z2,
+                verbose=self.verbose,
+                explain_skipevent=False,
+                smartcut_ZapassesZ1sel=False,
+                )
+            # Check ZyZx .
+            zz_alt = 
+            ls_zz_cands.extend(
+                (zz,)
             )
 
         # Implement ZZ cuts.
-        for zz in ls_zz_pairs:
-            if zz.passes_redbkg_sel(
-                    method='any',
-                    allow_z1_failing_leps=allow_z1_failing_leps
-                    ):
-                continue
-            # Good ZZ.
+        ls_zz_cands = [
+            zz for zz in ls_zz_pairs \
+
+            ]
             
 
 
 
 
 
-        if cr in ("2P2F", "3P1F"):
-            ls_all_passing_zz = get_zz_passing_redbkg_osmethod_sel(
-                ls_zz_pairs, allow_z1_failing_leps=allow_z1_failing_leps
-                )
-        elif cr == "WCF":
-            ls_all_passing_zz = get_zz_passing_redbkg_wcf_sel(
-                ls_zz_pairs, allow_z1_failing_leps=allow_z1_failing_leps
-                )
         
         n_zzpairs = len(ls_zz_pairs)
         n_zzcands = len(ls_all_passing_zz)
