@@ -4,10 +4,12 @@ import os
 #--- Fake Rates ---#
 ####################
 fakerates_WZremoved_2017_UL       = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2017UL_WZxs5p26pb.root"
-fakerates_WZremoved_2018_UL       = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2018UL_WZxs5p26pb.root"
+fakerates_WZremoved_2018_UL = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2018UL_WZxs5p26pb.root"
+
 fakerates_WZremoved_2016_UL_woFSR = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2016UL_WZxs5p26pb_woFSR_versVukasin.root"
 fakerates_WZremoved_2017_UL_woFSR = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2017UL_WZxs5p26pb_woFSR_versVukasin.root"
 fakerates_WZremoved_2018_UL_woFSR = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2018UL_WZxs5p26pb_woFSR_versVukasin.root"
+
 fakerates_WZremoved_2018_rereco   = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/uselepFSRtocalc_mZ1/Hist_Data_ptl3_WZremoved.root"
 
 ##############################
@@ -28,10 +30,14 @@ data_2016_UL_postVFP_orig = "/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_L
 data_2016_UL_preVFP       = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_pre_MiniAODv2_noDuplicates.root"
 data_2016_UL_postVFP      = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_post_MiniAODv2_noDuplicates.root"
 data_2016_UL  = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_preandpost_MiniAODv2_noDuplicates.root"
-mc_2016_UL_DY = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/DYJetsToLL_M-50_M125_20165_skimmed.root"
-mc_2016_UL_TT = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/TTTo2L2Nu_M125_20165_skimmed.root"
-mc_2016_UL_WZ = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/WZTo3LNu_M125_20165_skimmed.root"
-mc_2016_UL_ZZ = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/ZZTo4L_M125_20165_skimmed.root"
+mc_2016_UL_preVFP_DY = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20160/DYJetsToLL_M-50_M125_20160_skimmed.root"
+mc_2016_UL_preVFP_TT = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20160/TTTo2L2Nu_M125_20160_skimmed.root"
+mc_2016_UL_preVFP_WZ = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20160/WZTo3LNu_M125_20160_skimmed.root"
+mc_2016_UL_preVFP_ZZ = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20160/ZZTo4L_M125_20160_skimmed.root"
+mc_2016_UL_postVFP_DY = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/DYJetsToLL_M-50_M125_20165_skimmed.root"
+mc_2016_UL_postVFP_TT = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/TTTo2L2Nu_M125_20165_skimmed.root"
+mc_2016_UL_postVFP_WZ = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/WZTo3LNu_M125_20165_skimmed.root"
+mc_2016_UL_postVFP_ZZ = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/ZZTo4L_M125_20165_skimmed.root"
 # Skim for >=3 leptons per event.
 data_2016_UL_ge3lepskim  = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/skimge3leps/Data_Run2016-UL2016_preandpost_MiniAODv2_noDuplicates.root"
 mc_2016_UL_DY_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge3leps/DYJetsToLL_M-50_M125_20165_skimmed.root"
