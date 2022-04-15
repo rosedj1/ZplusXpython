@@ -20,36 +20,58 @@ rb_skim_UL2018_data    = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/r
 rb_skim_UL2017_data_zz = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge3lepskim_2017_Data_ZZ.root"
 rb_skim_UL2018_data_zz = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/redbkgest_UL_WZxs5p26pb_ge3lepskim_2018_Data_ZZ.root"
 
-#################
-#=== 2016 UL ===#
-#################
-# Full stats, skimmed branches.
-# NOTE: Don't use DoubleMuonLowMass. Also we require MuonEG!
+# NOTE: For 2016, don't use DoubleMuonLowMass. Also we require MuonEG!
+#########################
+#=== 2016 UL pre-VFP ===#
+#########################
+# Full stats.
 data_2016_UL_preVFP_orig  = "/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016pre/Data_Run2016-HIPM_UL2016_pre_MiniAODv2_unskimmed_noDuplicates.root"
-data_2016_UL_postVFP_orig = "/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016post/Data_Run2016-UL2016_post_MiniAODv2_unskimmed_noDuplicates.root"
-data_2016_UL_preVFP       = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_pre_MiniAODv2_noDuplicates.root"
-data_2016_UL_postVFP      = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_post_MiniAODv2_noDuplicates.root"
-data_2016_UL  = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_preandpost_MiniAODv2_noDuplicates.root"
+# Full stats, skimmed branches.
+data_2016_UL_preVFP = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_pre_MiniAODv2_noDuplicates.root"
 mc_2016_UL_preVFP_DY = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20160/DYJetsToLL_M-50_M125_20160_skimmed.root"
 mc_2016_UL_preVFP_TT = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20160/TTTo2L2Nu_M125_20160_skimmed.root"
 mc_2016_UL_preVFP_WZ = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20160/WZTo3LNu_M125_20160_skimmed.root"
 mc_2016_UL_preVFP_ZZ = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20160/ZZTo4L_M125_20160_skimmed.root"
+# Skim for >=3 leptons per event.
+data_2016_UL_preVFP_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016preVFP/skimge3leps/Data_Run2016-UL2016_pre_MiniAODv2_noDuplicates.root"
+mc_2016_UL_preVFP_TT_ge3lepskim = ""
+# mc_2016_UL_preVFP_ZZ_ge3lepskim
+
+# Skim for >=4 leptons per event.
+
+##########################
+#=== 2016 UL post-VFP ===#
+##########################
+# Full stats.
+data_2016_UL_postVFP_orig = "/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016post/Data_Run2016-UL2016_post_MiniAODv2_unskimmed_noDuplicates.root"
+# Full stats, skimmed branches.
+data_2016_UL_postVFP = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_post_MiniAODv2_noDuplicates.root"
 mc_2016_UL_postVFP_DY = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/DYJetsToLL_M-50_M125_20165_skimmed.root"
 mc_2016_UL_postVFP_TT = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/TTTo2L2Nu_M125_20165_skimmed.root"
 mc_2016_UL_postVFP_WZ = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/WZTo3LNu_M125_20165_skimmed.root"
 mc_2016_UL_postVFP_ZZ = "root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/ZZTo4L_M125_20165_skimmed.root"
 # Skim for >=3 leptons per event.
-data_2016_UL_ge3lepskim  = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/skimge3leps/Data_Run2016-UL2016_preandpost_MiniAODv2_noDuplicates.root"
-mc_2016_UL_DY_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge3leps/DYJetsToLL_M-50_M125_20165_skimmed.root"
-mc_2016_UL_TT_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge3leps/TTTo2L2Nu_M125_20165_skimmed.root"
-mc_2016_UL_WZ_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge3leps/WZTo3LNu_M125_20165_skimmed.root"
-mc_2016_UL_ZZ_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge3leps/ZZTo4L_M125_20165_skimmed.root"
+data_2016_UL_postVFP_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016postVFP/skimge3leps/Data_Run2016-UL2016_post_MiniAODv2_noDuplicates.root"
+mc_2016_UL_postVFP_DY_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge3leps/DYJetsToLL_M-50_M125_20165_skimmed.root"
+mc_2016_UL_postVFP_TT_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge3leps/TTTo2L2Nu_M125_20165_skimmed.root"
+mc_2016_UL_postVFP_WZ_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge3leps/WZTo3LNu_M125_20165_skimmed.root"
+mc_2016_UL_postVFP_ZZ_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge3leps/ZZTo4L_M125_20165_skimmed.root"
 # Skim for >=4 leptons per event.
-data_2016_UL_ge4lepskim  = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/skimge4leps/Data_Run2016-UL2016_preandpost_MiniAODv2_noDuplicates.root"
-mc_2016_UL_DY_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge4leps/DYJetsToLL_M-50_M125_20165_skimmed.root"
-mc_2016_UL_TT_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge4leps/TTTo2L2Nu_M125_20165_skimmed.root"
-mc_2016_UL_WZ_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge4leps/WZTo3LNu_M125_20165_skimmed.root"
-mc_2016_UL_ZZ_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge4leps/ZZTo4L_M125_20165_skimmed.root"
+# data_2016_UL_postVFP_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016postVFP/skimge4leps/Data_Run2016-UL2016_post_MiniAODv2_noDuplicates.root"
+mc_2016_UL_postVFP_DY_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge4leps/DYJetsToLL_M-50_M125_20165_skimmed.root"
+mc_2016_UL_postVFP_TT_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge4leps/TTTo2L2Nu_M125_20165_skimmed.root"
+mc_2016_UL_postVFP_WZ_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge4leps/WZTo3LNu_M125_20165_skimmed.root"
+mc_2016_UL_postVFP_ZZ_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge4leps/ZZTo4L_M125_20165_skimmed.root"
+
+################################
+#=== 2016 pre- and post-VFP ===#
+################################
+# Full stats, skimmed branches.
+data_2016_UL  = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/fullstats/skimmedbranches/Data_Run2016-UL2016_preandpost_MiniAODv2_noDuplicates.root"
+# Skim for >=3 leptons per event.
+data_2016_UL_ge3lepskim  = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/skimge3leps/Data_Run2016-UL2016_preandpost_MiniAODv2_noDuplicates.root"
+# Skim for >=4 leptons per event.
+data_2016_UL_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016/skimge4leps/Data_Run2016-UL2016_preandpost_MiniAODv2_noDuplicates.root"
 
 #################
 #=== 2017 UL ===#

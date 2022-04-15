@@ -2,14 +2,16 @@
 #=============================================================================
 # Purpose: Copy and run `select_evts_geXleps_template.py` on SLURM.
 # Syntax: `./<this_script>.sh`
-# Notes: Only used on 1 root file at a time, so 1 SLURM job per root file.
+# Notes: 
+#   - Only used on 1 root file at a time, so 1 SLURM job per root file.
+#   - Output ROOT file shares same name as input root file, but diff. dir.
 # Author: Jake Rosenzweig
 # Created: 2022-02-26
 # Updated: 2022-03-16 (Happy birthday, Willis!)
 #=============================================================================
-infile_root='root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshzz4l/xBF/Run2/UL/MC/20165/DYJetsToLL_M-50_M125_20165_skimmed.root'
-outfile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016/skimge3leps/DYJetsToLL_M-50_M125_20165_skimmed.root'
-outdir_logs="/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output"
+infile_root='/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016pre/Data_Run2016-HIPM_UL2016_pre_MiniAODv2_unskimmed_noDuplicates.root'
+outdir_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016preVFP/skimge3leps/test/'
+outdir_logs="/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output/test/"
 
 py_template='/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/select_evts_geXleps_template.py'
 sbatch_template='/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/select_evts_geXleps_onslurm_template.sbatch'
@@ -17,7 +19,7 @@ sbatch_template='/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/s
 tree_path='passedEvents'
 n_leps_skim=3
 break_at=-1
-ovewrite=0
+ovewrite=1
 print_every=1000000
 
 ###############
@@ -27,13 +29,18 @@ function make_new_dir {
     # If 
     # Arg1: New directory to be created.
     if [  ! -d ${1} ]; then
-        mkdir ${1}
-        echo "Created ${1}."
+        mkdir -p ${1}
+        echo "Created new dir:"
+        echo "${1}/"
     fi
 }
 
+# Remove any trailing forward slash.
+outdir_logs=${outdir_logs%/}
+outdir_root=${outdir_root%/}
+
 make_new_dir ${outdir_logs}
-make_new_dir $( dirname ${outfile_root} )
+make_new_dir ${outdir_root}
 
 echo "Storing new SLURM script and Python script in:"
 echo "${outdir_logs}"
@@ -46,10 +53,14 @@ function make_filename_in_log_dir {
     echo ${1}/${filename}
 }
 
+filename_withext=$( basename ${infile_root} )
+filename=${filename_withext/.root/}
+outfile_root="${outdir_root}/${filename}.root"
+
 echo "Using Python template..."
 echo "${py_template}"
 echo "...to create new Python script:"
-new_pyscript=${py_template/".py"/"_copy.py"}
+new_pyscript=${py_template/".py"/"_copy_${filename}.py"}
 new_pyscript=$( make_filename_in_log_dir ${outdir_logs} ${new_pyscript} )
 echo "${new_pyscript}"
 cp ${py_template} ${new_pyscript}
@@ -66,7 +77,7 @@ sed -i "s|PRINT_EVERY|${print_every}|" ${new_pyscript}
 echo "Using SLURM template..."
 echo "${sbatch_template}"
 echo "...to create new SLURM script:"
-new_sbatch=${sbatch_template/".sbatch"/"_copy.sbatch"}
+new_sbatch=${sbatch_template/".sbatch"/"_copy_${filename}.sbatch"}
 new_sbatch=$( make_filename_in_log_dir ${outdir_logs} ${new_sbatch} )
 echo "${new_sbatch}"
 cp ${sbatch_template} ${new_sbatch}
