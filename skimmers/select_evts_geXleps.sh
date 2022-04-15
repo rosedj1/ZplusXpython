@@ -9,17 +9,17 @@
 # Created: 2022-02-26
 # Updated: 2022-03-16 (Happy birthday, Willis!)
 #=============================================================================
-infile_root='/cmsuf/data/store/user/t2/users/kshi/Zprime/Ultra_Legacy/data/unskimmed/2016pre/Data_Run2016-HIPM_UL2016_pre_MiniAODv2_unskimmed_noDuplicates.root'
-outdir_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016preVFP/skimge3leps/test/'
-outdir_logs="/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output/test/"
+infile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016postVFP/skimge3leps/Data_Run2016-UL2016_post_MiniAODv2_noDuplicates.root'
+outdir_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016postVFP/skimge4leps/'
+outdir_logs="/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output/"
 
 py_template='/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/select_evts_geXleps_template.py'
 sbatch_template='/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/select_evts_geXleps_onslurm_template.sbatch'
 
 tree_path='passedEvents'
-n_leps_skim=3
+n_leps_skim=4
 break_at=-1
-ovewrite=1
+ovewrite=0
 print_every=1000000
 
 ###############
