@@ -9,8 +9,8 @@
 # Created: 2022-02-26
 # Updated: 2022-03-16 (Happy birthday, Willis!)
 #=============================================================================
-infile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016postVFP/skimge3leps/Data_Run2016-UL2016_post_MiniAODv2_noDuplicates.root'
-outdir_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016postVFP/skimge4leps/'
+infile_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016preVFP/skimge3leps/ZZTo4L_M125_20160_skimmed.root'
+outdir_root='/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016preVFP/skimge4leps/'
 outdir_logs="/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/output/"
 
 py_template='/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/skimmers/select_evts_geXleps_template.py'

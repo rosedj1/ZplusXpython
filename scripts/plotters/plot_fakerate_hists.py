@@ -17,6 +17,7 @@ parser.add_argument('-w', '--frs_wzrm',   dest="frs_wzrm", type=str, help='input
 parser.add_argument('-o', '--outfile',     dest="outfile", type=str, help='output pdf with fake rate plots')
 parser.add_argument('-x', '--overwrite',   dest="overwrite", action='store_true', help='Overwrite existing file.')
 parser.add_argument('-y', '--year',        dest="year", type=int, help='Year of data set sample.')
+parser.add_argument('-a', '--axisAN',        dest="axis_AN", action='store_true', help='Use AN-19-139 axis bounds.')
 args = parser.parse_args()
 
 infile_data = args.frs_data
@@ -27,6 +28,7 @@ outfile = args.outfile
 # outfile = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/plots/fakerate_hists/jakesfiles_vukasinsframework_20210827.pdf"
 overwrite = args.overwrite
 year = args.year
+axis_AN = args.axis_AN
 
 check_overwrite(outfile, overwrite=overwrite)
 
@@ -84,18 +86,26 @@ h_EB.GetXaxis().SetTitle(r'p_{T}^{e} [GeV]')
 h_MB.GetXaxis().SetTitle(r'p_{T}^{#mu} [GeV]')
 h_EB.GetYaxis().SetTitle(r'Fake Rate')
 h_MB.GetYaxis().SetTitle(r'Fake Rate')
-h_EB.SetTitle('Third lepton (loose): electron')
-h_MB.SetTitle('Third lepton (loose): muon')
+# h_EB.SetTitle('Third lepton (loose): electron')
+# h_MB.SetTitle('Third lepton (loose): muon')
+h_EB.SetTitle('')
+h_MB.SetTitle('')
 h_EB.GetXaxis().SetTitleOffset(1.1)
 h_MB.GetXaxis().SetTitleOffset(1.1)
 h_EB.GetYaxis().SetTitleOffset(1.5)
 h_MB.GetYaxis().SetTitleOffset(1.5)
 # h_EB.GetXaxis().SetRangeUser(4, 84)
 if year == 2016:
-    y_min_muon = 0.04
-    y_max_muon = 0.35
-    y_min_elec = 0.008
-    y_max_elec = 0.35
+    if axis_AN:
+        y_min_muon = 0.04
+        y_max_muon = 0.35
+        y_min_elec = 0.008
+        y_max_elec = 0.35
+    else:
+        y_min_muon = -0.1
+        y_max_muon = 0.4
+        y_min_elec = -0.1
+        y_max_elec = 0.2
 elif year == 2017:
     y_min_muon = 0.0098
     y_max_muon = 0.35
@@ -118,6 +128,7 @@ h_EB.Draw()
 h_EE.Draw('same')
 h_EB_wz.Draw('same')
 h_EE_wz.Draw('same')
+h_EE_wz.GetXaxis().SetRangeUser(4, 84)
 
 leg = TLegend(0.1220736, 0.6069565, 0.4331104, 0.8521739)
 # leg = TLegend(30, 20, '', 'brNDC')
@@ -130,7 +141,7 @@ leg.AddEntry(h_EE_wz, "endcap corrected", "l")
 # leg.SetTextSize(0.03)
 leg.Draw("same")
 
-# c.Update()
+c.Update()
 c.Print(outfile)
 
 #--- Now print muon FR plots. ---#

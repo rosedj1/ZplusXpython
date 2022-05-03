@@ -61,10 +61,10 @@ dct_sumgenweights_2016_UL_preVFP = {
     #=== Who processed MC 2016 UL pre-VFP: Filippo
     # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
     'DY10'       : -1,  # Not yet analyzed.
-    'DY50'       : 95170592.0,
-    'TT'         : 37202080.0,
+    'DY50'       : 95170560.0,
+    'TT'         : 37132616.0,
     'WZ'         : 6363896.0,
-    'ZZ'         : 49189640.0,
+    'ZZ'         : 49189660.0,
     'Data'       : 1,
 }
 dct_sumgenweights_2016_UL_postVFP = {
@@ -99,7 +99,7 @@ dct_sumgenweights_2018_UL = {
     'DY50'       : 96233360.0,
     'TT'         : 144783312.0,
     'WZ'         : 6482815.0,
-    'ZZ'         : 98187552.0,
+    'ZZ'         : 98187536.0,
     'Data'       : 1,
 }
 
