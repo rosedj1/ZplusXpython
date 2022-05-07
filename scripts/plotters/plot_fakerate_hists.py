@@ -8,27 +8,30 @@ Plots FRs before and after WZ removal
 # import ROOT as rt
 from ROOT import TFile, TCanvas, kRed, kBlue, TLegend
 from Utils_Python.Utils_Files import check_overwrite
+
 import argparse
-
 parser = argparse.ArgumentParser()
-# parser.add_argument('-v', '--verbose',     dest="verbose", action="store_true")
-parser.add_argument('-d', '--frs_data', dest="frs_data", type=str, help='input Data rootfile')
-parser.add_argument('-w', '--frs_wzrm',   dest="frs_wzrm", type=str, help='input rootfile with fake rates (WZ removed)')
-parser.add_argument('-o', '--outfile',     dest="outfile", type=str, help='output pdf with fake rate plots')
+# parser.add_argument('-d', '--frs_data', dest="frs_data", type=str, help='input Data rootfile')
+# parser.add_argument('-w', '--frs_wzrm',   dest="frs_wzrm", type=str, help='input rootfile with fake rates (WZ removed)')
+# parser.add_argument('-o', '--outfile',     dest="outfile", type=str, help='output pdf with fake rate plots')
 parser.add_argument('-x', '--overwrite',   dest="overwrite", action='store_true', help='Overwrite existing file.')
-parser.add_argument('-y', '--year',        dest="year", type=int, help='Year of data set sample.')
-parser.add_argument('-a', '--axisAN',        dest="axis_AN", action='store_true', help='Use AN-19-139 axis bounds.')
+# parser.add_argument('-y', '--year',        dest="year", type=int, help='Year of data set sample.')
+# parser.add_argument('-a', '--axisAN',        dest="axis_AN", action='store_true', help='Use AN-19-139 axis bounds.')
 args = parser.parse_args()
-
-infile_data = args.frs_data
-infile_wz_rmv = args.frs_wzrm
-outfile = args.outfile
-# infile_data = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/Hist_Data_ptl3_Data.root"
-# infile_wz_rmv = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/data/best_asof_20210827/fakerate_hists/Hist_Data_ptl3_WZremoved.root"
-# outfile = "/blue/avery/rosedj1/zplusx_vukasin/ZplusXpython/plots/fakerate_hists/jakesfiles_vukasinsframework_20210827.pdf"
+# infile_data = args.frs_data
+# infile_wz_rmv = args.frs_wzrm
+# outfile = args.outfile
 overwrite = args.overwrite
-year = args.year
-axis_AN = args.axis_AN
+# year = args.year
+# axis_AN = args.axis_AN
+
+infile_data = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/vukasin_version_of_code/freshinstall_20220224/hists_Data2016_WZxs5p26pb_woFSR_preVFP_again/Hist_Data_ptl3_Data_2016.root"
+infile_wz_rmv = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/vukasin_version_of_code/freshinstall_20220224/hists_Data2016_WZxs5p26pb_woFSR_preVFP_again/Hist_Data_ptl3_WZremoved_2016.root"
+outfile = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/plots/hists_fakerate/fakerates_2016preVFP_UL_WZxs5p26pb_woFSR_niceaxisrange.pdf"
+# outfile = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/plots/hists_fakerate/fakerates_2016preVFP_UL_WZxs5p26pb_woFSR_yaxissyncwithAN.pdf"
+year = 2016
+axis_AN = False
+x_axis_range = [5.0, 80.0]
 
 check_overwrite(outfile, overwrite=overwrite)
 
@@ -102,25 +105,39 @@ if year == 2016:
         y_min_elec = 0.008
         y_max_elec = 0.35
     else:
-        y_min_muon = -0.1
-        y_max_muon = 0.4
-        y_min_elec = -0.1
-        y_max_elec = 0.2
+        y_min_muon = 0.0
+        y_max_muon = 0.25
+        y_min_elec = 0.0
+        y_max_elec = 0.25
 elif year == 2017:
-    y_min_muon = 0.0098
-    y_max_muon = 0.35
-    y_min_elec = 0.01
-    y_max_elec = 0.35
+    if axis_AN:
+        y_min_muon = 0.0098
+        y_max_muon = 0.35
+        y_min_elec = 0.01
+        y_max_elec = 0.35
+    else:
+        y_min_muon = 0.0
+        y_max_muon = 0.25
+        y_min_elec = 0.0
+        y_max_elec = 0.25
 elif year == 2018:
-    y_min_muon = 0.04
-    y_max_muon = 0.35
-    y_min_elec = 0.01
-    y_max_elec = 0.35
+    if axis_AN:
+        y_min_muon = 0.04
+        y_max_muon = 0.35
+        y_min_elec = 0.01
+        y_max_elec = 0.35
+    else:
+        y_min_muon = 0.0
+        y_max_muon = 0.25
+        y_min_elec = 0.0
+        y_max_elec = 0.25
 else:
     raise ValueError(f"Year ({year}) must be 2016, 2017, or 2018.")
 
 h_EB.GetYaxis().SetRangeUser(y_min_elec, y_max_elec)
+h_EB.GetXaxis().SetRangeUser(x_axis_range[0], x_axis_range[1])
 h_MB.GetYaxis().SetRangeUser(y_min_muon, y_max_muon)
+h_MB.GetXaxis().SetRangeUser(x_axis_range[0], x_axis_range[1])
 h_EB.SetStats(0)
 h_MB.SetStats(0)
 
@@ -128,7 +145,6 @@ h_EB.Draw()
 h_EE.Draw('same')
 h_EB_wz.Draw('same')
 h_EE_wz.Draw('same')
-h_EE_wz.GetXaxis().SetRangeUser(4, 84)
 
 leg = TLegend(0.1220736, 0.6069565, 0.4331104, 0.8521739)
 # leg = TLegend(30, 20, '', 'brNDC')

@@ -114,6 +114,7 @@ outdir_json = "REPLACE_OUTDIR_JSON"
 # basename gets appended with file nickname:
 # outfile_basename = "osmethodnew_UL_somenegfrs_stopwhenfound3p1f_nomatchlepHindex_multiquart_recalcmasses_noskipmass4llt0_allowz1failleps"
 outfile_basename = "REPLACE_PREFIX"
+suffix = "REPLACE_SUFFIX"
 #=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -153,7 +154,7 @@ if __name__ == '__main__':
     ls_all_outfiles = []
     for name, inpath in d_nicknames_files.items():
 
-        ending = f"{year}_{name}"
+        ending = f"{year}_{name}_{suffix}"
         new_base_json = outfile_base_json.replace(".json", f"_{ending}.json")
         new_base_root = outfile_base_root.replace(".root", f"_{ending}.root")
         outfile_root = os.path.join(outdir_root, new_base_root)

@@ -4,6 +4,10 @@ of correct event weights for the given L_ints:
 2016 = 33.330 /fb
 2017 = 41.798 /fb
 2018 = 58.951 /fb
+
+Notes:
+- The root files used as the input of this script are produced using:
+skimmers/select_evts_OSmethod_multiquartetperevt.py
 """
 import os
 import ROOT
@@ -28,7 +32,7 @@ from Utils_Python.printing import announce
 year = 2016
 lumi = LUMI_INT_2016_UL  # 1/pb
 dct_sumgenwgts = dct_sumgenweights_2016_UL
-outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/plots/osmethodxBF_hists_2016UL_AN19139colors.pdf"
+outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/plots/osmethodxBF_hists_2016ULpreVFP_AN19139colors.pdf"
 
 dct_xs = dct_xs_jake
 overwrite = 0

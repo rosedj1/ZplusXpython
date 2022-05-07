@@ -720,7 +720,7 @@ def select_redbkg_evts(
                             f"!!! Negative fake rate found: !!!\n"
                             f"!!!  fr_down={fr_down:.6f}, "
                             f" fr={fr:.6f}, fr_up={fr_up:.6f} !!!\n"
-                            f"!!! Reseting to 0 for now !!!"
+                            f"!!! Resetting to 0 for now !!!"
                             )
                         fr = 0
                         fr_down = 0

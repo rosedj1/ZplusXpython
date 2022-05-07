@@ -69,7 +69,8 @@ from sidequests.funcs.evt_loops import (
     select_redbkg_evts
     )
 from sidequests.data.filepaths import (
-    data_2016_UL_ge4lepskim,
+    data_2016_UL_preVFP_ge4lepskim,
+    data_2016_UL_postVFP_ge4lepskim,
     data_2017_UL, data_2017_UL_ge3lepskim, data_2017_UL_ge4lepskim,
     data_2018_UL, data_2018_UL_ge3lepskim, data_2018_UL_ge4lepskim,
     mc_2016_UL_ZZ_ge4lepskim,
@@ -78,17 +79,23 @@ from sidequests.data.filepaths import (
     # infile_filippo_data_2018_fromhpg,
     # infile_filippo_zz_2018_fromhpg,
     # mc_2018_zz_hpg,
-    fakerates_WZremoved_2017_UL,
-    fakerates_WZremoved_2018_UL,
-    fakerates_WZremoved_2016_UL_woFSR,
+    # fakerates_WZremoved_2017_UL,
+    # fakerates_WZremoved_2018_UL,
+    # fakerates_WZremoved_2016_UL_woFSR,
+    fakerates_WZremoved_2016_UL_woFSR_preVFP,
+    fakerates_WZremoved_2016_UL_woFSR_postVFP,
     fakerates_WZremoved_2017_UL_woFSR,
     fakerates_WZremoved_2018_UL_woFSR
     )
 from Utils_Python.Utils_Files import check_overwrite, make_dirs
 from Utils_Python.Commands import shell_cmd
 from constants.analysis_params import (
-    LUMI_INT_2016_UL, LUMI_INT_2017_UL, LUMI_INT_2018_UL,
-    dct_sumgenweights_2016_UL,
+    LUMI_INT_2016_UL_preVFP,
+    LUMI_INT_2016_UL_postVFP,
+    LUMI_INT_2017_UL,
+    LUMI_INT_2018_UL,
+    dct_sumgenweights_2016_UL_preVFP,
+    dct_sumgenweights_2016_UL_postVFP,
     dct_sumgenweights_2017_UL,
     dct_sumgenweights_2018_UL,
     # n_sumgenweights_dataset_dct_jake,
@@ -101,7 +108,7 @@ from constants.analysis_params import (
 #########################
 # Files to analyze.
 d_nicknames_files = {
-    'Data': data_2016_UL_ge4lepskim,
+    'Data': data_2016_UL_preVFP_ge4lepskim,
     # 'ZZ': mc_2016_UL_ZZ,
     # 'ZZ': mc_2016_UL_ZZ_ge4lepskim,
 
@@ -122,19 +129,19 @@ d_nicknames_files = {
     # "ZZ" : infile_filippo_zz_2018_fromhpg,
 }
 year = 2016
-genwgts_dct = dct_sumgenweights_2016_UL
-int_lumi = LUMI_INT_2016_UL
-infile_FR_wz_removed = fakerates_WZremoved_2016_UL_woFSR
+genwgts_dct = dct_sumgenweights_2016_UL_preVFP
+int_lumi = LUMI_INT_2016_UL_preVFP
+infile_FR_wz_removed = fakerates_WZremoved_2016_UL_woFSR_preVFP
 dct_xs = dct_xs_jake
 
 start_at_evt = 0
-break_at_evt = -1  # Use -1 to run over all events.
+break_at_evt = 1000  # Use -1 to run over all events.
 print_every = 100_000
 explain_skipevent = 0
 
 #=== Bools to control analysis flow. ===#
 # Choose one or the other, or neither.
-sync_with_xBFAna = 0  # If True, will override the bools below.
+sync_with_xBFAna = 1  # If True, will override the bools below.
 use_multiquart_sel = 0
 
 #=== Alternatively, fine-tune the analyzer. ===#

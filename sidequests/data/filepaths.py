@@ -7,6 +7,8 @@ fakerates_WZremoved_2017_UL = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpyt
 fakerates_WZremoved_2018_UL = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2018UL_WZxs5p26pb.root"
 
 fakerates_WZremoved_2016_UL_woFSR = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2016UL_WZxs5p26pb_woFSR_versVukasin.root"
+fakerates_WZremoved_2016_UL_woFSR_preVFP = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/vukasin_version_of_code/freshinstall_20220224/hists_Data2016_WZxs5p26pb_woFSR_preVFP/Hist_Data_ptl3_WZremoved_2016.root"
+fakerates_WZremoved_2016_UL_woFSR_postVFP = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/vukasin_version_of_code/freshinstall_20220224/hists_Data2016_WZxs5p26pb_woFSR_postVFP/Hist_Data_ptl3_WZremoved_2016.root"
 fakerates_WZremoved_2017_UL_woFSR = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2017UL_WZxs5p26pb_woFSR_versVukasin.root"
 fakerates_WZremoved_2018_UL_woFSR = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/fakerates/Hist_Data_ptl3_WZremoved_2018UL_WZxs5p26pb_woFSR_versVukasin.root"
 
@@ -63,7 +65,7 @@ mc_2016_UL_postVFP_TT_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samp
 mc_2016_UL_postVFP_WZ_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge3leps/WZTo3LNu_M125_20165_skimmed.root"
 mc_2016_UL_postVFP_ZZ_ge3lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge3leps/ZZTo4L_M125_20165_skimmed.root"
 # Skim for >=4 leptons per event.
-# data_2016_UL_postVFP_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016postVFP/skimge4leps/Data_Run2016-UL2016_post_MiniAODv2_noDuplicates.root"
+data_2016_UL_postVFP_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/Data/2016postVFP/skimge4leps/Data_Run2016-UL2016_post_MiniAODv2_noDuplicates.root"
 mc_2016_UL_postVFP_DY_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge4leps/DYJetsToLL_M-50_M125_20165_skimmed.root"
 mc_2016_UL_postVFP_TT_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge4leps/TTTo2L2Nu_M125_20165_skimmed.root"
 mc_2016_UL_postVFP_WZ_ge4lepskim = "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L_UL/MC/2016postVFP/skimge4leps/WZTo3LNu_M125_20165_skimmed.root"

@@ -87,6 +87,7 @@ for name, infile in dct_infile_name.items():
         REPLACE_DCT_XS=dct_xs,
         REPLACE_FAKERATE_INFILE=infile_fakerates,
         REPLACE_PREFIX=prefix,
+        REPLACE_SUFFIX=suffix,
         REPLACE_OUTDIR_ROOTFILES=outdir_rootfiles,
         REPLACE_OUTDIR_JSON=outdir_json,
         REPLACE_BREAK_AT=break_at,
