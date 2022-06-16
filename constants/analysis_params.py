@@ -49,15 +49,27 @@ xs_dct_vukasin = {
 #=== UL ===#
 #==========#
 # All L_ints are in pb^{-1}.
-LUMI_INT_2016_UL_pre = 19520
-LUMI_INT_2016_UL_post = 16810
-# Use combined for MC event scaling.
-LUMI_INT_2016_UL = LUMI_INT_2016_UL_pre + LUMI_INT_2016_UL_post
+LUMI_INT_2016_UL_preVFP = 19520
+LUMI_INT_2016_UL_postVFP = 16810
+# Use combined for MC event scaling. <== I don't think this is true...
+LUMI_INT_2016_UL = LUMI_INT_2016_UL_preVFP + LUMI_INT_2016_UL_postVFP
 LUMI_INT_2017_UL = 41798
 LUMI_INT_2018_UL = 58951
 
-dct_sumgenweights_2016_UL = {
-    #=== Kun processed Data 2016 UL pre- and post-VFP. ===#
+dct_sumgenweights_2016_UL_preVFP = {
+    #=== Who processed Data 2016 UL pre-VFP: Kun
+    #=== Who processed MC 2016 UL pre-VFP: Filippo
+    # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
+    'DY10'       : -1,  # Not yet analyzed.
+    'DY50'       : 95170560.0,
+    'TT'         : 37132616.0,
+    'WZ'         : 6363896.0,
+    'ZZ'         : 49189660.0,
+    'Data'       : 1,
+}
+dct_sumgenweights_2016_UL_postVFP = {
+    #=== Who processed Data 2016 UL post-VFP: Kun
+    #=== Who processed MC 2016 UL post-VFP: Filippo
     # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
     'DY10'       : -1,  # Not yet analyzed.
     'DY50'       : 104156464.0,
@@ -68,7 +80,8 @@ dct_sumgenweights_2016_UL = {
 }
 
 dct_sumgenweights_2017_UL = {
-    #=== Chenguang processed Data 2018 UL. ===#
+    #=== Who processed Data 2017 UL: Jake
+    #=== Who processed MC 2017 UL: Filippo
     # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
     'DY10'       : -1,  # Not yet analyzed.
     'DY50'       : 103345040.0,
@@ -79,13 +92,14 @@ dct_sumgenweights_2017_UL = {
 }
 
 dct_sumgenweights_2018_UL = {
-    #=== Chenguang processed Data 2018 UL. ===#
+    #=== Who processed Data 2018 UL: Chenguang
+    #=== Who processed MC 2018 UL: Filippo
     # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
     'DY10'       : -1,  # Not yet analyzed.
     'DY50'       : 96233360.0,
     'TT'         : 144783312.0,
     'WZ'         : 6482815.0,
-    'ZZ'         : 98187552.0,
+    'ZZ'         : 98187536.0,
     'Data'       : 1,
 }
 

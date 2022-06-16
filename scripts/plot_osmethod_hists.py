@@ -2,6 +2,8 @@
 a new specified L_int. I.e. the current calculation uses a pre-filled branch
 of correct event weights for the given L_ints:
 2016 = 33.330 /fb
+2016_preVFP = 19.520 /fb
+2016_postVFP = 16.810 /fb
 2017 = 41.798 /fb
 2018 = 58.951 /fb
 """
@@ -14,9 +16,11 @@ from constants.finalstates import (
     dct_finalstates_latex, dct_finalstates_str2int
     )
 from constants.analysis_params import (
-    LUMI_INT_2016_UL, LUMI_INT_2017_UL, LUMI_INT_2018_UL,
+    LUMI_INT_2016_UL, LUMI_INT_2016_UL_preVFP, LUMI_INT_2016_UL_postVFP,
+    LUMI_INT_2017_UL, LUMI_INT_2018_UL,
     dct_xs_jake,
-    dct_sumgenweights_2016_UL,
+    dct_sumgenweights_2016_UL_preVFP,
+    dct_sumgenweights_2016_UL_postVFP,
     dct_sumgenweights_2017_UL,
     dct_sumgenweights_2018_UL
     )
@@ -26,24 +30,25 @@ from Utils_Python.Utils_Files import check_overwrite, make_dirs
 from Utils_Python.printing import announce
 
 year = 2016
-lumi = LUMI_INT_2016_UL  # 1/pb
-dct_sumgenwgts = dct_sumgenweights_2016_UL
-outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/plots/osmethodxBF_hists_2016UL_AN19139colors.pdf"
+lumi = LUMI_INT_2016_UL_preVFP  # 1/pb
+dct_sumgenwgts = dct_sumgenweights_2016_UL_preVFP
+# outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/plots/osmethodxBF_hists_2016ULpreVFP_AN19139colors.pdf"
+outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/plots/osmethodxBF_hists_2016ULpreVFP_AN19139colors.pdf"
 
 dct_xs = dct_xs_jake
 overwrite = 0
 
 x_lim = [70, 870.0]  # GeV.  [70.0, 170.0]
 bin_width = 20  # GeV.
-color_scheme = "AN19139"  #"AN16442"
+color_scheme = "AN19139" #"AN16442" #
 
 dct_samples = {
     #=== NOTE: The first plot here will be the bottommost in h_stack!
-    "ZZ": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_ZZ.root",
-    "WZ": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_WZ.root",
-    "TT": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_TT.root",
-    "DY50": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_DY50.root",
-    "Data": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_Data.root",
+    "ZZ": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_ZZ_preVFP.root",
+    "WZ": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_WZ_preVFP.root",
+    "TT": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_TT_preVFP.root",
+    "DY50": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_DY50_preVFP.root",
+    "Data": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_Data_preVFP.root",
 
     # "ZZ": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethodnew_2018_ZZ.root",
     # "WZ": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethodnew_2018_WZ.root",

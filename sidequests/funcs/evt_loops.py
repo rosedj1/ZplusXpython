@@ -714,7 +714,7 @@ def select_evts_2P2F_3P1F_multiquartets(
                             f"!!! Negative fake rate found: !!!\n"
                             f"!!!  fr_down={fr_down:.6f}, "
                             f" fr={fr:.6f}, fr_up={fr_up:.6f} !!!\n"
-                            f"!!! Reseting to 0 for now !!!"
+                            f"!!! Resetting to 0 for now !!!"
                             )
                         fr = 0
                         fr_down = 0
@@ -754,10 +754,10 @@ def select_evts_2P2F_3P1F_multiquartets(
                         array_fr_down = [0]
                         array_fr = [0]
                         array_fr_up = [0]
-                    else:
-                        raise ValueError(
-                            f"ntimes_fr_resettozero={ntimes_fr_resettozero}"
-                            )
+                    # else:
+                    #     raise ValueError(
+                    #         f"ntimes_fr_resettozero={ntimes_fr_resettozero}"
+                    #         )
                 new_weight_down = evt_weight_calcd * calc_fr_ratio_3p1f(*array_fr_down)
                 new_weight      = evt_weight_calcd * calc_fr_ratio_3p1f(*array_fr)
                 new_weight_up   = evt_weight_calcd * calc_fr_ratio_3p1f(*array_fr_up)
@@ -785,10 +785,10 @@ def select_evts_2P2F_3P1F_multiquartets(
                         array_fr_down = [0, 0]
                         array_fr = [0, 0]
                         array_fr_up = [0, 0]
-                    else:
-                        raise ValueError(
-                            f"ntimes_fr_resettozero={ntimes_fr_resettozero}"
-                            )
+                    # else:
+                    #     raise ValueError(
+                    #         f"ntimes_fr_resettozero={ntimes_fr_resettozero}"
+                    #         )
                 try:
                     new_weight_down = evt_weight_calcd * calc_fr_ratio_2p2f_prod(*array_fr_down)
                     new_weight      = evt_weight_calcd * calc_fr_ratio_2p2f_prod(*array_fr)
@@ -798,13 +798,19 @@ def select_evts_2P2F_3P1F_multiquartets(
                     new_weight_2p2fin3p1f = evt_weight_calcd * calc_fr_ratio_2p2f_sum(*array_fr)
                     new_weight_2p2fin3p1f_up = evt_weight_calcd * calc_fr_ratio_2p2f_sum(*array_fr_up)
                 except TypeError:
-                    raise TypeError(
-                    f"evt_num={evt_num}, evt_id={evt_id}\n"
-                    f"CR: {cr_str}\n"
-                    f"  array_fr_down: {array_fr_down}\n"
-                    f"  array_fr: {array_fr}\n"
-                    f"  array_fr_up: {array_fr_up}"
-                    )
+                    new_weight_down = 0
+                    new_weight = 0
+                    new_weight_up = 0
+                    new_weight_2p2fin3p1f_down = 0
+                    new_weight_2p2fin3p1f = 0
+                    new_weight_2p2fin3p1f_up = 0
+                    # raise TypeError(
+                    # f"evt_num={evt_num}, evt_id={evt_id}\n"
+                    # f"CR: {cr_str}\n"
+                    # f"  array_fr_down: {array_fr_down}\n"
+                    # f"  array_fr: {array_fr}\n"
+                    # f"  array_fr_up: {array_fr_up}"
+                    # )
             else:
                 raise ValueError("wut.")
 

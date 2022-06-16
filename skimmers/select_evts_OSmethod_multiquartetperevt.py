@@ -58,7 +58,7 @@
 #     - lep_RedBkgindex (int arr[4])
 # Author: Jake Rosenzweig
 # Created: 2021-11-30
-# Updated: 2022-03-08
+# Updated: 2022-06-15
 #=============================================================================
 """
 import os
@@ -70,9 +70,9 @@ from sidequests.funcs.evt_loops import (
     )
 from sidequests.data.filepaths import (
     data_2016_UL_ge4lepskim,
+    data_2016_UL_preVFP_ge4lepskim,
     data_2017_UL, data_2017_UL_ge3lepskim, data_2017_UL_ge4lepskim,
     data_2018_UL, data_2018_UL_ge3lepskim, data_2018_UL_ge4lepskim,
-    mc_2016_UL_ZZ_ge4lepskim,
     mc_2017_UL_ZZ, mc_2017_UL_ZZ_ge3lepskim,
     mc_2018_UL_ZZ, mc_2018_UL_ZZ_ge3lepskim,
     # infile_filippo_data_2018_fromhpg,
@@ -80,15 +80,20 @@ from sidequests.data.filepaths import (
     # mc_2018_zz_hpg,
     fakerates_WZremoved_2017_UL,
     fakerates_WZremoved_2018_UL,
-    fakerates_WZremoved_2016_UL_woFSR,
+    fakerates_WZremoved_2016_UL_woFSR_preVFP,
+    fakerates_WZremoved_2016_UL_woFSR_postVFP,
     fakerates_WZremoved_2017_UL_woFSR,
     fakerates_WZremoved_2018_UL_woFSR
     )
 from Utils_Python.Utils_Files import check_overwrite, make_dirs
 from Utils_Python.Commands import shell_cmd
 from constants.analysis_params import (
-    LUMI_INT_2016_UL, LUMI_INT_2017_UL, LUMI_INT_2018_UL,
-    dct_sumgenweights_2016_UL,
+    LUMI_INT_2016_UL_preVFP,
+    LUMI_INT_2016_UL_postVFP,
+    LUMI_INT_2017_UL,
+    LUMI_INT_2018_UL,
+    dct_sumgenweights_2016_UL_preVFP,
+    dct_sumgenweights_2016_UL_postVFP,
     dct_sumgenweights_2017_UL,
     dct_sumgenweights_2018_UL,
     # n_sumgenweights_dataset_dct_jake,
@@ -101,7 +106,8 @@ from constants.analysis_params import (
 #########################
 # Files to analyze.
 d_nicknames_files = {
-    'Data': data_2016_UL_ge4lepskim,
+    # 'Data': data_2016_UL_ge4lepskim,
+    'Data': data_2016_UL_preVFP_ge4lepskim,
     # 'ZZ': mc_2016_UL_ZZ,
     # 'ZZ': mc_2016_UL_ZZ_ge4lepskim,
 
@@ -122,21 +128,32 @@ d_nicknames_files = {
     # "ZZ" : infile_filippo_zz_2018_fromhpg,
 }
 year = 2016
-genwgts_dct = dct_sumgenweights_2016_UL
-int_lumi = LUMI_INT_2016_UL
-infile_FR_wz_removed = fakerates_WZremoved_2016_UL_woFSR
+genwgts_dct = dct_sumgenweights_2016_UL_preVFP
+int_lumi = LUMI_INT_2016_UL_preVFP
+infile_FR_wz_removed = fakerates_WZremoved_2016_UL_woFSR_preVFP
 dct_xs = dct_xs_jake
+
+# outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/test/verify/"
+outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/test/"
+outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/test/"
+# Produces a root file with TTree and hists, and a json file with evtID info.
+# basename gets appended with file nickname:
+# outfile_basename = "osmethodnew_UL_somenegfrs_stopwhenfound3p1f_nomatchlepHindex_multiquart_recalcmasses_noskipmass4llt0_allowz1failleps"
+outfile_basename = "skim_osmethod_perfectxBFsync_test01"
+suffix = "preVFP"
 
 start_at_evt = 0
 break_at_evt = -1  # Use -1 to run over all events.
 print_every = 100_000
 explain_skipevent = 0
 
+fill_hists = 0
+hadd_files = 0  # Only when running on Data and ZZ in series.
+
 #=== Bools to control analysis flow. ===#
 # Choose one or the other, or neither.
-sync_with_xBFAna = 0  # If True, will override the bools below.
 use_multiquart_sel = 0
-
+sync_with_xBFAna = 1  # If True, will override the bools below.
 #=== Alternatively, fine-tune the analyzer. ===#
 stop_when_found_3p1f = 1  # If a 3P1F ZZ cand is found, don't build 2P2F.
 match_lep_Hindex = 0  # Only keep quartets whose Z1 and Z2 match lep_Hindex.
@@ -147,16 +164,6 @@ skip_passedFullSelection = 1
 allow_z1_failing_leps = 1
 
 smartcut_ZapassesZ1sel = 0  # Literature sets this to False.
-fill_hists = 0
-hadd_files = 0
-
-# outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/test/verify/"
-outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/"
-outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/"
-# Produces a root file with TTree and hists, and a json file with evtID info.
-# basename gets appended with file nickname:
-# outfile_basename = "osmethodnew_UL_somenegfrs_stopwhenfound3p1f_nomatchlepHindex_multiquart_recalcmasses_noskipmass4llt0_allowz1failleps"
-outfile_basename = "osmethodnew_UL"
 #=========================#
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -196,7 +203,7 @@ if __name__ == '__main__':
     ls_all_outfiles = []
     for name, inpath in d_nicknames_files.items():
 
-        ending = f"{year}_{name}"
+        ending = f"{year}_{name}_{suffix}"
         new_base_json = outfile_base_json.replace(".json", f"_{ending}.json")
         new_base_root = outfile_base_root.replace(".root", f"_{ending}.root")
         outfile_root = os.path.join(outdir_root, new_base_root)
