@@ -139,7 +139,7 @@ outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/test/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
 # basename gets appended with file nickname:
 # outfile_basename = "osmethodnew_UL_somenegfrs_stopwhenfound3p1f_nomatchlepHindex_multiquart_recalcmasses_noskipmass4llt0_allowz1failleps"
-outfile_basename = "skim_osmethod_perfectxBFsync_test01"
+outfile_basename = "skim_osmethod_perfectxBFsync_test02"
 suffix = "preVFP"
 
 start_at_evt = 0
